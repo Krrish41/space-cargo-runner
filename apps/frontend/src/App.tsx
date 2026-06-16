@@ -52,7 +52,8 @@ function App() {
           if (storedUserId) payload.userId = storedUserId;
           else if (storedGuestId) payload.username = storedGuestId;
 
-          const res = await fetch('http://localhost:3001/api/auth', {
+          const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+          const res = await fetch(`${backendUrl}/api/auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -65,7 +66,19 @@ function App() {
             syncPlayerStats(data.user);
           }
         } catch (e) {
-          console.error('Failed to init guest', e);
+          console.error('Failed to init guest from backend. Falling back to offline mode:', e);
+          // Offline Fallback so the game doesn't permanently lock out
+          const offlineUser = {
+            id: 'offline-' + Math.random().toString(36).substring(2, 9),
+            username: 'Offline Pilot',
+            coins: 0,
+            highScore: 0,
+            shipEngineLevel: 1,
+            shipHandlingLevel: 1,
+            shipShieldLevel: 1,
+            walletAddress: null
+          };
+          setUser(offlineUser);
         }
       };
       initGuest();
@@ -77,7 +90,8 @@ function App() {
     if (isConnected && address && user && !walletBound) {
       const bindWallet = async () => {
         try {
-          const res = await fetch('http://localhost:3001/api/wallet/bind', {
+          const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+          const res = await fetch(`${backendUrl}/api/wallet/bind`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: user.id, walletAddress: address })
