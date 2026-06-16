@@ -7,10 +7,10 @@ export class Preloader extends Phaser.Scene {
 
   preload() {
     // Load high-fidelity generated game assets
-    this.load.image('ship', '/assets/ship.png');
-    this.load.image('asteroid', '/assets/asteroid.png');
-    this.load.image('cargo', '/assets/cargo.png');
-    this.load.image('fuel', '/assets/fuel.png');
+    this.load.image('ship', `${import.meta.env.BASE_URL}assets/ship.png`);
+    this.load.image('asteroid', `${import.meta.env.BASE_URL}assets/asteroid.png`);
+    this.load.image('cargo', `${import.meta.env.BASE_URL}assets/cargo.png`);
+    this.load.image('fuel', `${import.meta.env.BASE_URL}assets/fuel.png`);
 
     // Keep the stars as generated graphics since they are just dots
     const starGraphics = this.add.graphics();
