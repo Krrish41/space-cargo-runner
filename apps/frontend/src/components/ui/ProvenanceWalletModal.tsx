@@ -137,7 +137,7 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
     if (!connectorToConnect) return;
     try {
       setUiState(UI_STATES.CONNECTING);
-      connect({ connector: connectorToConnect });
+      connect({ connector: connectorToConnect, chainId: 34 });
     } catch (err: any) {
       console.error("[Provenance] Desktop connect sync error:", err);
       if (err.name === 'UserRejectedRequestError' || err?.code === 4001) {
