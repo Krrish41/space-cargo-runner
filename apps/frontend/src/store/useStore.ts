@@ -171,10 +171,11 @@ export const useStore = create<GameState>((set, get) => ({
     });
 
     try {
-      const res = await fetch('http://localhost:3001/api/ship/upgrade', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const res = await fetch(`${backendUrl}/api/ship/upgrade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: state.user.id, upgradeType: 'shieldLevel' })
+        body: JSON.stringify({ userId: state.user.id, stat: 'shield' })
       });
       const data = await res.json();
       
@@ -217,10 +218,11 @@ export const useStore = create<GameState>((set, get) => ({
     });
 
     try {
-      const res = await fetch('http://localhost:3001/api/ship/upgrade', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const res = await fetch(`${backendUrl}/api/ship/upgrade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: state.user.id, upgradeType: 'fuelLevel' })
+        body: JSON.stringify({ userId: state.user.id, stat: 'fuel' })
       });
       const data = await res.json();
       
@@ -270,13 +272,24 @@ export const useStore = create<GameState>((set, get) => ({
 
   fetchLeaderboard: async () => {
     try {
-      const res = await fetch('http://localhost:3001/api/leaderboard');
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const res = await fetch(`${backendUrl}/api/leaderboard`);
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.leaderboard) {
         set({ topRunners: data.leaderboard });
+      } else {
+        throw new Error('Leaderboard fetch failed');
       }
     } catch (e) {
-      console.error('Failed to fetch leaderboard:', e);
+      console.error('Failed to fetch leaderboard, falling back to mock data:', e);
+      // Offline fallback leaderboard
+      set({ topRunners: [
+        { id: '1', username: 'NeonRider', highScore: 15240 },
+        { id: '2', username: 'CyberPunk99', highScore: 12400 },
+        { id: '3', username: 'GlitchHacker', highScore: 9800 },
+        { id: '4', username: 'VoidDrifter', highScore: 7500 },
+        { id: '5', username: 'Offline Pilot', highScore: 1200 }
+      ] });
     }
   },
 
@@ -284,10 +297,11 @@ export const useStore = create<GameState>((set, get) => ({
     const state = get();
     if (!state.user) return;
     try {
-      const res = await fetch('http://localhost:3001/api/user/rename', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const res = await fetch(`${backendUrl}/api/user/rename`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: state.user.id, newName })
+        body: JSON.stringify({ userId: state.user.id, newUsername: newName })
       });
       const data = await res.json();
       if (data.success) {
