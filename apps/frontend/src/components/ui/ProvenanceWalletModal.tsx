@@ -24,7 +24,8 @@ interface ProvenanceWalletModalProps {
 }
 
 const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) => {
-  const { connectAsync, connectors, error: connectError } = useConnect();
+  const { connectAsync, connectors, error: connectError, reset } = useConnect();
+  const [errorMessage, setErrorMessage] = useState<string>('The connection was aborted or timed out.');
   const { isConnecting, isConnected } = useAccount();
   const [uiState, setUiState] = useState<UiState>(UI_STATES.DEFAULT);
   const [selectedConnector, setSelectedConnector] = useState<any>(null);
@@ -82,6 +83,7 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
       } else {
         if (!isMobile) {
           console.warn("[Provenance] Desktop connection error:", connectError.message);
+          setErrorMessage(connectError?.message || "Connection failed.");
           setUiState(UI_STATES.ERROR);
           return;
         }
@@ -137,10 +139,26 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
   const handleProceedConnection = async (connectorToConnect: any = selectedConnector) => {
     if (!connectorToConnect) return;
     try {
+      if (reset) reset();
       setUiState(UI_STATES.CONNECTING);
       await connectAsync({ connector: connectorToConnect });
     } catch (err: any) {
       console.error("[Provenance] Desktop connect sync error:", err);
+      const msg = err?.message?.toLowerCase() || '';
+      
+      if (msg.includes('already connected')) {
+        // Just let the auto-close handle it
+        return;
+      }
+      
+      if (msg.includes('resource unavailable') || msg.includes('already processing')) {
+        setErrorMessage("MetaMask is already open in the background. Please click the MetaMask extension icon to continue.");
+      } else if (err.name === 'UserRejectedRequestError' || msg.includes('user rejected')) {
+        setErrorMessage("Connection was rejected by the user.");
+      } else {
+        setErrorMessage(err?.shortMessage || err?.message || "The connection was aborted or timed out.");
+      }
+      
       setUiState(UI_STATES.ERROR);
     }
   };
@@ -289,7 +307,7 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
                       <AlertCircle size={48} />
                     </div>
                     <h3 style={{ color: '#fff', fontWeight: 'bold', fontSize: '18px' }}>Connection Failed</h3>
-                    <p style={{ color: '#00ffcc', fontSize: '14px', maxWidth: '220px' }}>The connection was aborted or timed out.</p>
+                    <p style={{ color: '#00ffcc', fontSize: '14px', maxWidth: '300px' }}>{errorMessage}</p>
                     <button 
                       onClick={() => {
                         setUiState(UI_STATES.DEFAULT);
