@@ -266,21 +266,21 @@ function App() {
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>SYSTEM MANUAL</h2>
               
               <div className="manual-entry">
-                <img src="/assets/cargo.png" alt="Cargo" className="manual-sprite" />
+                <img src={`${import.meta.env.BASE_URL}assets/cargo.png`} alt="Cargo" className="manual-sprite" />
                 <div className="manual-text">
                   <strong style={{color: 'var(--secondary)'}}>CARGO:</strong> Collect for coins and XP.
                 </div>
               </div>
               
               <div className="manual-entry">
-                <img src="/assets/asteroid.png" alt="Asteroid" className="manual-sprite" style={{ filter: 'drop-shadow(0 0 10px rgba(255,0,0,0.5))' }} />
+                <img src={`${import.meta.env.BASE_URL}assets/asteroid.png`} alt="Asteroid" className="manual-sprite" style={{ filter: 'drop-shadow(0 0 10px rgba(255,0,0,0.5))' }} />
                 <div className="manual-text">
                   <strong style={{color: '#ff3366'}}>ASTEROID:</strong> Dodge. Hits drain fuel.
                 </div>
               </div>
               
               <div className="manual-entry">
-                <img src="/assets/fuel.png" alt="Fuel" className="manual-sprite" style={{ filter: 'drop-shadow(0 0 10px rgba(0,170,255,0.5))' }} />
+                <img src={`${import.meta.env.BASE_URL}assets/fuel.png`} alt="Fuel" className="manual-sprite" style={{ filter: 'drop-shadow(0 0 10px rgba(0,170,255,0.5))' }} />
                 <div className="manual-text">
                   <strong style={{color: '#00aaff'}}>FUEL:</strong> Replenish. Running empty ends session.
                 </div>
