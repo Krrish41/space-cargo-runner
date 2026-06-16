@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useConnect, useAccount } from 'wagmi';
+import { useConnect, useAccount, useDisconnect } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Download, ExternalLink, Wallet, AlertCircle, AlertTriangle } from 'lucide-react';
 import { useStore } from '../../store/useStore';
@@ -25,6 +25,7 @@ interface ProvenanceWalletModalProps {
 
 const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) => {
   const { connectAsync, connectors, error: connectError, reset } = useConnect();
+  const { disconnectAsync } = useDisconnect();
   const [errorMessage, setErrorMessage] = useState<string>('The connection was aborted or timed out.');
   const { isConnecting, isConnected } = useAccount();
   const [uiState, setUiState] = useState<UiState>(UI_STATES.DEFAULT);
@@ -140,8 +141,24 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
     if (!connectorToConnect) return;
     try {
       if (reset) reset();
+      
+      // Force clear any stale Wagmi state before connecting
+      if (disconnectAsync) {
+        await disconnectAsync({ connector: connectorToConnect }).catch(() => {});
+      }
+      
       setUiState(UI_STATES.CONNECTING);
-      await connectAsync({ connector: connectorToConnect });
+      
+      // Add a 10s timeout since MetaMask is known to hang if requests are queued silently
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('TIMEOUT_HANG')), 10000)
+      );
+      
+      await Promise.race([
+        connectAsync({ connector: connectorToConnect, chainId: 34 }),
+        timeoutPromise
+      ]);
+      
     } catch (err: any) {
       console.error("[Provenance] Desktop connect sync error:", err);
       const msg = err?.message?.toLowerCase() || '';
@@ -151,7 +168,9 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
         return;
       }
       
-      if (msg.includes('resource unavailable') || msg.includes('already processing')) {
+      if (msg.includes('timeout_hang')) {
+        setErrorMessage("MetaMask is not responding. Please click the MetaMask extension to check for pending requests, or refresh the page.");
+      } else if (msg.includes('resource unavailable') || msg.includes('already processing')) {
         setErrorMessage("MetaMask is already open in the background. Please click the MetaMask extension icon to continue.");
       } else if (err.name === 'UserRejectedRequestError' || msg.includes('user rejected')) {
         setErrorMessage("Connection was rejected by the user.");
