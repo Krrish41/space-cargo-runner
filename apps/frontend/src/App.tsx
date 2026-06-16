@@ -59,11 +59,13 @@ function App() {
             body: JSON.stringify(payload)
           });
           const data = await res.json();
-          if (data.success) {
+          if (data.success && data.user) {
             localStorage.setItem('userId', data.user.id);
             localStorage.setItem('guestId', data.user.username); // Keep for legacy
             setUser(data.user);
             syncPlayerStats(data.user);
+          } else {
+            throw new Error('Backend auth failed: ' + (data.message || 'No user returned'));
           }
         } catch (e) {
           console.error('Failed to init guest from backend. Falling back to offline mode:', e);
@@ -98,10 +100,12 @@ function App() {
             body: JSON.stringify({ userId: user.id, walletAddress: address })
           });
           const data = await res.json();
-          if (data.success) {
+          if (data.success && data.user) {
             console.log('Wallet bound successfully:', data.user.walletAddress);
             setWalletBound(true);
             syncPlayerStats(data.user);
+          } else {
+            throw new Error('Backend wallet bind failed: ' + (data.message || 'No user returned'));
           }
         } catch (e) {
           console.error('Failed to bind wallet with backend. Simulating local bind.', e);
