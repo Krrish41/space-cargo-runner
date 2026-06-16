@@ -24,8 +24,11 @@ function App() {
   const liveFeed = useStore((state) => state.liveFeed);
   const topRunners = useStore((state) => state.topRunners);
   const fetchLeaderboard = useStore((state) => state.fetchLeaderboard);
+  const fetchLiveFeed = useStore((state) => state.fetchLiveFeed);
 
   useEffect(() => {
+    fetchLeaderboard();
+    fetchLiveFeed();
     socket.on('scoreUpdated', (updatedUser: UserProfile) => {
       // If this is the current player, sync their new state locally
       if (user && updatedUser.id === user.id) {
@@ -102,6 +105,8 @@ function App() {
           const data = await res.json();
           if (data.success && data.user) {
             console.log('Wallet bound successfully:', data.user.walletAddress);
+            localStorage.setItem('userId', data.user.id);
+            setUser(data.user);
             setWalletBound(true);
             syncPlayerStats(data.user);
           } else {

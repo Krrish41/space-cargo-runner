@@ -30,6 +30,7 @@ interface GameState {
   resetRun: () => void;
   pushToLiveFeed: (user: UserProfile) => void;
   fetchLeaderboard: () => Promise<void>;
+  fetchLiveFeed: () => Promise<void>;
   updateUsername: (newName: string) => Promise<any>;
   
   getPilotLevel: () => number;
