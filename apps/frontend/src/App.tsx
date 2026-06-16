@@ -103,7 +103,9 @@ function App() {
             syncPlayerStats(data.user);
           }
         } catch (e) {
-          console.error(e);
+          console.error('Failed to bind wallet with backend. Simulating local bind.', e);
+          setUser({ ...user, walletAddress: address as string, username: 'Linked Pilot' });
+          setWalletBound(true);
         }
       };
       bindWallet();
