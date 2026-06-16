@@ -2,6 +2,8 @@
 
 Welcome to **Space Cargo Runner**! A retro-futuristic Web2.5 arcade game where you jump into the cockpit, dodge cosmic hazards, and push your engines to the limit to dominate the global leaderboards.
 
+### 🎮 [Play the Game Live Here!](https://krrish41.github.io/space-cargo-runner/)
+
 ## Under the Hood: Game Architecture & Technical Implementation
 
 This project is structured as a modern NPM Workspace Monorepo, seamlessly bridging the gap between high-performance Web2 canvas rendering, real-time networking, and persistent Web3-ready identities.
