@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 
 import { createConfig, http, WagmiProvider } from 'wagmi';
-import { polygon, base } from 'wagmi/chains';
+import { polygon, base, mainnet } from 'wagmi/chains';
 import { type Chain } from 'viem';
 
 const secureChain = {
@@ -22,7 +22,7 @@ import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { WalletModalProvider } from './context/WalletModalContext';
 
 const config = createConfig({
-  chains: [secureChain, polygon, base],
+  chains: [secureChain, polygon, base, mainnet],
   connectors: [
     injected(), 
     injected({ target: 'metaMask' }),
@@ -42,6 +42,7 @@ const config = createConfig({
     [secureChain.id]: http(),
     [polygon.id]: http(),
     [base.id]: http(),
+    [mainnet.id]: http(),
   },
 });
 

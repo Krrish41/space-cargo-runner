@@ -24,7 +24,7 @@ interface ProvenanceWalletModalProps {
 }
 
 const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) => {
-  const { connect, connectors, error: connectError } = useConnect();
+  const { connectAsync, connectors, error: connectError } = useConnect();
   const { isConnecting, isConnected } = useAccount();
   const [uiState, setUiState] = useState<UiState>(UI_STATES.DEFAULT);
   const [selectedConnector, setSelectedConnector] = useState<any>(null);
@@ -53,10 +53,10 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
 
       if (injectedConnector) {
         console.log("[Provenance] Web3 Browser detected. Auto-connecting...");
-        connect({ connector: injectedConnector });
+        connectAsync({ connector: injectedConnector }).catch(console.error);
       }
     }
-  }, [isConnected, connectors, connect]);
+  }, [isConnected, connectors, connectAsync]);
 
   // Handle Wagmi connection errors
   useEffect(() => {
@@ -81,7 +81,8 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
         setUiState(isMobile ? UI_STATES.MOBILE_ACTION_REQUIRED : UI_STATES.ERROR);
       } else {
         if (!isMobile) {
-          console.warn("[Provenance] Desktop connection error suppressed:", connectError.message);
+          console.warn("[Provenance] Desktop connection error:", connectError.message);
+          setUiState(UI_STATES.ERROR);
           return;
         }
         setUiState(UI_STATES.MOBILE_INSTALL_REQUIRED);
@@ -133,16 +134,14 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
     handleProceedConnection(connector);
   };
 
-  const handleProceedConnection = (connectorToConnect: any = selectedConnector) => {
+  const handleProceedConnection = async (connectorToConnect: any = selectedConnector) => {
     if (!connectorToConnect) return;
     try {
       setUiState(UI_STATES.CONNECTING);
-      connect({ connector: connectorToConnect, chainId: 34 });
+      await connectAsync({ connector: connectorToConnect });
     } catch (err: any) {
       console.error("[Provenance] Desktop connect sync error:", err);
-      if (err.name === 'UserRejectedRequestError' || err?.code === 4001) {
-        setUiState(UI_STATES.ERROR);
-      }
+      setUiState(UI_STATES.ERROR);
     }
   };
   useEffect(() => {
