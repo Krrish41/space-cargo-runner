@@ -294,6 +294,19 @@ export const useStore = create<GameState>((set, get) => ({
     }
   },
 
+  fetchLiveFeed: async () => {
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const res = await fetch(`${backendUrl}/api/feed`);
+      const data = await res.json();
+      if (data.success && data.feed) {
+        set({ liveFeed: data.feed });
+      }
+    } catch (e) {
+      console.error('Failed to fetch live feed history:', e);
+    }
+  },
+
   updateUsername: async (newName: string) => {
     const state = get();
     if (!state.user) return;
