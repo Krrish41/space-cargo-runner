@@ -88,3 +88,9 @@ cd apps/frontend
 npm run dev
 ```
 Navigate to `http://localhost:5173` to start playing.
+
+### 5. Persistent RPG Mechanics (Pilot Rank)
+The game features a permanent progression system backed by the Neon database.
+- **Experience (XP):** Every run grants XP based on the distance survived and total cargo secured.
+- **Pilot Rank:** Your total XP determines your mathematical Pilot Rank (Level).
+- **Global Identity:** XP and Level are permanently linked to your wallet address or secure guest ID, creating a lasting identity on the global leaderboard.

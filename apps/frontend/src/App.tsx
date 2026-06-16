@@ -279,7 +279,10 @@ function App() {
                 <p>Dist Traveled: <span className="stat-value">{distance}m</span></p>
                 <p>Cargo Secured: <span className="stat-value" style={{ color: 'var(--secondary)' }}>{coinsCollected}</span></p>
               </div>
-              <button className="physical-btn primary" onClick={handleStart} style={{ margin: '0 auto' }}>Reboot Engine</button>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                <button className="physical-btn" onClick={() => setGameState('MENU')}>Return to Menu</button>
+                <button className="physical-btn primary" onClick={handleStart}>Reboot Engine</button>
+              </div>
             </div>
           )}
 
