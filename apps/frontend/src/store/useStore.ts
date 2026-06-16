@@ -301,7 +301,7 @@ export const useStore = create<GameState>((set, get) => ({
       const res = await fetch(`${backendUrl}/api/user/rename`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: state.user.id, newUsername: newName })
+        body: JSON.stringify({ userId: state.user.id, newName: newName })
       });
       const data = await res.json();
       if (data.success) {
