@@ -34,6 +34,14 @@ The game implements a dual-layer authentication system:
 - **Guest Authentication**: Upon first load, the backend generates a persistent UUID for the user. This UUID is stored in the browser's `localStorage` as a cryptographic identity badge. It bypasses the need for traditional email/password registration while still allowing database persistence.
 - **Web3 Wallet Connection**: Using **Wagmi** and viem, players can upgrade their temporary Guest UUID into a permanent, immutable identity by signing a message with a Web3 wallet (like MetaMask or Rainbow) connected to the **SecureChain (SCAI)** network. 
 
+#### SecureChain (SCAI) Network Configuration
+To fully interact with the Web3 features of Space Cargo Runner, ensure your wallet is configured with the following SecureChain Mainnet details:
+* **Network Name:** SCAI Mainnet
+* **RPC URL:** `https://mainnet-rpc.scai.network`
+* **Chain ID:** `34`
+* **Currency Symbol:** `SCAI`
+* **Block Explorer:** `https://explorer.securechain.ai`
+
 ### 5. The Cyberpunk UI Design System
 The entire interface is built using Vanilla CSS to avoid the overhead of heavy styling frameworks, leaning into a bespoke 1980s retro-futuristic aesthetic.
 - **CRT Overlays**: Achieved using CSS `box-shadow` insets and `rgba` gradients to simulate curved glass monitors.
