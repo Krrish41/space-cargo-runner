@@ -76,7 +76,8 @@ function App() {
             shipEngineLevel: 1,
             shipHandlingLevel: 1,
             shipShieldLevel: 1,
-            walletAddress: null
+            walletAddress: undefined,
+            xp: 0
           };
           setUser(offlineUser);
         }
