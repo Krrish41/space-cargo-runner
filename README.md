@@ -6,7 +6,7 @@ Welcome to **Space Cargo Runner**! A retro-futuristic Web2.5 arcade game where y
 
 ## Under the Hood: Game Architecture & Technical Implementation
 
-This project is structured as a modern NPM Workspace Monorepo, seamlessly bridging the gap between high-performance Web2 canvas rendering, real-time networking, and persistent Web3-ready identities.
+Space Cargo Runner seamlessly blends high-octane Web2 arcade physics with the bleeding edge of Web3 wallet identity powered by SecureChain. Players can jump in instantly as Guest Pilots, or connect a Web3 wallet for an immutable global identity, bridging the gap between traditional gaming and decentralized ecosystems.
 
 ### 1. The Game Engine Layer (Phaser 3 + React)
 The core gameplay loop is powered by **Phaser 3**, operating entirely within an HTML5 Canvas. To achieve a modern React UI overlay without sacrificing canvas performance, the architecture heavily utilizes **Zustand**. 
@@ -32,7 +32,7 @@ The schema is strictly relational, handling:
 ### 4. The Authentication Architecture
 The game implements a dual-layer authentication system:
 - **Guest Authentication**: Upon first load, the backend generates a persistent UUID for the user. This UUID is stored in the browser's `localStorage` as a cryptographic identity badge. It bypasses the need for traditional email/password registration while still allowing database persistence.
-- **Web3 Wallet Connection**: Using **Wagmi** and viem, players can upgrade their temporary Guest UUID into a permanent, immutable identity by signing a message with an Ethereum wallet (like MetaMask or Rainbow). 
+- **Web3 Wallet Connection**: Using **Wagmi** and viem, players can upgrade their temporary Guest UUID into a permanent, immutable identity by signing a message with a Web3 wallet (like MetaMask or Rainbow) connected to the **SecureChain (SCAI)** network. 
 
 ### 5. The Cyberpunk UI Design System
 The entire interface is built using Vanilla CSS to avoid the overhead of heavy styling frameworks, leaning into a bespoke 1980s retro-futuristic aesthetic.
