@@ -12,7 +12,7 @@ router.post('/upgrade', async (req, res) => {
   }
 
   try {
-    const updatedUser = await prisma.$transaction(async (tx) => {
+    const updatedUser = await prisma.$transaction(async (tx: any) => {
       const user = await tx.user.findUnique({ where: { id: userId }, include: { ship: true } });
       if (!user || !user.ship) throw new Error("User not found");
 
