@@ -172,7 +172,7 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
-  hitObstacle(ship: any, obstacle: any) {
+  hitObstacle(_ship: any, obstacle: any) {
     if (this.isInvulnerable) return;
 
     obstacle.destroy();
@@ -186,7 +186,7 @@ export class MainScene extends Phaser.Scene {
     this.ship.setTint(0xff0000);
     
     // Blink effect during i-frames
-    const blink = this.time.addEvent({
+    this.time.addEvent({
       delay: 100,
       repeat: 8,
       callback: () => {
@@ -201,7 +201,7 @@ export class MainScene extends Phaser.Scene {
     });
   }
 
-  collectCargo(ship: any, cargo: any) {
+  collectCargo(_ship: any, cargo: any) {
     cargo.destroy();
     useStore.getState().addCoins(10);
     useStore.getState().incrementCargo();

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useConnect, useAccount, useDisconnect } from 'wagmi';
+import { useConnect, useAccount } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Download, ExternalLink, Wallet, AlertCircle, AlertTriangle } from 'lucide-react';
 import { useStore } from '../../store/useStore';
@@ -26,7 +26,6 @@ interface ProvenanceWalletModalProps {
 const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) => {
   const { connect, connectors, error: connectError } = useConnect();
   const { isConnecting, isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
   const [uiState, setUiState] = useState<UiState>(UI_STATES.DEFAULT);
   const [selectedConnector, setSelectedConnector] = useState<any>(null);
   const connectionTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -34,7 +33,6 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
 
   const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
   const isInAppBrowser = typeof navigator !== 'undefined' && /Twitter|Instagram|FBAV|Telegram/i.test(navigator.userAgent);
-  const isIOS = typeof navigator !== 'undefined' && /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   // Auto-close on successful connection
   useEffect(() => {
@@ -147,18 +145,6 @@ const ProvenanceWalletModal = ({ isOpen, onClose }: ProvenanceWalletModalProps) 
       }
     }
   };
-
-  const handleDAppRedirect = () => {
-    const dappUrl = window.location.host + window.location.pathname;
-    const name = selectedConnector?.name.toLowerCase() || "";
-    
-    if (name.includes('metamask')) {
-      window.location.href = `https://metamask.app.link/dapp/${dappUrl}`;
-    } else if (name.includes('rainbow')) {
-      window.location.href = `https://rnbwapp.com/dapp/${dappUrl}`;
-    }
-  };
-
   useEffect(() => {
     if (!isOpen) {
       if (connectionTimeout.current) clearTimeout(connectionTimeout.current);
