@@ -35,7 +35,7 @@ jobs:
         run: npm run build
         working-directory: ./apps/frontend
         env:
-          VITE_BACKEND_URL: ${{ secrets.VITE_BACKEND_URL }}
+          VITE_BACKEND_URL: "https://space-cargo-backend.onrender.com"
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
