@@ -158,9 +158,7 @@ function App() {
                   <div className="hud-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                     <div style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '2px', marginBottom: '4px' }}>FUEL CORE DISSIPATION</div>
                     <div className="fuel-bar-container">
-                      <div className="hud-bar-bg">
-                        <div className="hud-bar-fill fuel-bar-fill" style={{ width: `${(fuel / maxFuel) * 100}%` }}></div>
-                      </div>
+                      <div className="fuel-bar-fill" style={{ width: `${(fuel / maxFuel) * 100}%` }}></div>
                     </div>
                     <div style={{ fontSize: '0.8rem', marginTop: '4px' }}>{Math.floor(fuel)} / {maxFuel} EU</div>
                   </div>
@@ -172,9 +170,7 @@ function App() {
                       <span>LVL {getPilotLevel()}</span>
                     </div>
                     <div className="fuel-bar-container" style={{ width: '150px' }}>
-                      <div className="hud-bar-bg">
-                        <div className="hud-bar-fill xp-bar-fill" style={{ width: `${getXpProgress()}%` }}></div>
-                      </div>
+                      <div className="xp-bar-fill" style={{ width: `${getXpProgress()}%` }}></div>
                     </div>
                   </div>
                 </div>
