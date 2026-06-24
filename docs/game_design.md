@@ -1,14 +1,16 @@
 # Game Design Document (GDD)
 
+> **Note:** For full technical implementation details and an overview of the live game, please see the root [`Game_Documentation.md`](../Game_Documentation.md).
+
 ## 1. Concept overview
 **Space Cargo Runner** is an infinite-runner arcade survival game. The player pilots a heavily modified cargo ship through a dense, procedurally generated asteroid belt. The primary objective is to survive as long as possible (Distance) while securing valuable resources (Cargo) to climb the global leaderboard.
 
 ## 2. Core Gameplay Loop
 1. **Launch:** The player starts at a base speed. Fuel dissipates linearly over time.
-2. **Navigate:** The player uses the `UP` and `DOWN` arrow keys (or W/S) to maneuver the ship vertically across the canvas.
+2. **Navigate:** The player uses the `LEFT` and `RIGHT` arrow keys (or A/D, or pointer/touch input on the left/right sides of the screen) to maneuver the ship laterally across the canvas.
 3. **Collect & Survive:** 
    - **Cargo (Neon Cubes):** Collecting cargo grants 10 coins.
-   - **Fuel Cells (Blue Capsules):** Replenish the core fuel dissipation bar.
+   - **Fuel Cells (Blue Capsules):** Replenish the core fuel dissipation bar. These spawn with a 15% probability and are critical for extending the run as fuel drains automatically every second.
    - **Asteroids (Red Rocks):** Hitting an asteroid strips Hull Integrity (HP).
 4. **End Condition:** The run ends ("CRITICAL FAILURE") if Hull Integrity reaches 0 (destroyed) or if the Fuel Core Dissipation bar depletes completely (stranded).
 

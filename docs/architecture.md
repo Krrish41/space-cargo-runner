@@ -1,5 +1,7 @@
 # System Architecture Documentation
 
+> **Note:** For full technical implementation details and an overview of the live game, please see the root [`Game_Documentation.md`](../Game_Documentation.md).
+
 **Space Cargo Runner** utilizes a decoupled, event-driven Web2.5 architecture. This document outlines the distinct layers of the tech stack and how data flows from the game client to the persistent cloud database.
 
 ---

@@ -13,9 +13,11 @@ This post dives deep into the architecture, the technical hurdles we faced, and 
 **The Problem:** React is incredible for building beautiful, responsive UIs (like menus, HUDs, and modals). However, React is notoriously terrible at rendering 60-frames-per-second game logic. For the actual game canvas, we needed a dedicated engine, so we chose **Phaser 3**. The challenge was bridging the gap between Phaser's isolated internal loop and React's component state.
 
 **The Solution:** We decoupled our state entirely using **Zustand**. 
-Instead of trying to pass props down from React into the Phaser canvas, we set up a lightweight, global Zustand store. When the player's spaceship takes damage or collects a coin, the Phaser engine makes a direct call to the store: `useStore.getState().drainFuel(10)`. 
+Instead of trying to pass props down from React into the Phaser canvas, we set up a lightweight, global Zustand store. When the player's spaceship takes damage or collects a coin, the Phaser engine makes a direct call to the store: `useStore.getState().drainFuel(2)`. 
 
 Our React UI layer (the HUD) passively subscribes to `useStore`. This means the HUD automatically updates when health or fuel changes, but the React components never interrupt or block the Phaser rendering loop. It resulted in a butter-smooth 60 FPS experience with a stunning, reactive CSS UI on top.
+
+This decoupled state architecture also makes the game incredibly easy to re-balance on the fly. For instance, in a recent patch, we were able to instantly double the survival time of our players simply by adjusting the fuel drain timer from 0.5s to 1.0s and slightly bumping the fuel tank spawn rate to 15%—all without touching a single React component!
 
 ## 2. Web3 Identity: Invisible Onboarding
 
