@@ -78,7 +78,7 @@ export class MainScene extends Phaser.Scene {
 
     if (this.fuelDrainTimer) this.fuelDrainTimer.destroy();
     this.fuelDrainTimer = this.time.addEvent({
-      delay: 500,
+      delay: 1000,
       loop: true,
       callback: () => {
         useStore.getState().drainFuel(2);
@@ -158,7 +158,7 @@ export class MainScene extends Phaser.Scene {
       asteroid.setScale(0.12);
       asteroid.setBlendMode(Phaser.BlendModes.SCREEN);
       asteroid.body?.setSize(asteroid.width * 0.6, asteroid.height * 0.6);
-    } else if (rand < 0.9) {
+    } else if (rand < 0.85) {
       // Spawn Cargo
       const cargo = this.cargoGroup.create(x, -50, 'cargo');
       cargo.setScale(0.08);
