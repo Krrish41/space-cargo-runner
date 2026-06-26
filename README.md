@@ -1,96 +1,140 @@
-# Space Cargo Runner - Neon Cyberpunk Odyssey
+# Space Cargo Runner
 
-Welcome to **Space Cargo Runner**! A retro-futuristic Web2.5 arcade game where you jump into the cockpit, dodge cosmic hazards, and push your engines to the limit to dominate the global leaderboards.
+**Space Cargo Runner** is a retro-futuristic arcade runner built with React, Phaser, Zustand, Socket.io, Express, Prisma, and Neon PostgreSQL. Jump in as a guest pilot, dodge hazards, collect cargo, trigger power-ups, upgrade your ship, and chase the leaderboard.
 
-### 🎮 [Play the Game Live Here!](https://krrish41.github.io/space-cargo-runner/)
+[Play on GitHub Pages](https://krrish41.github.io/space-cargo-runner/)
 
-## Under the Hood: Game Architecture & Technical Implementation
+## Current Gameplay
 
-Space Cargo Runner seamlessly blends high-octane Web2 arcade physics with the bleeding edge of Web3 wallet identity powered by SecureChain. Players can jump in instantly as Guest Pilots, or connect a Web3 wallet for an immutable global identity, bridging the gap between traditional gaming and decentralized ecosystems.
+- Fast lateral ship controls with keyboard, pointer, and touch input.
+- First-run tutorial brief plus a detailed in-game manual.
+- Gradual difficulty progression with increasing speed and denser obstacle pressure.
+- Obstacle variety: asteroids, mines, and fast debris.
+- Collectible variety: cargo, data caches, and fuel cells.
+- Power-ups: Shield, Magnet, Double Score, and Slow Motion.
+- Improved HUD with hull, fuel, pilot rank, distance, score, cargo count, time survived, and active power-up timer.
+- Pause/resume plus sound and music toggles.
+- Animated parallax starfield and dust streak background.
+- Collision, cargo, fuel, and power-up visual effects with lightweight WebAudio feedback.
+- Rich Game Over report with final score, best score, distance, time, cargo, credits, and achievement unlocks.
+- Records screen with achievements and missions.
+- Hangar screen with unlockable ship skins.
+- Leaderboard and live comms feed when the backend is available.
 
-### 1. The Game Engine Layer (Phaser 3 + React)
-The core gameplay loop is powered by **Phaser 3**, operating entirely within an HTML5 Canvas. To achieve a modern React UI overlay without sacrificing canvas performance, the architecture heavily utilizes **Zustand**. 
+## Playability on GitHub Pages
 
-Instead of passing props down a complex React tree and forcing costly re-renders every frame, the Phaser instance hooks directly into a lightweight Zustand store. When the spaceship collects cargo or takes damage, Phaser updates the Zustand state (e.g., `useStore.getState().addCoins(10)`). The React UI layer (which houses the HUD, Modals, and Main Menu) passively subscribes to these Zustand changes and updates independently of the Phaser render loop.
+The frontend is a static Vite build and is deployed from `apps/frontend/dist` through GitHub Actions. The Vite base path is set to `/space-cargo-runner/`, so assets resolve correctly on:
 
-### 2. The Real-Time Network Layer (Socket.io)
-Space Cargo Runner features a "Global Live Comms" feed. To achieve real-time broadcast capabilities, the Node.js backend implements an event-driven WebSocket server using **Socket.io**. 
+```text
+https://krrish41.github.io/space-cargo-runner/
+```
 
-When a player finishes a run:
-1. The React frontend sends an HTTP POST request to the Express REST API with the final score.
-2. The Express endpoint saves the score to the database and immediately invokes `io.emit()`.
-3. This pushes the new run data to every single connected WebSocket client globally in milliseconds.
-4. The frontend catches this event and pushes it to the bottom of the glowing CRT terminal ticker.
+The game remains playable even if the hosted backend is unavailable. In that case it falls back to an offline pilot profile and mock leaderboard data. Online persistence, wallet binding, upgrades, leaderboard updates, and live comms require the backend URL configured by `VITE_BACKEND_URL`.
 
-### 3. The Data Persistence Layer (Prisma + Neon PostgreSQL)
-All game data is persistently stored in a global **Neon PostgreSQL** database, managed and modeled using **Prisma ORM**.
-The schema is strictly relational, handling:
-- **Users**: Unique UUIDs, cosmetic callsigns, and Web3 Wallet Addresses.
-- **Ships**: One-to-one mapping to Users, storing upgrade levels (Plasma Cores, Deflector Shields).
-- **Runs**: One-to-many mapping to Users, logging every individual run, distance, and timestamp.
+## Repository Layout
 
-### 4. The Authentication Architecture
-The game implements a dual-layer authentication system:
-- **Guest Authentication**: Upon first load, the backend generates a persistent UUID for the user. This UUID is stored in the browser's `localStorage` as a cryptographic identity badge. It bypasses the need for traditional email/password registration while still allowing database persistence.
-- **Web3 Wallet Connection**: Using **Wagmi** and viem, players can upgrade their temporary Guest UUID into a permanent, immutable identity by signing a message with a Web3 wallet (like MetaMask or Rainbow) connected to the **SecureChain (SCAI)** network. 
+```text
+apps/frontend      React + Vite UI, Phaser game scene, Zustand store
+apps/backend       Express + Socket.io API, Prisma persistence
+packages/shared    Shared TypeScript types
+docs               Architecture, game design, and product writeup
+.github/workflows  GitHub Pages deployment workflow
+```
 
-#### SecureChain (SCAI) Network Configuration
-To fully interact with the Web3 features of Space Cargo Runner, ensure your wallet is configured with the following SecureChain Mainnet details:
-* **Network Name:** SCAI Mainnet
-* **RPC URL:** `https://mainnet-rpc.scai.network`
-* **Chain ID:** `34`
-* **Currency Symbol:** `SCAI`
-* **Block Explorer:** `https://explorer.securechain.ai`
+## Local Development
 
-### 5. The Cyberpunk UI Design System
-The entire interface is built using Vanilla CSS to avoid the overhead of heavy styling frameworks, leaning into a bespoke 1980s retro-futuristic aesthetic.
-- **CRT Overlays**: Achieved using CSS `box-shadow` insets and `rgba` gradients to simulate curved glass monitors.
-- **Frosted Glass**: Leveraging `backdrop-filter: blur()` to ensure glowing neon text remains readable when overlaid directly on top of the active Phaser canvas.
-- **Animations**: CSS `@keyframes` handle the ambient glowing and blinking of UI elements, keeping the main JavaScript thread entirely free for physics calculations.
+Install dependencies from the monorepo root:
 
-## Monorepo Architecture
-
-* **`apps/frontend`**: The React 18 / Vite application. Houses the UI components, Wagmi wallet hooks, Zustand store, and the embedded Phaser 3 game canvas.
-* **`apps/backend`**: The Node.js / Express server. Manages the Socket.io WebSocket connections, REST endpoints, and the Prisma ORM instance.
-* **`packages/shared`**: Shared TypeScript types ensuring strict end-to-end type safety between the frontend and backend over the network.
-
-## Local Development & Installation
-
-### 1. Install Dependencies
-From the root directory, install all workspace packages:
 ```bash
 npm install
 ```
 
-### 2. Configure Database Environment
-Inside `apps/backend`, create a `.env` file for your Neon Postgres connection:
+Run the frontend:
+
+```bash
+npm run dev:frontend
+```
+
+The local frontend opens at:
+
+```text
+http://localhost:5173/space-cargo-runner/
+```
+
+Run the backend separately when you want persistence and leaderboard features:
+
+```bash
+cd apps/backend
+npm run dev
+```
+
+Create `apps/backend/.env` first:
+
 ```env
 DATABASE_URL="postgresql://user:password@host:port/dbname?sslmode=require"
 ```
 
-### 3. Initialize the Database
-Generate the Prisma Client and migrate the schema to your global database:
+Initialize Prisma:
+
 ```bash
 cd apps/backend
 npx prisma db push
 ```
 
-### 4. Boot the Servers
-Start the backend WebSocket/REST server:
+## Build and Preview
+
+Build the GitHub Pages frontend from the root:
+
 ```bash
-cd apps/backend
-npm run dev
+npm run build
 ```
 
-In a new terminal, start the Vite frontend development server:
-```bash
-cd apps/frontend
-npm run dev
-```
-Navigate to `http://localhost:5173` to start playing.
+Preview the production build:
 
-### 5. Persistent RPG Mechanics (Pilot Rank)
-The game features a permanent progression system backed by the Neon database.
-- **Experience (XP):** Every run grants XP based on the distance survived and total cargo secured.
-- **Pilot Rank:** Your total XP determines your mathematical Pilot Rank (Level).
-- **Global Identity:** XP and Level are permanently linked to your wallet address or secure guest ID, creating a lasting identity on the global leaderboard.
+```bash
+npm run preview:frontend
+```
+
+The GitHub Actions workflow uses:
+
+```bash
+npm ci
+npm run build --workspace frontend
+```
+
+and deploys `apps/frontend/dist`.
+
+## Backend API
+
+- `POST /api/auth`: create or restore a guest/user profile.
+- `POST /api/wallet/bind`: bind a wallet address to the current profile.
+- `POST /api/user/rename`: rename a pilot.
+- `GET /api/leaderboard`: fetch top pilots.
+- `GET /api/feed`: fetch recent live comms history when available.
+- `POST /api/ship/upgrade`: upgrade shield or fuel capacity.
+- Socket event `submitScore`: submit a completed run.
+- Socket event `scoreUpdated`: receive live leaderboard/comms updates.
+
+## Web3 Notes
+
+Wallet connection is optional. Guest mode is the default path and is enough to play immediately. Wallet binding can make a profile portable when the backend is available.
+
+SecureChain network details used by the wallet flow:
+
+```text
+Network Name: SCAI Mainnet
+RPC URL: https://mainnet-rpc.scai.network
+Chain ID: 34
+Currency Symbol: SCAI
+Block Explorer: https://explorer.securechain.ai
+```
+
+## Verification
+
+Recent verification for this release:
+
+- Frontend production build passes.
+- Touched frontend files pass focused ESLint with no errors.
+- Browser smoke test confirmed menu, start run, HUD, pause, Records, Hangar, and canvas rendering.
+
+Full frontend lint still reports existing wallet/modal/context lint debt unrelated to the gameplay and deployment changes.

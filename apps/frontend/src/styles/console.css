@@ -216,6 +216,329 @@
   color: var(--primary);
 }
 
+.hud-score-card {
+  min-width: 160px;
+  padding: 12px 16px;
+  border: 1px solid rgba(0, 255, 204, 0.65);
+  border-radius: 8px;
+  background: rgba(2, 4, 8, 0.82);
+  box-shadow: inset 0 0 18px rgba(0, 255, 204, 0.14), 0 0 22px rgba(0, 0, 0, 0.55);
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.hud-score-card span,
+.hud-score-card small {
+  color: #9fb0ce;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-shadow: none;
+}
+
+.hud-score-card strong {
+  color: #ffffff;
+  font-size: 1.7rem;
+  line-height: 1;
+  text-shadow: 0 0 12px var(--primary);
+}
+
+.powerup-pill {
+  min-width: 210px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 209, 102, 0.8);
+  border-radius: 8px;
+  background: rgba(2, 4, 8, 0.86);
+  color: #ffd166;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: inset 0 0 18px rgba(255, 209, 102, 0.12), 0 0 18px rgba(255, 209, 102, 0.16);
+  animation: pulse-panel 1s ease-in-out infinite alternate;
+}
+
+.powerup-pill span,
+.powerup-pill strong {
+  font-size: 0.86rem;
+  white-space: nowrap;
+}
+
+.quick-controls {
+  position: absolute;
+  top: 118px;
+  right: 30px;
+  z-index: 55;
+  display: flex;
+  gap: 10px;
+}
+
+.icon-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #1f293a 0%, #0a0d14 100%);
+  border: 1px solid #3a4863;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 0 #05080c, 0 8px 18px rgba(0, 0, 0, 0.45);
+}
+
+.icon-btn:hover {
+  transform: translateY(-2px);
+  color: #ffffff;
+  background: linear-gradient(180deg, #273650 0%, #111723 100%);
+  box-shadow: 0 6px 0 #05080c, 0 10px 20px rgba(0, 255, 204, 0.16);
+}
+
+.tutorial-brief {
+  width: min(680px, calc(100vw - 48px));
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid rgba(0, 255, 204, 0.7);
+  border-radius: 8px;
+  background: rgba(5, 8, 12, 0.9);
+  box-shadow: inset 0 0 20px rgba(0, 255, 204, 0.08), 0 10px 26px rgba(0, 0, 0, 0.45);
+  text-align: left;
+}
+
+.tutorial-brief div {
+  display: grid;
+  gap: 6px;
+}
+
+.tutorial-brief strong {
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.tutorial-brief span {
+  color: #dbe8ff;
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1.45;
+}
+
+.mission-strip {
+  width: min(760px, calc(100vw - 48px));
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.mission-chip {
+  min-height: 62px;
+  border: 1px solid rgba(58, 72, 99, 0.9);
+  border-radius: 8px;
+  background: rgba(5, 8, 12, 0.76);
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+  color: #9fb0ce;
+  text-align: left;
+}
+
+.mission-chip strong {
+  color: #ffffff;
+}
+
+.mission-chip.completed {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: inset 0 0 16px rgba(0, 255, 204, 0.12);
+}
+
+.game-over-panel {
+  width: min(680px, calc(100vw - 42px));
+}
+
+.run-summary-grid {
+  margin: 24px 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.run-summary-grid div {
+  min-height: 86px;
+  border: 1px solid rgba(58, 72, 99, 0.85);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 12px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+}
+
+.run-summary-grid span {
+  color: #9fb0ce;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+}
+
+.run-summary-grid strong {
+  color: #ffffff;
+  font-size: 1.35rem;
+  text-shadow: 0 0 10px var(--primary);
+}
+
+.unlock-callout {
+  margin: -4px auto 22px;
+  width: fit-content;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffd166;
+  border: 1px solid rgba(255, 209, 102, 0.65);
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 209, 102, 0.08);
+}
+
+.pause-panel,
+.meta-panel {
+  width: min(760px, calc(100vw - 42px));
+  padding: 30px;
+}
+
+.pause-stats {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+  color: #9fb0ce;
+}
+
+.pause-stats strong {
+  color: #ffffff;
+  margin-left: 6px;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.achievement-grid,
+.skin-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.achievement-card,
+.skin-card {
+  min-height: 120px;
+  margin: 0;
+  min-width: 0;
+  border-radius: 8px;
+  border: 1px solid rgba(58, 72, 99, 0.9);
+  background: rgba(0, 0, 0, 0.35);
+  color: #8899b5;
+  padding: 14px;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 8px;
+  text-align: left;
+  box-shadow: none;
+}
+
+.achievement-card.unlocked {
+  border-color: rgba(0, 255, 204, 0.7);
+  color: #ffffff;
+  box-shadow: inset 0 0 18px rgba(0, 255, 204, 0.1);
+}
+
+.achievement-card strong,
+.skin-card strong {
+  color: #ffffff;
+}
+
+.achievement-card span,
+.skin-card small {
+  font-family: 'Courier New', Courier, monospace;
+  line-height: 1.35;
+  text-transform: none;
+}
+
+.skin-card {
+  cursor: pointer;
+}
+
+.skin-card:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  background: rgba(0, 255, 204, 0.06);
+}
+
+.skin-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.skin-card.selected {
+  border-color: #ffd166;
+  box-shadow: inset 0 0 18px rgba(255, 209, 102, 0.12);
+}
+
+.skin-swatch {
+  width: 44px;
+  height: 18px;
+  border-radius: 4px;
+  box-shadow: 0 0 14px currentColor;
+}
+
+.mission-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.mission-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 110px;
+  gap: 12px;
+  align-items: center;
+  color: #dbe8ff;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.mission-progress {
+  height: 10px;
+  border: 1px solid #00f0ff;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #021a22;
+}
+
+.mission-progress div {
+  height: 100%;
+  background: #00f0ff;
+  box-shadow: 0 0 10px #00f0ff;
+}
+
+@keyframes pulse-panel {
+  from { opacity: 0.78; }
+  to { opacity: 1; }
+}
+
 /* Emergency Redout (Game Over) */
 .emergency-text {
   color: #ff3366;
@@ -447,4 +770,52 @@
 
 .fade-in-ticker {
   animation: fadeInTicker 0.4s ease-out forwards;
+}
+
+@media (max-width: 900px) {
+  .wallet-panel-container {
+    top: 16px;
+    right: 16px;
+  }
+
+  .quick-controls {
+    top: 92px;
+    right: 16px;
+  }
+
+  .hud-cockpit {
+    padding: 16px;
+    font-size: 1rem;
+  }
+
+  .health-bar-container,
+  .fuel-bar-container {
+    width: 150px;
+  }
+
+  .hud-score-card,
+  .powerup-pill {
+    min-width: 140px;
+  }
+
+  .mission-strip,
+  .run-summary-grid,
+  .achievement-grid,
+  .skin-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-row {
+    grid-template-columns: 1fr;
+  }
+
+  .console-dashboard {
+    padding: 16px;
+  }
+
+  .console-dashboard .physical-btn {
+    min-width: 180px;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+  }
 }

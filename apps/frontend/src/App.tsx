@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useStore } from './store/useStore';
 import { PhaserGame } from './game/PhaserGame';
-import { Rocket, Coins, Trophy, Settings, LogOut, User } from 'lucide-react';
+import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer } from 'lucide-react';
 import { useAccount, useDisconnect } from 'wagmi';
 import { useWalletModal } from './context/WalletModalContext';
 import ProvenanceWalletModal from './components/ui/ProvenanceWalletModal';
@@ -11,8 +11,45 @@ import type { UserProfile } from 'shared';
 import './App.css';
 import './styles/console.css';
 
+interface AuthPayload {
+  isGuest: true;
+  userId?: string;
+  username?: string;
+}
+
 function App() {
-  const { gameState, distance, coinsCollected, health, maxHealth, shieldLevel, fuel, maxFuel, fuelLevel, setGameState, resetRun, user, setUser, syncPlayerStats, upgradeShield, upgradeFuel } = useStore();
+  const {
+    gameState,
+    distance,
+    coinsCollected,
+    cargoCollected,
+    timeSurvived,
+    bestScore,
+    lastRunStats,
+    activePowerUp,
+    soundEnabled,
+    musicEnabled,
+    achievements,
+    missions,
+    shipSkins,
+    selectedSkinId,
+    health,
+    maxHealth,
+    shieldLevel,
+    fuel,
+    maxFuel,
+    fuelLevel,
+    setGameState,
+    resetRun,
+    user,
+    setUser,
+    syncPlayerStats,
+    upgradeShield,
+    upgradeFuel,
+    toggleSound,
+    toggleMusic,
+    selectSkin
+  } = useStore();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const [walletBound, setWalletBound] = useState(false);
@@ -25,6 +62,7 @@ function App() {
   const topRunners = useStore((state) => state.topRunners);
   const fetchLeaderboard = useStore((state) => state.fetchLeaderboard);
   const fetchLiveFeed = useStore((state) => state.fetchLiveFeed);
+  const [showFirstRunBrief, setShowFirstRunBrief] = useState(() => localStorage.getItem('tutorialSeen') !== 'true');
 
   useEffect(() => {
     fetchLeaderboard();
@@ -51,7 +89,7 @@ function App() {
           const storedGuestId = localStorage.getItem('guestId');
           const storedUserId = localStorage.getItem('userId');
           
-          const payload: any = { isGuest: true };
+          const payload: AuthPayload = { isGuest: true };
           if (storedUserId) payload.userId = storedUserId;
           else if (storedGuestId) payload.username = storedGuestId;
 
@@ -71,7 +109,7 @@ function App() {
             throw new Error('Backend auth failed: ' + (data.message || 'No user returned'));
           }
         } catch (e) {
-          console.error('Failed to init guest from backend. Falling back to offline mode:', e);
+          console.warn('Failed to init guest from backend. Falling back to offline mode:', e);
           // Offline Fallback so the game doesn't permanently lock out
           const offlineUser = {
             id: 'offline-' + Math.random().toString(36).substring(2, 9),
@@ -113,7 +151,7 @@ function App() {
             throw new Error('Backend wallet bind failed: ' + (data.message || 'No user returned'));
           }
         } catch (e) {
-          console.error('Failed to bind wallet with backend. Simulating local bind.', e);
+          console.warn('Failed to bind wallet with backend. Simulating local bind.', e);
           setUser({ ...user, walletAddress: address as string, username: 'Linked Pilot' });
           setWalletBound(true);
         }
@@ -123,6 +161,8 @@ function App() {
   }, [isConnected, address, user, walletBound]);
 
   const handleStart = () => {
+    localStorage.setItem('tutorialSeen', 'true');
+    setShowFirstRunBrief(false);
     resetRun();
     setGameState('PLAYING');
   };
@@ -131,6 +171,30 @@ function App() {
     fetchLeaderboard();
     setGameState('LEADERBOARD');
   };
+
+  const handleDismissBrief = () => {
+    localStorage.setItem('tutorialSeen', 'true');
+    setShowFirstRunBrief(false);
+  };
+
+  const displayedRun = lastRunStats || {
+    finalScore: distance + coinsCollected * 10 + cargoCollected * 25 + timeSurvived,
+    bestScore,
+    distance,
+    coins: coinsCollected,
+    cargo: cargoCollected,
+    timeSurvived,
+    achievementNames: []
+  };
+
+  const hudScore = distance + coinsCollected * 10 + cargoCollected * 25 + timeSurvived;
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${mins}:${secs}`;
+  };
+
+  const PowerIcon = activePowerUp?.type === 'Shield' ? Shield : activePowerUp?.type === 'Magnet' ? Magnet : activePowerUp?.type === 'Slow Motion' ? Gauge : Timer;
 
   return (
     <>
@@ -141,7 +205,7 @@ function App() {
         {/* Top Cockpit Bar: HUD & Player ID */}
         <div className="hud-cockpit">
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            {gameState === 'PLAYING' && (
+            {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
               <>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                   <div className="hud-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -183,11 +247,37 @@ function App() {
                   <Coins className="text-secondary" color="#ff00ff" />
                   <span className="stat-value">{coinsCollected}</span>
                 </div>
+                <div className="hud-score-card">
+                  <span>Score</span>
+                  <strong>{hudScore}</strong>
+                  <small>{formatTime(timeSurvived)} | Cargo {cargoCollected}</small>
+                </div>
+                {activePowerUp && (
+                  <div className="powerup-pill">
+                    <PowerIcon size={18} />
+                    <span>{activePowerUp.type}</span>
+                    <strong>{Math.ceil(activePowerUp.remainingMs / 1000)}s</strong>
+                  </div>
+                )}
               </>
             )}
           </div>
 
         </div>
+
+        {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
+          <div className="quick-controls console-interactive">
+            <button className="icon-btn" title={gameState === 'PAUSED' ? 'Resume' : 'Pause'} onClick={() => setGameState(gameState === 'PAUSED' ? 'PLAYING' : 'PAUSED')}>
+              {gameState === 'PAUSED' ? <Play size={18} /> : <Pause size={18} />}
+            </button>
+            <button className="icon-btn" title={soundEnabled ? 'Sound off' : 'Sound on'} onClick={toggleSound}>
+              {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+            </button>
+            <button className="icon-btn" title={musicEnabled ? 'Music off' : 'Music on'} onClick={toggleMusic}>
+              {musicEnabled ? <Music2 size={18} /> : <Music size={18} />}
+            </button>
+          </div>
+        )}
 
         {/* Interactive Top-Right Wallet Panel */}
         <div className="console-interactive wallet-panel-container">
@@ -248,6 +338,25 @@ function App() {
              <div style={{ textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                <h1 className="neon-title">Space Cargo<br/>Runner</h1>
 
+               {showFirstRunBrief && (
+                 <div className="tutorial-brief">
+                  <div>
+                    <strong>First flight brief</strong>
+                    <span>Move with arrow keys or hold left/right on the screen. Collect cargo, fuel, and power-ups. Dodge asteroids, mines, and debris. Press P or Space to pause.</span>
+                  </div>
+                  <button className="icon-btn" title="Dismiss briefing" onClick={handleDismissBrief}>OK</button>
+                 </div>
+               )}
+
+               <div className="mission-strip">
+                {missions.map((mission) => (
+                  <div key={mission.id} className={`mission-chip ${mission.completed ? 'completed' : ''}`}>
+                    <span>{mission.label}</span>
+                    <strong>{Math.min(mission.progress, mission.target)} / {mission.target}</strong>
+                  </div>
+                ))}
+               </div>
+
                {/* LIVE COMMS TICKER */}
                <div className="live-comms-ticker" style={{ marginTop: '40px', border: '1px solid #00ffcc', padding: '15px', background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(4px)', color: '#00ffcc', fontFamily: 'monospace', width: '100%', maxWidth: '600px', height: '140px', overflow: 'hidden', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,255,204,0.1)' }}>
                   <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid rgba(0,255,204,0.3)', paddingBottom: '6px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -273,12 +382,40 @@ function App() {
           )}
 
           {gameState === 'GAME_OVER' && (
-            <div className="crt-panel" style={{ padding: '40px', textAlign: 'center', minWidth: '400px' }}>
+            <div className="crt-panel game-over-panel" style={{ padding: '40px', textAlign: 'center', minWidth: '400px' }}>
               <h2 className="title emergency-text" style={{ fontSize: '2.5rem' }}>CRITICAL FAILURE</h2>
-              <div style={{ margin: '30px 0', fontSize: '1.5rem', fontFamily: 'Courier New' }}>
-                <p>Dist Traveled: <span className="stat-value">{distance}m</span></p>
-                <p>Cargo Secured: <span className="stat-value" style={{ color: 'var(--secondary)' }}>{coinsCollected}</span></p>
+              <div className="run-summary-grid">
+                <div>
+                  <span>Final Score</span>
+                  <strong>{displayedRun.finalScore}</strong>
+                </div>
+                <div>
+                  <span>Best Score</span>
+                  <strong>{displayedRun.bestScore}</strong>
+                </div>
+                <div>
+                  <span>Distance</span>
+                  <strong>{displayedRun.distance}m</strong>
+                </div>
+                <div>
+                  <span>Time</span>
+                  <strong>{formatTime(displayedRun.timeSurvived)}</strong>
+                </div>
+                <div>
+                  <span>Cargo</span>
+                  <strong>{displayedRun.cargo}</strong>
+                </div>
+                <div>
+                  <span>Credits</span>
+                  <strong>{displayedRun.coins}</strong>
+                </div>
               </div>
+              {displayedRun.achievementNames.length > 0 && (
+                <div className="unlock-callout">
+                  <Medal size={18} />
+                  {displayedRun.achievementNames.join(', ')} unlocked
+                </div>
+              )}
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
                 <button className="physical-btn" onClick={() => setGameState('MENU')}>Return to Menu</button>
                 <button className="physical-btn primary" onClick={handleStart}>Reboot Engine</button>
@@ -286,14 +423,39 @@ function App() {
             </div>
           )}
 
+          {gameState === 'PAUSED' && (
+            <div className="crt-panel pause-panel">
+              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>PAUSED</h2>
+              <div className="pause-stats">
+                <span>Score <strong>{hudScore}</strong></span>
+                <span>Time <strong>{formatTime(timeSurvived)}</strong></span>
+                <span>Distance <strong>{Math.floor(distance)}m</strong></span>
+              </div>
+              <div className="settings-row">
+                <button className="physical-btn" onClick={toggleSound}>{soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />} Sound</button>
+                <button className="physical-btn" onClick={toggleMusic}>{musicEnabled ? <Music2 size={18} /> : <Music size={18} />} Music</button>
+              </div>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                <button className="physical-btn" onClick={() => setGameState('MENU')}>Abort Run</button>
+                <button className="physical-btn primary" onClick={() => setGameState('PLAYING')}><Play size={20} /> Resume</button>
+              </div>
+            </div>
+          )}
+
           {gameState === 'HOW_TO_PLAY' && (
             <div className="crt-panel" style={{ padding: '30px', minWidth: '500px' }}>
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>SYSTEM MANUAL</h2>
+              <div className="manual-entry">
+                <Rocket size={42} color="var(--primary)" />
+                <div className="manual-text">
+                  <strong style={{color: 'var(--primary)'}}>CONTROLS:</strong> Arrow keys or screen hold to steer. P / Space pauses.
+                </div>
+              </div>
               
               <div className="manual-entry">
                 <img src={`${import.meta.env.BASE_URL}assets/cargo.png`} alt="Cargo" className="manual-sprite" />
                 <div className="manual-text">
-                  <strong style={{color: 'var(--secondary)'}}>CARGO:</strong> Collect for coins and XP.
+                  <strong style={{color: 'var(--secondary)'}}>CARGO & DATA:</strong> Collect for credits, score, and XP. Data caches are worth more.
                 </div>
               </div>
               
@@ -308,6 +470,13 @@ function App() {
                 <img src={`${import.meta.env.BASE_URL}assets/fuel.png`} alt="Fuel" className="manual-sprite" style={{ filter: 'drop-shadow(0 0 10px rgba(0,170,255,0.5))' }} />
                 <div className="manual-text">
                   <strong style={{color: '#00aaff'}}>FUEL:</strong> Replenish. Running empty ends session.
+                </div>
+              </div>
+
+              <div className="manual-entry">
+                <Shield size={42} color="#63ff8f" />
+                <div className="manual-text">
+                  <strong style={{color: '#63ff8f'}}>POWER-UPS:</strong> Shield, Magnet, Double Score, and Slow Motion appear during runs.
                 </div>
               </div>
 
@@ -364,6 +533,58 @@ function App() {
             </div>
           )}
 
+          {gameState === 'ACHIEVEMENTS' && (
+            <div className="crt-panel meta-panel">
+              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>PILOT RECORDS</h2>
+              <div className="achievement-grid">
+                {achievements.map((achievement) => (
+                  <div key={achievement.id} className={`achievement-card ${achievement.unlocked ? 'unlocked' : ''}`}>
+                    <Medal size={26} />
+                    <strong>{achievement.name}</strong>
+                    <span>{achievement.description}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mission-list">
+                {missions.map((mission) => (
+                  <div key={mission.id} className="mission-row">
+                    <span>{mission.label}</span>
+                    <div className="mission-progress">
+                      <div style={{ width: `${Math.min(100, (mission.progress / mission.target) * 100)}%` }}></div>
+                    </div>
+                    <strong>{mission.completed ? 'Complete' : mission.reward}</strong>
+                  </div>
+                ))}
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Records</button>
+              </div>
+            </div>
+          )}
+
+          {gameState === 'HANGAR' && (
+            <div className="crt-panel meta-panel">
+              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>SHIP HANGAR</h2>
+              <div className="skin-grid">
+                {shipSkins.map((skin) => (
+                  <button
+                    key={skin.id}
+                    className={`skin-card ${selectedSkinId === skin.id ? 'selected' : ''}`}
+                    onClick={() => selectSkin(skin.id)}
+                    disabled={!skin.unlocked}
+                  >
+                    <span className="skin-swatch" style={{ background: skin.color }}></span>
+                    <strong>{skin.name}</strong>
+                    <small>{skin.unlocked ? selectedSkinId === skin.id ? 'Equipped' : 'Available' : skin.unlock}</small>
+                  </button>
+                ))}
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Hangar</button>
+              </div>
+            </div>
+          )}
+
           {gameState === 'LEADERBOARD' && (
             <div className="crt-panel" style={{ padding: '30px', minWidth: '400px' }}>
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>TOP RUNNERS</h2>
@@ -400,6 +621,12 @@ function App() {
               </button>
               <button className="physical-btn" onClick={() => setGameState('SHOP')}>
                 <Settings size={20} /> UPGRADES
+              </button>
+              <button className="physical-btn" onClick={() => setGameState('HANGAR')}>
+                <Palette size={20} /> HANGAR
+              </button>
+              <button className="physical-btn" onClick={() => setGameState('ACHIEVEMENTS')}>
+                <Medal size={20} /> RECORDS
               </button>
               <button className="physical-btn" onClick={handleOpenLeaderboard}>
                 <Trophy size={20} /> LEADERBOARD

@@ -2,15 +2,68 @@ import { create } from 'zustand';
 import { socket } from '../lib/socket';
 import type { UserProfile, ShipState, PlayerStats } from 'shared';
 
+type GameScreen = 'MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'SHOP' | 'LEADERBOARD' | 'HOW_TO_PLAY' | 'ACHIEVEMENTS' | 'HANGAR';
+type PowerUpKind = 'Shield' | 'Magnet' | 'Double Score' | 'Slow Motion';
+
+interface RunStats {
+  finalScore: number;
+  bestScore: number;
+  distance: number;
+  coins: number;
+  cargo: number;
+  timeSurvived: number;
+  achievementNames: string[];
+}
+
+interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  unlocked: boolean;
+}
+
+interface Mission {
+  id: string;
+  label: string;
+  progress: number;
+  target: number;
+  reward: string;
+  completed: boolean;
+}
+
+interface ShipSkin {
+  id: string;
+  name: string;
+  color: string;
+  unlock: string;
+  unlocked: boolean;
+}
+
+interface UsernameUpdateResult {
+  success: boolean;
+  message?: string;
+}
+
 interface GameState {
   user: UserProfile | null;
   liveFeed: UserProfile[];
   topRunners: { id: string, username: string, highScore: number }[] | null;
   ship: ShipState | null;
-  gameState: 'MENU' | 'PLAYING' | 'GAME_OVER' | 'SHOP' | 'LEADERBOARD' | 'HOW_TO_PLAY';
+  gameState: GameScreen;
   distance: number;
   coinsCollected: number;
   cargoCollected: number;
+  timeSurvived: number;
+  bestScore: number;
+  runStartedAt: number | null;
+  lastRunStats: RunStats | null;
+  activePowerUp: { type: PowerUpKind; remainingMs: number } | null;
+  soundEnabled: boolean;
+  musicEnabled: boolean;
+  selectedSkinId: string;
+  achievements: Achievement[];
+  missions: Mission[];
+  shipSkins: ShipSkin[];
   
   // Ship Health & Upgrades
   health: number;
@@ -23,15 +76,20 @@ interface GameState {
   
   setUser: (user: UserProfile) => void;
   setShip: (ship: ShipState) => void;
-  setGameState: (state: 'MENU' | 'PLAYING' | 'GAME_OVER' | 'SHOP' | 'LEADERBOARD' | 'HOW_TO_PLAY') => void;
+  setGameState: (state: GameScreen) => void;
   setDistance: (dist: number) => void;
+  setTimeSurvived: (seconds: number) => void;
+  setActivePowerUp: (powerUp: { type: PowerUpKind; remainingMs: number } | null) => void;
+  toggleSound: () => void;
+  toggleMusic: () => void;
+  selectSkin: (skinId: string) => void;
   addCoins: (coins: number) => void;
   incrementCargo: () => void;
   resetRun: () => void;
   pushToLiveFeed: (user: UserProfile) => void;
   fetchLeaderboard: () => Promise<void>;
   fetchLiveFeed: () => Promise<void>;
-  updateUsername: (newName: string) => Promise<any>;
+  updateUsername: (newName: string) => Promise<UsernameUpdateResult | undefined>;
   
   getPilotLevel: () => number;
   getXpProgress: () => number;
@@ -57,6 +115,30 @@ export const useStore = create<GameState>((set, get) => ({
   distance: 0,
   coinsCollected: 0,
   cargoCollected: 0,
+  timeSurvived: 0,
+  bestScore: Number(localStorage.getItem('bestScore') || 0),
+  runStartedAt: null,
+  lastRunStats: null,
+  activePowerUp: null,
+  soundEnabled: localStorage.getItem('soundEnabled') !== 'false',
+  musicEnabled: localStorage.getItem('musicEnabled') !== 'false',
+  selectedSkinId: localStorage.getItem('selectedSkinId') || 'standard',
+  achievements: [
+    { id: 'first-haul', name: 'First Haul', description: 'Secure your first cargo crate.', unlocked: localStorage.getItem('achievement:first-haul') === 'true' },
+    { id: 'five-hundred', name: 'Void Sprinter', description: 'Travel 500 meters in a run.', unlocked: localStorage.getItem('achievement:five-hundred') === 'true' },
+    { id: 'cargo-chain', name: 'Cargo Chain', description: 'Collect 10 cargo items in one run.', unlocked: localStorage.getItem('achievement:cargo-chain') === 'true' },
+    { id: 'survivor', name: 'Cold Nerves', description: 'Survive for 60 seconds.', unlocked: localStorage.getItem('achievement:survivor') === 'true' }
+  ],
+  missions: [
+    { id: 'mission-distance', label: 'Run 750m', progress: 0, target: 750, reward: '+75 XP', completed: false },
+    { id: 'mission-cargo', label: 'Secure 12 cargo', progress: 0, target: 12, reward: '+120 credits', completed: false },
+    { id: 'mission-survive', label: 'Survive 90s', progress: 0, target: 90, reward: 'Ace skin access', completed: false }
+  ],
+  shipSkins: [
+    { id: 'standard', name: 'Standard Courier', color: '#00ffcc', unlock: 'Unlocked', unlocked: true },
+    { id: 'magenta', name: 'Pulse Runner', color: '#ff00ff', unlock: 'Reach 500m', unlocked: localStorage.getItem('skin:magenta') === 'true' || Number(localStorage.getItem('bestScore') || 0) >= 500 },
+    { id: 'gold', name: 'Aureate Hauler', color: '#ffd166', unlock: 'Collect 10 cargo in one run', unlocked: localStorage.getItem('skin:gold') === 'true' }
+  ],
   
   health: 100,
   maxHealth: 100,
@@ -70,6 +152,24 @@ export const useStore = create<GameState>((set, get) => ({
   setShip: (ship) => set({ ship }),
   setGameState: (gameState) => set({ gameState }),
   setDistance: (distance) => set({ distance }),
+  setTimeSurvived: (timeSurvived) => set({ timeSurvived }),
+  setActivePowerUp: (activePowerUp) => set({ activePowerUp }),
+  toggleSound: () => set((state) => {
+    const soundEnabled = !state.soundEnabled;
+    localStorage.setItem('soundEnabled', String(soundEnabled));
+    return { soundEnabled };
+  }),
+  toggleMusic: () => set((state) => {
+    const musicEnabled = !state.musicEnabled;
+    localStorage.setItem('musicEnabled', String(musicEnabled));
+    return { musicEnabled };
+  }),
+  selectSkin: (skinId) => {
+    const skin = get().shipSkins.find((item) => item.id === skinId);
+    if (!skin?.unlocked) return;
+    localStorage.setItem('selectedSkinId', skinId);
+    set({ selectedSkinId: skinId });
+  },
   addCoins: (coins) => set((state) => ({ coinsCollected: state.coinsCollected + coins })),
   incrementCargo: () => set((state) => ({ cargoCollected: state.cargoCollected + 1 })),
   
@@ -77,6 +177,10 @@ export const useStore = create<GameState>((set, get) => ({
     distance: 0, 
     coinsCollected: 0,
     cargoCollected: 0,
+    timeSurvived: 0,
+    runStartedAt: Date.now(),
+    lastRunStats: null,
+    activePowerUp: null,
     health: state.maxHealth,
     fuel: state.maxFuel
   })),
@@ -253,13 +357,67 @@ export const useStore = create<GameState>((set, get) => ({
 
   syncRunResults: async (distance: number, coins: number) => {
     const state = get();
+    const timeSurvived = state.runStartedAt ? Math.floor((Date.now() - state.runStartedAt) / 1000) : state.timeSurvived;
+    const finalScore = distance + coins * 10 + state.cargoCollected * 25 + timeSurvived;
+    const bestScore = Math.max(state.bestScore, finalScore, state.user?.highScore || 0);
+    const achievementNames: string[] = [];
+    const updatedAchievements = state.achievements.map((achievement) => {
+      const unlocked =
+        achievement.unlocked ||
+        (achievement.id === 'first-haul' && state.cargoCollected >= 1) ||
+        (achievement.id === 'five-hundred' && distance >= 500) ||
+        (achievement.id === 'cargo-chain' && state.cargoCollected >= 10) ||
+        (achievement.id === 'survivor' && timeSurvived >= 60);
+
+      if (unlocked && !achievement.unlocked) {
+        localStorage.setItem(`achievement:${achievement.id}`, 'true');
+        achievementNames.push(achievement.name);
+      }
+
+      return { ...achievement, unlocked };
+    });
+
+    if (distance >= 500) localStorage.setItem('skin:magenta', 'true');
+    if (state.cargoCollected >= 10) localStorage.setItem('skin:gold', 'true');
+    localStorage.setItem('bestScore', String(bestScore));
+
+    set({
+      bestScore,
+      timeSurvived,
+      achievements: updatedAchievements,
+      missions: state.missions.map((mission) => {
+        const progress =
+          mission.id === 'mission-distance' ? distance :
+          mission.id === 'mission-cargo' ? state.cargoCollected :
+          timeSurvived;
+
+        return { ...mission, progress, completed: progress >= mission.target };
+      }),
+      shipSkins: state.shipSkins.map((skin) => ({
+        ...skin,
+        unlocked:
+          skin.unlocked ||
+          (skin.id === 'magenta' && distance >= 500) ||
+          (skin.id === 'gold' && state.cargoCollected >= 10)
+      })),
+      lastRunStats: {
+        finalScore,
+        bestScore,
+        distance,
+        coins,
+        cargo: state.cargoCollected,
+        timeSurvived,
+        achievementNames
+      }
+    });
+
     if (!state.user) return;
     try {
       const payload = { 
         userId: state.user.id, 
-        distance, 
+        distance: finalScore, 
         coins, 
-        xp: Math.floor(distance / 10),
+        xp: Math.floor(finalScore / 10),
         cargoCollected: state.cargoCollected
       };
       socket.emit('submitScore', payload);
@@ -282,7 +440,7 @@ export const useStore = create<GameState>((set, get) => ({
         throw new Error('Leaderboard fetch failed');
       }
     } catch (e) {
-      console.error('Failed to fetch leaderboard, falling back to mock data:', e);
+      console.warn('Failed to fetch leaderboard, falling back to mock data:', e);
       // Offline fallback leaderboard
       set({ topRunners: [
         { id: '1', username: 'NeonRider', highScore: 15240 },
@@ -303,7 +461,7 @@ export const useStore = create<GameState>((set, get) => ({
         set({ liveFeed: data.feed });
       }
     } catch (e) {
-      console.error('Failed to fetch live feed history:', e);
+      console.warn('Failed to fetch live feed history:', e);
     }
   },
 

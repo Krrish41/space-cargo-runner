@@ -1,61 +1,121 @@
-# System Architecture Documentation
+# System Architecture
 
-> **Note:** For full technical implementation details and an overview of the live game, please see the root [`Game_Documentation.md`](../Game_Documentation.md).
+Space Cargo Runner uses a decoupled Web2.5 architecture: a static, GitHub Pages-compatible frontend for instant play, plus an optional hosted backend for persistence, wallet identity, live comms, upgrades, and leaderboard data.
 
-**Space Cargo Runner** utilizes a decoupled, event-driven Web2.5 architecture. This document outlines the distinct layers of the tech stack and how data flows from the game client to the persistent cloud database.
+## Runtime Overview
 
----
+```text
+React cockpit UI
+       |
+       v
+Zustand shared game store <----> Phaser arcade scene
+       |
+       v
+REST + Socket.io client
+       |
+       v
+Express + Socket.io backend
+       |
+       v
+Prisma ORM + Neon PostgreSQL
+```
 
-## 1. High-Level Architecture Flow
+## Frontend
 
-1. **Client Rendering Layer:** The HTML5 Canvas rendered by **Phaser 3** runs the 60FPS physics and collision loops.
-2. **Client State Layer:** **Zustand** acts as an intermediary bridge between Phaser's telemetry and the **React** User Interface (HUD).
-3. **Web3 Authentication:** **Wagmi/Viem** manages the EVM wallet lifecycle, supplying wallet addresses to the backend for identity binding.
-4. **Network Layer:** **Axios/Fetch** handles standard REST CRUD operations, while **Socket.io** maintains a persistent bi-directional connection for live game feed broadcasts.
-5. **Server Layer:** A **Node.js/Express** backend processes game logic validation, handles API routes, and emits socket events.
-6. **Data Persistence Layer:** **Prisma ORM** strictly types database queries, executing them against a **Neon Serverless PostgreSQL** database.
+The frontend lives in `apps/frontend`.
 
----
+- **React:** renders the cockpit UI, menus, HUD, pause screen, Records, Hangar, leaderboard, wallet modal, and upgrade screens.
+- **Phaser:** owns the 60 FPS game loop, canvas rendering, physics collisions, spawning, difficulty progression, power-ups, visual effects, and lightweight WebAudio cues.
+- **Zustand:** bridges Phaser and React. Phaser writes telemetry such as health, fuel, score, distance, active power-up, and run completion into the store. React subscribes to those values without driving the canvas loop.
+- **Vite:** builds a static artifact with `base: "/space-cargo-runner/"`, which is required for GitHub Pages asset paths.
 
-## 2. Database Schema (Prisma Models)
+## Static Playability
 
-The system relies on a heavily relational schema to map users to their ships and historical game sessions.
+The frontend is intentionally playable without a backend. If API calls fail, the app creates an offline pilot locally and uses fallback leaderboard/live-feed data. This keeps GitHub Pages playable even when the hosted API is sleeping or unavailable.
 
-### `User` Model
-- `id` (UUID): Primary key.
-- `walletAddress` (String?): Optional EVM address for Web3 users.
-- `username` (String): Customizable pilot callsign.
-- `coins`, `xp`, `highScore` (Int): Lifetime accumulated metrics.
+Local-only state includes:
 
-### `Ship` Model
-- `userId` (UUID): Foreign key linking the ship to a specific user.
-- `engineLevel`, `shieldLevel`, `fuelLevel` (Int): Current upgrade states applied to the Phaser engine on boot.
+- Best score.
+- First-run tutorial dismissal.
+- Sound/music settings.
+- Achievements.
+- Skin unlocks.
+- Selected ship skin.
 
-### `GameSession` Model
-- `id` (UUID): Primary key.
-- `userId` (UUID): Foreign key denoting the player.
-- `distance`, `cargoCollected`, `coinsEarned`, `xpEarned` (Int): Immutable snapshot of a completed run's stats.
+## Game Scene
 
----
+`MainScene` owns the core arcade behavior:
 
-## 3. WebSocket Event Definitions
+- Parallax starfield and dust streak background.
+- Gradual speed and spawn-pressure scaling.
+- Obstacles: asteroids, mines, debris.
+- Collectibles: cargo, data caches, fuel cells.
+- Power-ups: Shield, Magnet, Double Score, Slow Motion.
+- Collision and collection feedback.
+- Pause/resume lifecycle.
+- Run end synchronization into Zustand.
 
-The real-time multiplayer component ("Global Live Comms") is completely decoupled from the REST API, driven solely by WebSocket events.
+`Preloader` loads static image assets and generates lightweight procedural textures for runtime-only objects such as mines, debris, data caches, power-ups, and dust streaks.
 
-### Client-to-Server
-- `submitScore (payload: ScoreData)`: Emitted when a player's ship reaches zero health or fuel. Contains the delta distance and cargo collected for the active session.
+## Backend
 
-### Server-to-Client
-- `scoreUpdated (payload: UserProfile)`: Globally broadcasted the instant any player's `submitScore` event is successfully written to the Neon DB. The React UI intercepts this event to update the scrolling Comms ticker.
+The backend lives in `apps/backend`.
 
----
+- **Express:** REST routes for auth, wallet binding, user rename, ship upgrades, leaderboard, feed, and score sync.
+- **Socket.io:** receives `submitScore` and broadcasts `scoreUpdated`.
+- **Prisma:** database access layer.
+- **Neon PostgreSQL:** persistent data store.
 
-## 4. API Specification
+### Primary REST Routes
 
-All REST routes are prefixed with `/api`.
+- `POST /api/auth`
+- `POST /api/wallet/bind`
+- `POST /api/user/rename`
+- `POST /api/ship/upgrade`
+- `GET /api/leaderboard`
+- `GET /api/feed`
 
-- `POST /api/auth`: Handles guest initialization. If a user ID exists in the local cache, retrieves their profile; otherwise, instantiates a new guest record.
-- `POST /api/wallet/bind`: Re-assigns a temporary guest identity to a permanent Web3 wallet address.
-- `POST /api/user/rename`: Updates the `username` field, with server-side validation rejecting strings under 3 or over 20 characters.
-- `GET /api/leaderboard`: Queries the top 10 players globally sorted by `highScore` descending.
-- `GET /api/feed`: Queries the 5 most recently updated players to populate the Live Comms ticker history upon page refresh.
+### Socket Events
+
+- `submitScore`: client sends completed run stats.
+- `scoreUpdated`: backend broadcasts the updated profile to connected clients.
+
+## Data Model
+
+### User
+
+Stores pilot identity, wallet binding, username, credits, XP, and high score.
+
+### Ship
+
+Stores upgrade levels, including shield and fuel levels used by the frontend.
+
+### GameSession
+
+Stores completed run snapshots: distance/score, cargo collected, coins earned, XP earned, and timestamp.
+
+## Deployment
+
+GitHub Pages deployment is defined in `.github/workflows/deploy.yml`.
+
+The workflow:
+
+1. Checks out the repository.
+2. Configures GitHub Pages.
+3. Installs with `npm ci`.
+4. Builds with `npm run build --workspace frontend`.
+5. Uploads `apps/frontend/dist`.
+6. Deploys to the `github-pages` environment.
+
+The workflow sets:
+
+```env
+VITE_BACKEND_URL=https://space-cargo-backend.onrender.com
+```
+
+## Operational Notes
+
+- Pages source should be configured as **GitHub Actions** in repository settings.
+- The hosted backend must allow CORS from GitHub Pages.
+- If the backend is unavailable, gameplay still works through the offline fallback path.
+- Full frontend lint currently includes pre-existing wallet modal/context lint debt. Touched gameplay and deployment files pass focused lint checks.

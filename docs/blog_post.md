@@ -1,44 +1,99 @@
-# Bridging Web2 Canvas and Web3 Identity: Building "Space Cargo Runner"
+# Building Space Cargo Runner: Arcade Feel, Static Hosting, Optional Persistence
 
-*By the Space Cargo Runner Engineering Team*
+Space Cargo Runner started as a simple idea: make a space runner that feels good immediately, then layer in persistence, leaderboards, wallet identity, and replay goals without making the player wait at a login screen.
 
-When we set out to build **Space Cargo Runner**, our goal was simple yet highly ambitious: take the fast-paced, pixel-perfect mechanics of a classic arcade space survival game and inject it with the immutable identity and real-time connectivity of Web3 technologies. We didn’t want to build a clunky "crypto game"; we wanted a seamless Web2.5 experience where players could just click and play, but optionally bind a Web3 wallet to permanently secure their legacy on a global leaderboard. 
+The current version is built around one rule: the game must be playable from GitHub Pages even when every network feature is offline.
 
-This post dives deep into the architecture, the technical hurdles we faced, and how we solved them using React, Phaser 3, WebSockets, and Serverless Postgres.
+## Phaser Handles the Moment-to-Moment Game
 
----
+React is great for cockpit panels, menus, HUDs, and modal flows. Phaser is better for the actual game loop. Space Cargo Runner uses Phaser for movement, collision, spawning, particles, camera feedback, and audio cues.
 
-## 1. The Engine Challenge: React meets Phaser 3
+The game scene now has a small arcade director:
 
-**The Problem:** React is incredible for building beautiful, responsive UIs (like menus, HUDs, and modals). However, React is notoriously terrible at rendering 60-frames-per-second game logic. For the actual game canvas, we needed a dedicated engine, so we chose **Phaser 3**. The challenge was bridging the gap between Phaser's isolated internal loop and React's component state.
+- Speed rises over time.
+- Spawn intervals shrink over time.
+- Extra pressure spawns appear later in a run.
+- Asteroids, mines, and debris create different dodge patterns.
+- Cargo, data caches, fuel, and power-ups compete for the player's attention.
 
-**The Solution:** We decoupled our state entirely using **Zustand**. 
-Instead of trying to pass props down from React into the Phaser canvas, we set up a lightweight, global Zustand store. When the player's spaceship takes damage or collects a coin, the Phaser engine makes a direct call to the store: `useStore.getState().drainFuel(2)`. 
+This keeps the first 20 seconds approachable while letting later runs get tense.
 
-Our React UI layer (the HUD) passively subscribes to `useStore`. This means the HUD automatically updates when health or fuel changes, but the React components never interrupt or block the Phaser rendering loop. It resulted in a butter-smooth 60 FPS experience with a stunning, reactive CSS UI on top.
+## Zustand Bridges Phaser and React
 
-This decoupled state architecture also makes the game incredibly easy to re-balance on the fly. For instance, in a recent patch, we were able to instantly double the survival time of our players simply by adjusting the fuel drain timer from 0.5s to 1.0s and slightly bumping the fuel tank spawn rate to 15%—all without touching a single React component!
+The shared Zustand store is the clean boundary between canvas gameplay and React UI.
 
-## 2. Web3 Identity: Invisible Onboarding
+Phaser updates the store when something important happens:
 
-We used **Wagmi** and **Viem** to handle our Web3 wallet integrations. One of the core tenets of our project was that players shouldn't be forced to sign a transaction just to play the game. 
+- Hull damage.
+- Fuel drain.
+- Cargo collection.
+- Power-up activation.
+- Distance and time updates.
+- Game over and run summary.
 
-When a user boots the game, the backend instantly assigns them a secure "Guest Pilot" identity, stored in the browser's `localStorage`. They can play, rack up points, and level up their Pilot Rank immediately. If they decide they want to secure their identity on the blockchain, they click "Connect Wallet". A custom backend endpoint (`/api/wallet/bind`) securely merges their temporary guest telemetry into their wallet address profile, granting them permanent, cross-device progression without any friction.
+React subscribes to that state for the HUD, pause panel, Records screen, Hangar, and Game Over report. The UI stays reactive without React trying to render every game frame.
 
-## 3. Real-Time Global Comms via Socket.io
+## GitHub Pages Is a First-Class Target
 
-We didn't just want a static leaderboard; we wanted a living, breathing universe. To achieve this, we deployed a **Node.js/Express** server hosted on Render, equipped with **Socket.io** WebSockets.
+The frontend is a static Vite app. The important deployment detail is the Vite base path:
 
-Every time a player finishes a cargo run anywhere in the world, their client fires a `submitScore` event to the backend. The server instantly calculates their XP gains, updates their database profile, and broadcasts a `scoreUpdated` WebSocket signal globally to every connected user. Our React frontend listens for this signal and pipes it directly into the "Global Live Comms Link" on the main menu, creating a scrolling, real-time ticker of player achievements across the world.
+```ts
+base: '/space-cargo-runner/'
+```
 
-## 4. Persistent RPG Progression with Neon Serverless Postgres
+That lets GitHub Pages serve assets from:
 
-To make the leaderboards matter, we needed an iron-clad database. We utilized **Neon Serverless PostgreSQL** paired with **Prisma ORM**. 
+```text
+https://krrish41.github.io/space-cargo-runner/
+```
 
-We designed a robust schema tracking `User`, `Ship`, and `GameSession` models. This allowed us to implement an RPG leveling system ("Pilot Rank"). Every distance unit traveled and piece of cargo secured translates into XP. As XP grows exponentially, players rank up. Because it's backed by a cloud Postgres instance, this telemetry is permanent. 
+GitHub Actions builds `apps/frontend/dist` and deploys it with the Pages artifact action. The workflow also injects the hosted backend URL for online features.
 
-## Conclusion
+## Offline Fallback Keeps the Game Playable
 
-Building **Space Cargo Runner** was a masterclass in modern full-stack development, proving that Web3 games don't have to sacrifice gameplay, and Web2 games don't have to rely on siloed, centralized identity. By strategically delegating responsibilities—Phaser for rendering, Zustand for state, Express for APIs, Socket.io for real-time events, and Neon for persistence—we successfully shipped a highly polished, Web2.5 arcade odyssey. 
+The backend powers identity, upgrades, leaderboard persistence, and live comms. But the player should never be blocked by a sleeping server. If API calls fail, the frontend creates an offline pilot and uses fallback leaderboard data.
 
-*Try it out live, connect your wallet, and see if you can claim the top spot on the Global Leaderboard!*
+Local browser storage keeps:
+
+- Best score.
+- Tutorial state.
+- Audio settings.
+- Achievements.
+- Skin unlocks.
+- Selected skin.
+
+That means the GitHub Pages version still works as an arcade game even before the backend wakes up.
+
+## The Meta Layer Adds Replay Value
+
+The new progression layer is intentionally lightweight:
+
+- A richer Game Over screen gives players a reason to retry.
+- Achievements reward milestones.
+- Missions point players toward clear goals.
+- Hangar skins make mastery visible.
+- Ship upgrades improve fuel and hull capacity when backend persistence is available.
+
+The goal is not to bury the runner under menus. The goal is to make every run leave a trace.
+
+## What Changed in the Polish Pass
+
+The recent pass added:
+
+- First-time tutorial brief.
+- Better manual instructions.
+- Difficulty progression.
+- More obstacle and collectible variety.
+- Shield, Magnet, Double Score, and Slow Motion.
+- Improved HUD visibility.
+- Pause/resume.
+- Sound and music toggles.
+- Better collision and collection effects.
+- Animated parallax background.
+- Game Over run summary.
+- Achievements, missions, unlockable skins, and Records/Hangar screens.
+- GitHub Pages deployment hardening.
+
+## Closing
+
+Space Cargo Runner is now more than a prototype loop. It is a static-hostable arcade game with optional online persistence: quick to play, readable in motion, and ready for GitHub Pages.

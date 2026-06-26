@@ -1,85 +1,157 @@
 # Space Cargo Runner - Game Documentation
 
-Welcome to the official documentation for **Space Cargo Runner**, a high-octane retro-futuristic Web2.5 arcade game!
+## Overview
 
-## 1. Introduction and Overview
-**Space Cargo Runner** seamlessly blends traditional arcade physics with bleeding-edge Web3 wallet identity powered by SecureChain. Players jump into the cockpit, dodge cosmic hazards, and push their engines to the limit to dominate the global leaderboards.
+Space Cargo Runner is an endless arcade survival game with a neon cockpit interface. The player pilots a cargo ship through a dangerous space lane, collecting valuable cargo while managing hull integrity, fuel, speed, hazards, and temporary power-ups.
 
-- **Play Live:** [Space Cargo Runner](https://krrish41.github.io/space-cargo-runner/)
-- **Core Objective:** Survive as long as possible while collecting cargo and coins. Manage your ship's health and fuel, dodge incoming asteroids, and upgrade your ship using your earnings to climb the leaderboard!
+Live game:
 
-## 2. Core Game Mechanics
-- **Ship Controls:** The ship follows your cursor or touch input. Move laterally to dodge and collect items.
-- **Hazards (Asteroids):** Colliding with an asteroid damages your ship's health. After a hit, the ship gains temporary invulnerability frames (indicated by blinking).
-- **Fuel System:**
-  - The ship constantly consumes fuel while engines are active.
-  - **Replenishing:** Look out for blue fuel canisters dropping into the lane! Collecting them instantly adds fuel back to your tank.
-  - **Game Over:** If your fuel gauge hits zero, your ship will be stranded, resulting in an immediate Game Over.
-- **Health & Shields:**
-  - Your ship starts with a base health level. Asteroid collisions deplete this health.
-  - Reaching zero health results in an immediate Game Over.
-- **Cargo & Coins:**
-  - Collecting floating cargo units awards points and in-game coins. These coins are saved permanently to your profile to be used in the Ship Upgrades Store.
+```text
+https://krrish41.github.io/space-cargo-runner/
+```
 
-## 3. Meta-Progression & Upgrades
-The game features persistent mechanics that allow you to grow stronger over time. In the main menu, visit the **Ship Upgrades** terminal to spend your hard-earned coins:
-- **Plasma Fuel Core:** Permanently increases your ship's maximum fuel capacity, allowing for longer runs without needing to find a fuel drop.
-- **Energy Shield:** Permanently upgrades your maximum health, letting you sustain more asteroid hits before getting destroyed.
-- **Pilot Rank System:** Every run grants XP based on distance survived and cargo secured. Earning XP mathematically increases your Pilot Rank (Level) and solidifies your position on the global leaderboards!
+The GitHub Pages build is playable as a static site. If the hosted backend is unavailable, the frontend falls back to an offline pilot and mock leaderboard data so the core game remains accessible.
 
-## 4. Technical Architecture
-The game runs on a robust Monorepo architecture separating the game engine, real-time layers, and persistent storage:
-- **Frontend Engine (Phaser 3 + React 18):** 
-  - Uses Phaser 3 within an HTML5 Canvas for high-performance arcade physics.
-  - Utilizes **Zustand** for state management, allowing Phaser to push state updates (coins, damage) to the React UI layer without forcing heavy React re-renders on the canvas.
-- **Backend (Node.js & Express):** Manages REST endpoints and game logic validation.
-- **Real-Time Network Layer (Socket.io):** A WebSockets server broadcasts live feed events globally. When any player completes a run, their score is pushed to every connected client in milliseconds and displayed on the CRT terminal ticker.
-- **Database (Neon PostgreSQL & Prisma ORM):** Strictly relational database mapping Users (Web3 / UUIDs) to Ships (Upgrades) to Runs (Scores and Timestamps).
+## Core Loop
 
-## 5. Web3 & Wallet Integration
-Space Cargo Runner offers a dual-layer authentication system:
-- **Guest Pilots:** Instant playability using persistent UUIDs stored in the browser's `localStorage`, bypassing traditional email registration.
-- **Web3 Connected Pilots (MetaMask / Rainbow):** Players can bridge their account to Web3 by connecting a wallet. Using **Wagmi** and **Viem**, the game detects injected providers like MetaMask.
-  - **SecureChain (SCAI) Network Configuration:**
-    - **Network Name:** SCAI Mainnet
-    - **RPC URL:** `https://mainnet-rpc.scai.network`
-    - **Chain ID:** `34`
-    - **Currency Symbol:** `SCAI`
-    - **Block Explorer:** `https://explorer.securechain.ai`
+1. Start a run from the cockpit dashboard.
+2. Steer left and right with arrow keys, pointer, or touch input.
+3. Collect cargo, data caches, fuel, and power-ups.
+4. Dodge asteroids, mines, and debris.
+5. Survive as long as possible while score, distance, cargo, and time climb.
+6. Review the Game Over report, unlock achievements/skins, and start again.
 
-## 6. Local Development & Installation Guide
-Want to boot up the game locally? Follow these steps:
+## Controls
 
-1. **Install Dependencies:**
-   ```bash
-   npm install
-   ```
-2. **Database Configuration:**
-   Inside `apps/backend`, create a `.env` file with your Postgres connection:
-   ```env
-   DATABASE_URL="postgresql://user:password@host:port/dbname?sslmode=require"
-   ```
-3. **Initialize the Database:**
-   ```bash
-   cd apps/backend
-   npx prisma db push
-   ```
-4. **Boot the Servers:**
-   - Terminal 1 (Backend):
-     ```bash
-     cd apps/backend
-     npm run dev
-     ```
-   - Terminal 2 (Frontend):
-     ```bash
-     cd apps/frontend
-     npm run dev
-     ```
-   Navigate to `http://localhost:5173` to start playing!
+- `Left Arrow`: move left.
+- `Right Arrow`: move right.
+- Pointer/touch left side: move left.
+- Pointer/touch right side: move right.
+- `P` or `Space`: pause/resume.
+- On-screen pause, sound, and music buttons are available during play.
 
-## 7. UI/UX Design Aesthetic
-The game utilizes a bespoke 1980s Cyberpunk and Retro-futuristic aesthetic. 
-- Built purely with **Vanilla CSS** to minimize framework overhead.
-- Features **CRT Overlays** using CSS box-shadow insets.
-- Incorporates **Frosted Glass** effects via `backdrop-filter: blur()`.
-- Glowing text animations run via CSS `@keyframes`, keeping the main JavaScript thread completely dedicated to physics calculations.
+## Hazards
+
+- **Asteroid:** Standard obstacle, moderate damage.
+- **Mine:** Heavier hazard with stronger damage and a slower drift.
+- **Debris:** Faster moving hazard with lighter damage and more lateral drift.
+
+The game gradually increases speed and spawn pressure over time, with extra pressure spawns appearing deeper into a run.
+
+## Collectibles
+
+- **Cargo:** Grants credits and cargo progress.
+- **Data Cache:** Higher-value collectible variant.
+- **Fuel Cell:** Restores fuel and extends the run.
+
+## Power-Ups
+
+- **Shield:** Absorbs collisions for a short duration.
+- **Magnet:** Pulls nearby cargo, fuel, and power-ups toward the ship.
+- **Double Score:** Doubles cargo/data credit rewards while active.
+- **Slow Motion:** Temporarily slows world speed.
+
+The HUD displays the active power-up and remaining time.
+
+## Scoring and Run Stats
+
+The run score combines:
+
+- Distance traveled.
+- Credits collected.
+- Cargo secured.
+- Time survived.
+
+The Game Over screen reports:
+
+- Final Score.
+- Best Score.
+- Distance.
+- Time Survived.
+- Cargo.
+- Credits.
+- Newly unlocked achievements.
+
+Best score, settings, achievements, and skins are persisted locally. Backend-connected profiles can also submit score events to the live leaderboard.
+
+## Progression
+
+### Upgrades
+
+The Ship Upgrades screen currently supports:
+
+- **Deflector Shields:** increases maximum hull integrity.
+- **Plasma Fuel Core:** increases maximum fuel capacity.
+
+### Records
+
+The Records screen includes achievements and mission progress:
+
+- First cargo secured.
+- 500m run.
+- 10 cargo in one run.
+- 60 second survival.
+- Mission targets for distance, cargo, and survival time.
+
+### Hangar
+
+The Hangar contains unlockable skins:
+
+- Standard Courier: unlocked by default.
+- Pulse Runner: unlocked by reaching 500m.
+- Aureate Hauler: unlocked by collecting 10 cargo in one run.
+
+## Technical Architecture
+
+- **Phaser:** canvas rendering, physics, collision, spawning, effects, and audio cues.
+- **React:** cockpit UI, menus, panels, HUD, wallet modal, and player controls.
+- **Zustand:** shared state bridge between Phaser and React.
+- **Socket.io:** live score submission and global comms feed.
+- **Express:** REST API for auth, wallet binding, rename, upgrades, leaderboard, and feed.
+- **Prisma + Neon PostgreSQL:** persistent users, ships, upgrades, and sessions.
+- **Vite:** frontend bundling with `base: "/space-cargo-runner/"` for GitHub Pages.
+
+## Deployment
+
+GitHub Pages deployment is handled by `.github/workflows/deploy.yml`.
+
+The workflow:
+
+1. Runs on pushes to `main`.
+2. Installs dependencies with `npm ci`.
+3. Builds the frontend workspace.
+4. Uploads `apps/frontend/dist`.
+5. Deploys through GitHub Pages.
+
+The deployed frontend uses:
+
+```env
+VITE_BACKEND_URL=https://space-cargo-backend.onrender.com
+```
+
+## Local Development
+
+Install from the root:
+
+```bash
+npm install
+```
+
+Run the frontend:
+
+```bash
+npm run dev:frontend
+```
+
+Run the backend:
+
+```bash
+cd apps/backend
+npm run dev
+```
+
+Build the Pages frontend:
+
+```bash
+npm run build
+```

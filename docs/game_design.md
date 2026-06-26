@@ -1,32 +1,149 @@
-# Game Design Document (GDD)
+# Game Design Document
 
-> **Note:** For full technical implementation details and an overview of the live game, please see the root [`Game_Documentation.md`](../Game_Documentation.md).
+## Concept
 
-## 1. Concept overview
-**Space Cargo Runner** is an infinite-runner arcade survival game. The player pilots a heavily modified cargo ship through a dense, procedurally generated asteroid belt. The primary objective is to survive as long as possible (Distance) while securing valuable resources (Cargo) to climb the global leaderboard.
+Space Cargo Runner is an endless space-courier survival game. The player pilots a cargo ship through an increasingly dangerous flight lane, collecting resources and power-ups while dodging hazards. The fantasy is quick, readable arcade action wrapped in a neon cockpit interface.
 
-## 2. Core Gameplay Loop
-1. **Launch:** The player starts at a base speed. Fuel dissipates linearly over time.
-2. **Navigate:** The player uses the `LEFT` and `RIGHT` arrow keys (or A/D, or pointer/touch input on the left/right sides of the screen) to maneuver the ship laterally across the canvas.
-3. **Collect & Survive:** 
-   - **Cargo (Neon Cubes):** Collecting cargo grants 10 coins.
-   - **Fuel Cells (Blue Capsules):** Replenish the core fuel dissipation bar. These spawn with a 15% probability and are critical for extending the run as fuel drains automatically every second.
-   - **Asteroids (Red Rocks):** Hitting an asteroid strips Hull Integrity (HP).
-4. **End Condition:** The run ends ("CRITICAL FAILURE") if Hull Integrity reaches 0 (destroyed) or if the Fuel Core Dissipation bar depletes completely (stranded).
+## Player Goals
 
-## 3. RPG Mechanics: Pilot Rank & XP
-The game features a permanent RPG progression system designed to reward long-term engagement.
-- **XP Calculation:** At the end of every run, the player is awarded XP based on a weighted formula combining `Distance Traveled` and `Cargo Secured`.
-- **Pilot Rank Formula:** A player's Pilot Rank (Level) is mathematically derived from their lifetime accumulated XP. The formula `Level = Math.floor(Math.sqrt(XP / 100)) + 1` creates an exponential curve, making early levels quick to achieve while higher ranks require significant mastery and grind.
-- **XP Bar:** The HUD displays a real-time progress bar indicating the percentage of XP required to reach the next rank.
+- Survive as long as possible.
+- Collect cargo and data caches.
+- Maintain fuel.
+- Avoid damage.
+- Use power-ups at the right time.
+- Beat the previous best score.
+- Unlock achievements and ship skins.
+- Climb the leaderboard when the backend is online.
 
-## 4. UI & Heads-Up Display (HUD)
-The HUD is designed with a retro "cyberpunk" aesthetic, utilizing glowing CRT filters and monospace fonts.
-- **Hull Integrity Bar:** Visually tracks HP. Transitions from Neon Blue to Emergency Red when below 30% capacity.
-- **Fuel Core Dissipation:** A constantly shrinking progress bar. Visually alerts the player to the urgency of collecting Fuel Cells.
-- **Global Live Comms Link:** A scrolling ticker box positioned at the bottom of the main menu. It intercepts live WebSocket broadcasts from the server to display real-time achievements of other players globally.
+## Controls
 
-## 5. Web3 Integration
-Instead of forcing players to create an account with a password, Space Cargo Runner utilizes an invisible, frictionless onboarding flow. 
-- **Guest Mode:** Players are instantly assigned a local, browser-based Guest identity.
-- **Wallet Binding:** Players can permanently secure their High Scores, Coins, and Pilot Rank by connecting an Ethereum-compatible Web3 wallet. The game binds the hardware address to the telemetry, serving as a decentralized authentication method.
+- Left/right arrow keys steer the ship.
+- Pointer and touch input steer by screen side.
+- `P` or `Space` toggles pause.
+- On-screen buttons control pause, sound, and music.
+
+## Core Loop
+
+1. Launch from the menu.
+2. Read the HUD: hull, fuel, score, cargo, time, distance, and power-up status.
+3. Dodge hazards while collecting resources.
+4. The game gradually increases speed and spawn pressure.
+5. Power-ups create temporary survival windows or score opportunities.
+6. A run ends when hull or fuel reaches zero.
+7. The Game Over screen reports run stats and unlocks.
+8. The player returns to upgrades, Records, Hangar, leaderboard, or restarts.
+
+## Difficulty Progression
+
+Difficulty scales through:
+
+- Increasing base world speed.
+- Shorter spawn intervals over time.
+- Additional pressure spawns later in a run.
+- More hazard variety as the run continues.
+
+The early game gives new players time to learn the lane movement. The mid-game introduces faster debris and mines. The late game increases pressure through denser and faster object patterns.
+
+## Objects
+
+### Hazards
+
+- **Asteroid:** baseline obstacle and damage source.
+- **Mine:** heavier damage, slower drift, high threat.
+- **Debris:** faster and lighter, creates quick reaction tests.
+
+### Collectibles
+
+- **Cargo:** main credit and cargo-count collectible.
+- **Data Cache:** higher-value cargo variant.
+- **Fuel Cell:** replenishes fuel and extends a run.
+
+### Power-Ups
+
+- **Shield:** absorbs collisions.
+- **Magnet:** pulls nearby collectibles.
+- **Double Score:** doubles cargo/data rewards.
+- **Slow Motion:** slows world movement temporarily.
+
+## Scoring
+
+Final Score is built from:
+
+- Distance.
+- Credits collected.
+- Cargo secured.
+- Time survived.
+
+The score model rewards both survival and active collection.
+
+## HUD
+
+The HUD prioritizes readability during fast motion:
+
+- Hull Integrity bar.
+- Fuel Core Dissipation bar.
+- Pilot Rank XP bar.
+- Distance.
+- Credits.
+- Score.
+- Time survived.
+- Cargo count.
+- Active power-up timer.
+- Pause/sound/music controls.
+
+## Game Over
+
+The Game Over screen is a performance recap:
+
+- Final Score.
+- Best Score.
+- Distance.
+- Time.
+- Cargo.
+- Credits.
+- New achievement unlocks.
+
+## Meta Progression
+
+### Upgrades
+
+- Deflector Shields increase max hull.
+- Plasma Fuel Core increases max fuel.
+
+### Achievements
+
+- First Haul: collect first cargo.
+- Void Sprinter: reach 500m.
+- Cargo Chain: collect 10 cargo in one run.
+- Cold Nerves: survive 60 seconds.
+
+### Missions
+
+Missions give visible targets:
+
+- Run 750m.
+- Secure 12 cargo.
+- Survive 90 seconds.
+
+### Hangar
+
+Ship skins create lightweight replay goals:
+
+- Standard Courier: default.
+- Pulse Runner: reach 500m.
+- Aureate Hauler: collect 10 cargo in one run.
+
+## Audio and Visual Feedback
+
+The game uses:
+
+- Camera shake and flash on collision.
+- Floating text for pickups and hazards.
+- Particle bursts for impacts and collection.
+- WebAudio tones for cargo, fuel, power-ups, and collisions.
+- Ambient low-frequency music toggle.
+- Animated star and dust background for motion depth.
+
+## Deployment Design
+
+The game is designed to be playable from GitHub Pages as a static app. Backend features enhance persistence and multiplayer feel, but core gameplay does not depend on them.

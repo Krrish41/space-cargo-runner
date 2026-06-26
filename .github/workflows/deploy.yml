@@ -28,12 +28,14 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
       - name: Install Monorepo Dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build Frontend
-        run: npm run build
-        working-directory: ./apps/frontend
+        run: npm run build --workspace frontend
         env:
           VITE_BACKEND_URL: "https://space-cargo-backend.onrender.com"
 

@@ -5,9 +5,10 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 router.post('/upgrade', async (req, res) => {
-  const { userId, upgradeType } = req.body;
+  const { userId, upgradeType, stat } = req.body;
+  const requestedUpgrade = upgradeType ?? (stat === 'shield' ? 'shieldLevel' : stat === 'fuel' ? 'fuelLevel' : undefined);
 
-  if (upgradeType !== 'shieldLevel' && upgradeType !== 'fuelLevel') {
+  if (requestedUpgrade !== 'shieldLevel' && requestedUpgrade !== 'fuelLevel') {
     return res.status(400).json({ success: false, message: "Invalid or unsupported upgrade type" });
   }
 
@@ -19,10 +20,10 @@ router.post('/upgrade', async (req, res) => {
       let currentLevel = 0;
       let cost = 0;
 
-      if (upgradeType === 'shieldLevel') {
+      if (requestedUpgrade === 'shieldLevel') {
         currentLevel = user.ship.shieldLevel;
         cost = currentLevel * 150;
-      } else if (upgradeType === 'fuelLevel') {
+      } else if (requestedUpgrade === 'fuelLevel') {
         currentLevel = user.ship.fuelLevel;
         cost = currentLevel * 125;
       }
@@ -37,7 +38,7 @@ router.post('/upgrade', async (req, res) => {
           coins: { decrement: cost },
           ship: {
             update: {
-              [upgradeType]: { increment: 1 }
+              [requestedUpgrade]: { increment: 1 }
             }
           }
         },

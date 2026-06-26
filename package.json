@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm --workspace frontend run build",
+    "dev:frontend": "npm --workspace frontend run dev",
+    "preview:frontend": "npm --workspace frontend run preview",
+    "lint:frontend": "npm --workspace frontend run lint",
+    "test": "npm run build"
   },
   "keywords": [],
   "author": "",
