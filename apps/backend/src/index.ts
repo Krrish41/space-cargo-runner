@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import shipRoutes from "./routes/ship";
+import rewardsRouter from './routes/rewards';
 
 const app = express();
 const server = http.createServer(app);
@@ -84,6 +85,7 @@ app.post("/api/auth", async (req, res) => {
 
 // Shop / Upgrade Endpoint (Mounted)
 app.use("/api/ship", shipRoutes);
+app.use('/api/rewards', rewardsRouter);
 
 // Wallet Bind Endpoint
 app.post("/api/wallet/bind", async (req, res) => {

@@ -25,6 +25,7 @@ model User {
   updatedAt      DateTime      @updatedAt
   ship           Ship?
   sessions       GameSession[]
+  rewardClaims   RewardClaim[]
 }
 
 model Ship {
@@ -48,4 +49,16 @@ model GameSession {
   xpEarned       Int           @default(0)
   damageTaken    Int           @default(0)
   createdAt      DateTime      @default(now())
+}
+
+model RewardClaim {
+  id            String   @id @default(uuid())
+  userId        String
+  walletAddress String
+  amount        Int
+  nonce         Int
+  signature     String
+  claimed       Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
 }

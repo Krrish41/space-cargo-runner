@@ -1,8 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useStore } from './store/useStore';
 import { PhaserGame } from './game/PhaserGame';
-import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer } from 'lucide-react';
-import { useAccount, useDisconnect } from 'wagmi';
+import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine } from 'lucide-react';
+import { useAccount, useDisconnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { formatEther } from 'viem';
+import { CONTRACT_ADDRESS, SPACE_CARGO_TOKEN_ABI } from './contracts/SpaceCargoToken';
 import { useWalletModal } from './context/WalletModalContext';
 import ProvenanceWalletModal from './components/ui/ProvenanceWalletModal';
 import EditPilotModal from './components/ui/EditPilotModal';
@@ -63,6 +65,59 @@ function App() {
   const fetchLeaderboard = useStore((state) => state.fetchLeaderboard);
   const fetchLiveFeed = useStore((state) => state.fetchLiveFeed);
   const [showFirstRunBrief, setShowFirstRunBrief] = useState(() => localStorage.getItem('tutorialSeen') !== 'true');
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const withdrawStatus = useStore((state) => state.withdrawStatus);
+  const withdrawError = useStore((state) => state.withdrawError);
+  const requestRewardSignature = useStore((state) => state.requestRewardSignature);
+  const setWithdrawStatus = useStore((state) => state.setWithdrawStatus);
+
+  // On-chain SCR token balance
+  const { data: onChainBalance, refetch: refetchBalance } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: SPACE_CARGO_TOKEN_ABI,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
+    query: { enabled: !!address && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000' },
+  });
+
+  // Contract write for claiming rewards
+  const { writeContract, data: txHash, isPending: isWritePending } = useWriteContract();
+  const { isLoading: isTxConfirming, isSuccess: isTxSuccess } = useWaitForTransactionReceipt({ hash: txHash });
+
+  // Handle successful transaction confirmation
+  useEffect(() => {
+    if (isTxSuccess) {
+      setWithdrawStatus('success');
+      refetchBalance();
+      setWithdrawAmount('');
+      // Auto-reset status after 5 seconds
+      const timer = setTimeout(() => setWithdrawStatus('idle'), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [isTxSuccess]);
+
+  // Handle withdrawal submission
+  const handleWithdraw = async () => {
+    const amount = parseInt(withdrawAmount);
+    if (isNaN(amount) || amount < 100) {
+      setWithdrawStatus('error', 'Minimum withdrawal is 100 coins');
+      return;
+    }
+
+    const result = await requestRewardSignature(amount);
+    if (result.success && result.tokenAmount && result.signature !== undefined && result.nonce !== undefined) {
+      try {
+        writeContract({
+          address: CONTRACT_ADDRESS,
+          abi: SPACE_CARGO_TOKEN_ABI,
+          functionName: 'claimReward',
+          args: [BigInt(result.tokenAmount), BigInt(result.nonce), result.signature as `0x${string}`],
+        });
+      } catch (e: any) {
+        setWithdrawStatus('error', e.message || 'Transaction failed');
+      }
+    }
+  };
 
   useEffect(() => {
     fetchLeaderboard();
@@ -527,6 +582,86 @@ function App() {
                   </button>
                 </div>
               </div>
+
+              {/* On-Chain Withdrawal Section */}
+              {isConnected && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000' && (
+                <div style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #ffd166', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontSize: '1.2rem', color: '#ffd166', letterSpacing: '1px' }}>WITHDRAW TO WALLET</span>
+                      <span style={{ color: '#8899b5', fontSize: '0.85rem' }}>Convert in-game coins to SCR tokens on SecureChain</span>
+                    </div>
+                    <ArrowDownToLine size={28} color="#ffd166" />
+                  </div>
+
+                  {onChainBalance !== undefined && (
+                    <div style={{ color: '#ffd166', fontSize: '0.9rem', marginBottom: '10px', fontFamily: 'Courier New' }}>
+                      ON-CHAIN BALANCE: {parseFloat(formatEther(onChainBalance as bigint)).toFixed(0)} SCR
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <input
+                      type="number"
+                      placeholder="Amount (min 100)"
+                      value={withdrawAmount}
+                      onChange={(e) => setWithdrawAmount(e.target.value)}
+                      min={100}
+                      max={user?.coins || 0}
+                      style={{
+                        flex: 1,
+                        background: 'rgba(0,0,0,0.6)',
+                        border: '1px solid #333',
+                        color: '#fff',
+                        padding: '10px 12px',
+                        borderRadius: '6px',
+                        fontFamily: 'Courier New',
+                        fontSize: '1rem',
+                        outline: 'none',
+                      }}
+                    />
+                    <button
+                      className="physical-btn"
+                      style={{ minWidth: '140px', padding: '10px', background: withdrawStatus === 'success' ? '#0f3' : undefined }}
+                      onClick={handleWithdraw}
+                      disabled={
+                        !user ||
+                        withdrawStatus === 'signing' ||
+                        withdrawStatus === 'confirming' ||
+                        isWritePending ||
+                        isTxConfirming ||
+                        !withdrawAmount ||
+                        parseInt(withdrawAmount) < 100 ||
+                        (user?.coins || 0) < parseInt(withdrawAmount || '0')
+                      }
+                    >
+                      {withdrawStatus === 'signing' ? 'SIGNING...' :
+                       withdrawStatus === 'confirming' || isWritePending || isTxConfirming ? 'CONFIRMING...' :
+                       withdrawStatus === 'success' ? '✓ CLAIMED!' :
+                       'WITHDRAW'}
+                    </button>
+                  </div>
+
+                  {withdrawStatus === 'error' && withdrawError && (
+                    <div style={{ color: '#ff4466', fontSize: '0.85rem', marginTop: '8px' }}>
+                      ⚠ {withdrawError}
+                    </div>
+                  )}
+                  {withdrawStatus === 'success' && (
+                    <div style={{ color: '#0f3', fontSize: '0.85rem', marginTop: '8px' }}>
+                      ✓ Tokens claimed successfully! Check your wallet.
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {!isConnected && (
+                <div style={{ background: 'rgba(0, 0, 0, 0.3)', padding: '12px', borderRadius: '8px', border: '1px dashed #444', textAlign: 'center', color: '#8899b5', fontSize: '0.85rem', marginBottom: '20px' }}>
+                  <ArrowDownToLine size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                  Connect a wallet to withdraw coins as SCR tokens on SecureChain
+                </div>
+              )}
+
               <div style={{ textAlign: 'center' }}>
                 <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Bay</button>
               </div>

@@ -44,6 +44,17 @@ interface UsernameUpdateResult {
   message?: string;
 }
 
+interface RewardSignatureResult {
+  success: boolean;
+  tokenAmount?: string;
+  nonce?: number;
+  signature?: string;
+  remainingCoins?: number;
+  error?: string;
+}
+
+type WithdrawStatus = 'idle' | 'signing' | 'confirming' | 'success' | 'error';
+
 interface GameState {
   user: UserProfile | null;
   liveFeed: UserProfile[];
@@ -104,6 +115,12 @@ interface GameState {
   syncRunResults: (distance: number, coins: number) => Promise<void>;
   
   hasGuestProgress: () => boolean;
+
+  // On-Chain Rewards
+  withdrawStatus: WithdrawStatus;
+  withdrawError: string | null;
+  setWithdrawStatus: (status: WithdrawStatus, error?: string) => void;
+  requestRewardSignature: (amount: number) => Promise<RewardSignatureResult>;
 }
 
 export const useStore = create<GameState>((set, get) => ({
@@ -147,6 +164,9 @@ export const useStore = create<GameState>((set, get) => ({
   fuel: 100,
   maxFuel: 100,
   fuelLevel: 1,
+
+  withdrawStatus: 'idle' as WithdrawStatus,
+  withdrawError: null,
 
   setUser: (user) => set({ user }),
   setShip: (ship) => set({ ship }),
@@ -485,5 +505,51 @@ export const useStore = create<GameState>((set, get) => ({
       console.error(e);
       return { success: false, message: 'Server error' };
     }
-  }
+  },
+
+  setWithdrawStatus: (status: WithdrawStatus, error?: string) => {
+    set({ withdrawStatus: status, withdrawError: error || null });
+  },
+
+  requestRewardSignature: async (amount: number): Promise<RewardSignatureResult> => {
+    const state = get();
+    if (!state.user) return { success: false, error: 'Not logged in' };
+    if (!state.user.walletAddress) return { success: false, error: 'No wallet connected' };
+    if (amount < 100) return { success: false, error: 'Minimum withdrawal is 100 coins' };
+    if (state.user.coins < amount) return { success: false, error: 'Insufficient coins' };
+
+    set({ withdrawStatus: 'signing' as WithdrawStatus, withdrawError: null });
+
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const res = await fetch(`${backendUrl}/api/rewards/sign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: state.user.id, amount }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        // Update local coin balance
+        set({
+          user: { ...state.user, coins: data.remainingCoins } as UserProfile,
+          withdrawStatus: 'confirming' as WithdrawStatus,
+        });
+        return {
+          success: true,
+          tokenAmount: data.tokenAmount,
+          nonce: data.nonce,
+          signature: data.signature,
+          remainingCoins: data.remainingCoins,
+        };
+      } else {
+        set({ withdrawStatus: 'error' as WithdrawStatus, withdrawError: data.error });
+        return { success: false, error: data.error };
+      }
+    } catch (e: any) {
+      const errorMsg = e.message || 'Failed to request reward signature';
+      set({ withdrawStatus: 'error' as WithdrawStatus, withdrawError: errorMsg });
+      return { success: false, error: errorMsg };
+    }
+  },
 }));
