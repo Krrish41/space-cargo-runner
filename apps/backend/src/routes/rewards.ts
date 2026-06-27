@@ -138,7 +138,7 @@ router.post('/sign', async (req: Request, res: Response): Promise<void> => {
  */
 router.get('/nonce/:walletAddress', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { walletAddress } = req.params;
+    const walletAddress = req.params.walletAddress as string;
 
     if (!walletAddress || !ethers.isAddress(walletAddress)) {
       res.status(400).json({ error: 'Invalid wallet address' });
@@ -169,7 +169,7 @@ router.get('/nonce/:walletAddress', async (req: Request, res: Response): Promise
  */
 router.get('/history/:userId', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { userId } = req.params;
+    const userId = req.params.userId as string;
     const claims = await prisma.rewardClaim.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
