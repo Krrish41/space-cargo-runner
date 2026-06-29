@@ -77,7 +77,7 @@ function App() {
     abi: SPACE_CARGO_TOKEN_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000' },
+    query: { enabled: !!address },
   });
 
   // Contract write for claiming rewards
@@ -584,7 +584,7 @@ function App() {
               </div>
 
               {/* On-Chain Withdrawal Section */}
-              {isConnected && CONTRACT_ADDRESS !== '0x0000000000000000000000000000000000000000' && (
+              {isConnected && (
                 <div style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #ffd166', marginBottom: '20px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
