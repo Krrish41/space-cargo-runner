@@ -62,6 +62,8 @@ function App() {
   const getXpProgress = useStore((state) => state.getXpProgress);
   const liveFeed = useStore((state) => state.liveFeed);
   const topRunners = useStore((state) => state.topRunners);
+  const isBackendWakingUp = useStore((state) => state.isBackendWakingUp);
+  const leaderboardError = useStore((state) => state.leaderboardError);
   const fetchLeaderboard = useStore((state) => state.fetchLeaderboard);
   const fetchLiveFeed = useStore((state) => state.fetchLiveFeed);
   const [showFirstRunBrief, setShowFirstRunBrief] = useState(() => localStorage.getItem('tutorialSeen') !== 'true');
@@ -725,7 +727,15 @@ function App() {
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>TOP RUNNERS</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New', marginBottom: '30px' }}>
                 {topRunners === null ? (
-                  <div style={{ textAlign: 'center', color: '#8899b5' }}>Fetching data...</div>
+                  <div style={{ textAlign: 'center', color: '#8899b5', padding: '20px' }}>
+                    {isBackendWakingUp 
+                      ? "Backend is waking up... this might take around a minute." 
+                      : "Fetching data..."}
+                  </div>
+                ) : leaderboardError ? (
+                  <div style={{ textAlign: 'center', color: '#ff4444', padding: '20px' }}>
+                    Leaderboard unavailable.
+                  </div>
                 ) : topRunners.length === 0 ? (
                   <div style={{ textAlign: 'center', color: '#8899b5' }}>No runners yet! Be the first!</div>
                 ) : (

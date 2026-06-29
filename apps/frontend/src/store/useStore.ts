@@ -58,7 +58,9 @@ type WithdrawStatus = 'idle' | 'signing' | 'confirming' | 'success' | 'error';
 interface GameState {
   user: UserProfile | null;
   liveFeed: UserProfile[];
-  topRunners: { id: string, username: string, highScore: number }[] | null;
+  topRunners: UserProfile[] | null;
+  isBackendWakingUp: boolean;
+  leaderboardError: boolean;
   ship: ShipState | null;
   gameState: GameScreen;
   distance: number;
@@ -127,6 +129,8 @@ export const useStore = create<GameState>((set, get) => ({
   user: null,
   liveFeed: [],
   topRunners: null,
+  isBackendWakingUp: false,
+  leaderboardError: false,
   ship: null,
   gameState: 'MENU',
   distance: 0,
@@ -450,13 +454,16 @@ export const useStore = create<GameState>((set, get) => ({
   },
 
   fetchLeaderboard: async () => {
+    let timeoutId: any;
     try {
+      set({ leaderboardError: false, topRunners: null });
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      const res = await fetch(`${backendUrl}/api/leaderboard`, { signal: controller.signal });
+      timeoutId = setTimeout(() => set({ isBackendWakingUp: true }), 3000);
+      
+      const res = await fetch(`${backendUrl}/api/leaderboard`);
       clearTimeout(timeoutId);
+      set({ isBackendWakingUp: false });
       
       const data = await res.json();
       if (data.success && data.leaderboard) {
@@ -465,27 +472,16 @@ export const useStore = create<GameState>((set, get) => ({
         throw new Error('Leaderboard fetch failed');
       }
     } catch (e) {
-      console.warn('Failed to fetch leaderboard, falling back to mock data:', e);
-      // Offline fallback leaderboard
-      set({ topRunners: [
-        { id: '1', username: 'NeonRider', highScore: 15240 },
-        { id: '2', username: 'CyberPunk99', highScore: 12400 },
-        { id: '3', username: 'GlitchHacker', highScore: 9800 },
-        { id: '4', username: 'VoidDrifter', highScore: 7500 },
-        { id: '5', username: 'Offline Pilot', highScore: 1200 }
-      ] });
+      clearTimeout(timeoutId);
+      set({ isBackendWakingUp: false, leaderboardError: true, topRunners: [] });
+      console.warn('Failed to fetch leaderboard:', e);
     }
   },
 
   fetchLiveFeed: async () => {
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-      
-      const res = await fetch(`${backendUrl}/api/feed`, { signal: controller.signal });
-      clearTimeout(timeoutId);
-      
+      const res = await fetch(`${backendUrl}/api/feed`);
       const data = await res.json();
       if (data.success && data.feed) {
         set({ liveFeed: data.feed });
