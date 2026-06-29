@@ -452,7 +452,12 @@ export const useStore = create<GameState>((set, get) => ({
   fetchLeaderboard: async () => {
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-      const res = await fetch(`${backendUrl}/api/leaderboard`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const res = await fetch(`${backendUrl}/api/leaderboard`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
       const data = await res.json();
       if (data.success && data.leaderboard) {
         set({ topRunners: data.leaderboard });
@@ -475,10 +480,17 @@ export const useStore = create<GameState>((set, get) => ({
   fetchLiveFeed: async () => {
     try {
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-      const res = await fetch(`${backendUrl}/api/feed`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      
+      const res = await fetch(`${backendUrl}/api/feed`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
       const data = await res.json();
       if (data.success && data.feed) {
         set({ liveFeed: data.feed });
+      } else {
+        throw new Error('Feed fetch failed');
       }
     } catch (e) {
       console.warn('Failed to fetch live feed history:', e);
