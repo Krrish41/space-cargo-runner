@@ -8,7 +8,7 @@
  */
 
 // TODO: Update this after deploying the contract
-export const CONTRACT_ADDRESS = '0x0000000000000000000000000000000000000000' as const;
+export const CONTRACT_ADDRESS = '0x8b0d500b43cb8044ba1c89A52321A0bF4344857c' as const;
 
 // Minimal ABI for the SpaceCargoToken — only includes functions used by the frontend
 export const SPACE_CARGO_TOKEN_ABI = [
