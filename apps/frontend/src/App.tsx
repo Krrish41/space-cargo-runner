@@ -252,19 +252,20 @@ function App() {
   };
 
   const PowerIcon = activePowerUp?.type === 'Shield' ? Shield : activePowerUp?.type === 'Magnet' ? Magnet : activePowerUp?.type === 'Slow Motion' ? Gauge : Timer;
+  const screenClass = `screen-${gameState.toLowerCase().replaceAll('_', '-')}`;
 
   return (
     <>
       <PhaserGame />
       
-      <div className="console-overlay">
+      <div className={`console-overlay ${screenClass}`}>
         
         {/* Top Cockpit Bar: HUD & Player ID */}
         <div className="hud-cockpit">
-          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <div className="hud-cluster" style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
             {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
               <>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div className="hud-bars" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                   <div className="hud-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
                     <div style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '2px', marginBottom: '4px' }}>HULL INTEGRITY</div>
                     <div className="health-bar-container">
@@ -296,11 +297,11 @@ function App() {
                   </div>
                 </div>
 
-                <div className="hud-item">
+                <div className="hud-item hud-mini-stat">
                   <Rocket className="text-primary" />
                   <span className="stat-value">{Math.floor(distance)}m</span>
                 </div>
-                <div className="hud-item">
+                <div className="hud-item hud-mini-stat">
                   <Coins className="text-secondary" color="#ff00ff" />
                   <span className="stat-value">{coinsCollected}</span>
                 </div>
@@ -346,7 +347,7 @@ function App() {
                 <div className="profile-avatar">
                   <User size={24} color={isConnected ? "var(--primary)" : "#8899b5"} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div className="pilot-meta" style={{ display: 'flex', flexDirection: 'column' }}>
                   <span style={{ fontSize: '0.8rem', color: '#8899b5' }}>
                     {isConnected ? 'LINKED PILOT' : 'GUEST PILOT'}
                   </span>
@@ -358,7 +359,7 @@ function App() {
                     {user.username}
                   </strong>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '20px' }}>
+                <div className="wallet-credits" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '20px' }}>
                   <span style={{ fontSize: '0.8rem', color: '#ff00ff', letterSpacing: '2px' }}>CREDITS</span>
                   <strong style={{ fontSize: '1.2rem', color: '#ff00ff' }}>{user.coins} <Coins size={14} style={{ display: 'inline', verticalAlign: 'middle' }}/></strong>
                 </div>
@@ -389,10 +390,10 @@ function App() {
         </div>
 
         {/* Center CRT Screens */}
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }} className="console-interactive">
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }} className="center-stage">
           
           {gameState === 'MENU' && (
-             <div style={{ textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+             <div className="menu-screen" style={{ textAlign: 'center', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                <h1 className="neon-title">Space Cargo<br/>Runner</h1>
 
                {showFirstRunBrief && (
@@ -500,7 +501,7 @@ function App() {
           )}
 
           {gameState === 'HOW_TO_PLAY' && (
-            <div className="crt-panel" style={{ padding: '30px', minWidth: '500px' }}>
+            <div className="crt-panel manual-panel" style={{ padding: '30px', minWidth: '500px' }}>
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>SYSTEM MANUAL</h2>
               <div className="manual-entry">
                 <Rocket size={42} color="var(--primary)" />
@@ -544,15 +545,15 @@ function App() {
           )}
 
           {gameState === 'SHOP' && (
-            <div className="crt-panel" style={{ padding: '30px', minWidth: '500px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <div className="crt-panel shop-panel" style={{ padding: '30px', minWidth: '500px' }}>
+              <div className="shop-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h2 className="title" style={{ fontSize: '2rem', margin: 0 }}>SHIP UPGRADES</h2>
                 <div style={{ color: '#ff00ff', fontSize: '1.2rem', fontWeight: 'bold', fontFamily: 'Courier New' }}>
                   CREDITS: {user?.coins || 0} <Coins size={16} style={{ display: 'inline', verticalAlign: 'middle' }}/>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontFamily: 'Courier New', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #1a2233' }}>
+                <div className="upgrade-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #1a2233' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>DEFLECTOR SHIELDS</span>
                     <span style={{ color: '#8899b5' }}>Level {shieldLevel} &rarr; Level {shieldLevel + 1}</span>
@@ -568,7 +569,7 @@ function App() {
                   </button>
                 </div>
                 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #1a2233' }}>
+                <div className="upgrade-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #1a2233' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: '1.2rem', color: '#00f0ff' }}>PLASMA FUEL CORE</span>
                     <span style={{ color: '#8899b5' }}>Level {fuelLevel} &rarr; Level {fuelLevel + 1}</span>
@@ -602,7 +603,7 @@ function App() {
                     </div>
                   )}
 
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <div className="withdraw-row" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <input
                       type="number"
                       placeholder="Amount (min 100)"
@@ -723,7 +724,7 @@ function App() {
           )}
 
           {gameState === 'LEADERBOARD' && (
-            <div className="crt-panel" style={{ padding: '30px', minWidth: '400px' }}>
+            <div className="crt-panel leaderboard-panel" style={{ padding: '30px', minWidth: '400px' }}>
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>TOP RUNNERS</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New', marginBottom: '30px' }}>
                 {topRunners === null ? (
