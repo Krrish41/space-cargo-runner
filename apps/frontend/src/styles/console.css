@@ -1231,6 +1231,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 1.05rem !important;
   }
 
   .wallet-credits {
@@ -1259,7 +1260,7 @@
   .screen-hangar .center-stage,
   .screen-game-over .center-stage {
     flex: 0 0 auto !important;
-    padding: calc(env(safe-area-inset-top, 0px) + 68px) 8px 12px;
+    padding: calc(env(safe-area-inset-top, 0px) + 96px) 8px 12px;
   }
 
   .screen-playing .center-stage {
