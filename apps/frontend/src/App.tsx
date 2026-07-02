@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useStore } from './store/useStore';
 import { PhaserGame } from './game/PhaserGame';
-import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine } from 'lucide-react';
+import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine, Wallet } from 'lucide-react';
 import { useAccount, useDisconnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatEther } from 'viem';
 import { CONTRACT_ADDRESS, SPACE_CARGO_TOKEN_ABI } from './contracts/SpaceCargoToken';
@@ -382,9 +382,10 @@ function App() {
                 )}
               </div>
             ) : (
-              <div onClick={openWalletModal} className="connect-prompt">
-                SYSTEM OFFLINE - LINK WALLET
-              </div>
+              <button onClick={openWalletModal} className="connect-prompt">
+                <Wallet size={15} />
+                <span>Link wallet</span>
+              </button>
             )}
           </div>
         </div>
