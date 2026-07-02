@@ -60,6 +60,9 @@ export class MainScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-P', () => this.togglePauseFromKeyboard());
     this.input.keyboard?.on('keydown-SPACE', () => this.togglePauseFromKeyboard());
 
+    // Enable multi-touch for mobile (up to 3 pointers total: 1 mouse + 2 touches)
+    this.input.addPointer(2);
+
     this.distance = 0;
   }
 
@@ -293,14 +296,27 @@ export class MainScene extends Phaser.Scene {
   }
 
   handleShipControls() {
-    const pointer = this.input.activePointer;
     const skinHandling = useStore.getState().selectedSkinId === 'gold' ? 1.08 : 1;
     const velocity = 420 * skinHandling;
 
-    if (this.cursors?.left.isDown || (pointer.isDown && pointer.x < this.scale.width / 2)) {
+    let isTouchingLeft = false;
+    let isTouchingRight = false;
+
+    // Check all active pointers (mouse + touches)
+    this.input.manager.pointers.forEach(pointer => {
+      if (pointer.isDown) {
+        if (pointer.x < this.scale.width / 2) {
+          isTouchingLeft = true;
+        } else {
+          isTouchingRight = true;
+        }
+      }
+    });
+
+    if (this.cursors?.left.isDown || isTouchingLeft) {
       this.ship.setVelocityX(-velocity);
       this.ship.setAngle(-96);
-    } else if (this.cursors?.right.isDown || (pointer.isDown && pointer.x > this.scale.width / 2)) {
+    } else if (this.cursors?.right.isDown || isTouchingRight) {
       this.ship.setVelocityX(velocity);
       this.ship.setAngle(-84);
     } else {

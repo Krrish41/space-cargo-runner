@@ -9,6 +9,9 @@ html, body {
   height: 100dvh;
   overflow: hidden;
   background-color: #000;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #root {
