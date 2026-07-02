@@ -441,7 +441,7 @@ function App() {
           )}
 
           {gameState === 'GAME_OVER' && (
-            <div className="crt-panel game-over-panel" style={{ padding: '40px', textAlign: 'center', minWidth: '400px' }}>
+            <div className="crt-panel game-over-panel" style={{ padding: '40px', textAlign: 'center', width: '100%', maxWidth: '400px' }}>
               <h2 className="title emergency-text" style={{ fontSize: '2.5rem' }}>CRITICAL FAILURE</h2>
               <div className="run-summary-grid">
                 <div>
@@ -502,7 +502,7 @@ function App() {
           )}
 
           {gameState === 'HOW_TO_PLAY' && (
-            <div className="crt-panel manual-panel" style={{ padding: '30px', minWidth: '500px' }}>
+            <div className="crt-panel manual-panel" style={{ padding: '30px', width: '100%', maxWidth: '500px' }}>
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>SYSTEM MANUAL</h2>
               <div className="manual-entry">
                 <Rocket size={42} color="var(--primary)" />
@@ -546,7 +546,7 @@ function App() {
           )}
 
           {gameState === 'SHOP' && (
-            <div className="crt-panel shop-panel" style={{ padding: '30px', minWidth: '500px' }}>
+            <div className="crt-panel shop-panel" style={{ padding: '30px', width: '100%', maxWidth: '500px' }}>
               <div className="shop-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h2 className="title" style={{ fontSize: '2rem', margin: 0 }}>SHIP UPGRADES</h2>
                 <div style={{ color: '#ff00ff', fontSize: '1.2rem', fontWeight: 'bold', fontFamily: 'Courier New' }}>
@@ -725,7 +725,7 @@ function App() {
           )}
 
           {gameState === 'LEADERBOARD' && (
-            <div className="crt-panel leaderboard-panel" style={{ padding: '30px', minWidth: '400px' }}>
+            <div className="crt-panel leaderboard-panel" style={{ padding: '30px', width: '100%', maxWidth: '400px' }}>
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>TOP RUNNERS</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New', marginBottom: '30px' }}>
                 {topRunners === null ? (
