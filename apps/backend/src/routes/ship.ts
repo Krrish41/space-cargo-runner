@@ -1,5 +1,6 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import { getGameConfig } from '../lib/config';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -13,6 +14,7 @@ router.post('/upgrade', async (req, res) => {
   }
 
   try {
+    const cfg = await getGameConfig(prisma);
     const updatedUser = await prisma.$transaction(async (tx: any) => {
       const user = await tx.user.findUnique({ where: { id: userId }, include: { ship: true } });
       if (!user || !user.ship) throw new Error("User not found");
@@ -22,10 +24,10 @@ router.post('/upgrade', async (req, res) => {
 
       if (requestedUpgrade === 'shieldLevel') {
         currentLevel = user.ship.shieldLevel;
-        cost = currentLevel * 150;
+        cost = currentLevel * cfg.shieldUpgradeBaseCost;
       } else if (requestedUpgrade === 'fuelLevel') {
         currentLevel = user.ship.fuelLevel;
-        cost = currentLevel * 125;
+        cost = currentLevel * cfg.fuelUpgradeBaseCost;
       }
 
       if (user.coins < cost) {

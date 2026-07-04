@@ -6,6 +6,8 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import shipRoutes from "./routes/ship";
 import rewardsRouter from './routes/rewards';
+import adminRouter from './routes/admin';
+import { getGameConfig } from './lib/config';
 
 const app = express();
 const server = http.createServer(app);
@@ -86,6 +88,31 @@ app.post("/api/auth", async (req, res) => {
 // Shop / Upgrade Endpoint (Mounted)
 app.use("/api/ship", shipRoutes);
 app.use('/api/rewards', rewardsRouter);
+app.use('/api/admin', adminRouter);
+
+// Public game config (difficulty + economy) consumed by the frontend.
+app.get('/api/config', async (_req, res) => {
+  try {
+    const cfg = await getGameConfig(prisma);
+    res.json({
+      success: true,
+      config: {
+        shieldUpgradeBaseCost: cfg.shieldUpgradeBaseCost,
+        fuelUpgradeBaseCost: cfg.fuelUpgradeBaseCost,
+        minClaimAmount: cfg.minClaimAmount,
+        coinToTokenRate: cfg.coinToTokenRate,
+        difficultySpeedScale: cfg.difficultySpeedScale,
+        difficultySpawnScale: cfg.difficultySpawnScale,
+        maintenanceMode: cfg.maintenanceMode,
+      },
+    });
+  } catch (e) {
+    res.status(500).json({ success: false, message: 'Failed to load config' });
+  }
+});
+
+// Simple health check for uptime pings / Render wake-up.
+app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
 // Wallet Bind Endpoint
 app.post("/api/wallet/bind", async (req, res) => {
@@ -118,17 +145,79 @@ app.post("/api/wallet/bind", async (req, res) => {
   }
 });
 
-// Leaderboard Endpoint
+// Leaderboard Endpoint — supports ?period=weekly|allTime (default allTime).
 app.get("/api/leaderboard", async (req, res) => {
+  const period = (req.query.period as string) === 'weekly' ? 'weekly' : 'allTime';
+  const limit = Math.min(50, parseInt(req.query.limit as string) || 10);
+
   try {
-    const topUsers = await prisma.user.findMany({
+    if (period === 'weekly') {
+      // Best single-run distance per user over the last 7 days.
+      const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+      const grouped = await prisma.gameSession.groupBy({
+        by: ['userId'],
+        where: { createdAt: { gte: since } },
+        _max: { distance: true },
+        orderBy: { _max: { distance: 'desc' } },
+        take: limit,
+      });
+
+      // `banned` filter uses a field added in the admin migration; cast so this
+      // compiles against a pre-migration generated client too (valid post-generate).
+      const users = await (prisma as any).user.findMany({
+        where: { id: { in: grouped.map((g) => g.userId) }, banned: false },
+        select: { id: true, username: true, xp: true },
+      });
+      const byId = new Map<string, { id: string; username: string; xp: number }>(
+        users.map((u: { id: string; username: string; xp: number }) => [u.id, u])
+      );
+
+      const leaderboard = grouped
+        .filter((g) => byId.has(g.userId))
+        .map((g) => ({
+          id: g.userId,
+          username: byId.get(g.userId)!.username,
+          xp: byId.get(g.userId)!.xp,
+          highScore: g._max.distance || 0,
+        }));
+
+      res.json({ success: true, period, leaderboard });
+      return;
+    }
+
+    const topUsers = await (prisma as any).user.findMany({
+      where: { banned: false },
       orderBy: { highScore: 'desc' },
-      take: 10,
+      take: limit,
       select: { id: true, username: true, highScore: true, xp: true }
     });
-    res.json({ success: true, leaderboard: topUsers });
+    res.json({ success: true, period, leaderboard: topUsers });
   } catch (error) {
+    console.error('Leaderboard error:', error);
     res.status(500).json({ success: false, message: "Failed to fetch leaderboard" });
+  }
+});
+
+// Live comms feed — most recent runs, newest first (the frontend expects `feed`).
+app.get("/api/feed", async (_req, res) => {
+  try {
+    const sessions = await prisma.gameSession.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 8,
+      include: { user: { select: { id: true, username: true, xp: true, highScore: true } } },
+    });
+    const feed = sessions
+      .filter((s) => s.user)
+      .map((s) => ({
+        id: s.user!.id,
+        username: s.user!.username,
+        xp: s.xpEarned,
+        highScore: s.distance,
+      }));
+    res.json({ success: true, feed });
+  } catch (error) {
+    console.error('Feed error:', error);
+    res.status(500).json({ success: false, message: "Failed to fetch feed" });
   }
 });
 
@@ -201,28 +290,27 @@ app.post("/api/user/rename", async (req, res) => {
   }
 });
 
-app.get("/api/leaderboard", async (req, res) => {
-  try {
-    const topUsers = await prisma.user.findMany({
-      orderBy: { highScore: "desc" },
-      take: 10,
-      select: { id: true, username: true, highScore: true }
-    });
-    res.json({ success: true, leaderboard: topUsers });
-  } catch (error) {
-    console.error("Leaderboard error:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch leaderboard" });
-  }
-});
-
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
-  
+
   socket.on("submitScore", async (data) => {
     const { userId, distance, coins, xp, cargoCollected } = data;
+
+    // Server-side bounds mirror the /api/user/sync validation — reject impossible runs.
+    if (
+      typeof distance !== 'number' || distance < 0 || distance > 250000 ||
+      typeof coins !== 'number' || coins < 0 || coins > 5000 ||
+      typeof xp !== 'number' || xp < 0 || xp > 25000
+    ) {
+      return;
+    }
+
     try {
+      const cfg = await getGameConfig(prisma);
+      if (cfg.maintenanceMode) return; // scoring paused
+
       const user = await prisma.user.findUnique({ where: { id: userId } });
-      if (user) {
+      if (user && !(user as any).banned) {
         await prisma.user.update({
           where: { id: userId },
           data: {

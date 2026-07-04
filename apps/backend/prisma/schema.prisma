@@ -21,11 +21,16 @@ model User {
   coins          Int           @default(0)
   xp             Int           @default(0)
   highScore      Int           @default(0)
+  role           String        @default("player")
+  banned         Boolean       @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   ship           Ship?
   sessions       GameSession[]
   rewardClaims   RewardClaim[]
+
+  @@index([highScore])
+  @@index([createdAt])
 }
 
 model Ship {
@@ -49,6 +54,9 @@ model GameSession {
   xpEarned       Int           @default(0)
   damageTaken    Int           @default(0)
   createdAt      DateTime      @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model RewardClaim {
@@ -58,7 +66,24 @@ model RewardClaim {
   amount        Int
   nonce         Int
   signature     String
+  status        String   @default("approved")
   claimed       Boolean  @default(false)
   createdAt     DateTime @default(now())
   user          User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Singleton row (id = "singleton") holding admin-tunable economy + difficulty config.
+model GameConfig {
+  id                   String   @id @default("singleton")
+  shieldUpgradeBaseCost Int     @default(150)
+  fuelUpgradeBaseCost  Int      @default(125)
+  minClaimAmount       Int      @default(100)
+  coinToTokenRate      Int      @default(1)
+  difficultySpeedScale Float    @default(1)
+  difficultySpawnScale Float    @default(1)
+  maintenanceMode      Boolean  @default(false)
+  updatedAt            DateTime @updatedAt
 }

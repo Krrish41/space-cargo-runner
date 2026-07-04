@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 import { socket } from '../lib/socket';
-import type { UserProfile, ShipState, PlayerStats } from 'shared';
+import type { UserProfile, ShipState, PlayerStats, LeaderboardPeriod, GameConfig } from 'shared';
+import { DEFAULT_GAME_CONFIG } from 'shared';
 
-type GameScreen = 'MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'SHOP' | 'LEADERBOARD' | 'HOW_TO_PLAY' | 'ACHIEVEMENTS' | 'HANGAR';
+type GameScreen = 'MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'SHOP' | 'LEADERBOARD' | 'HOW_TO_PLAY' | 'ACHIEVEMENTS' | 'HANGAR' | 'WITHDRAW';
 type PowerUpKind = 'Shield' | 'Magnet' | 'Double Score' | 'Slow Motion';
 
 interface RunStats {
@@ -59,6 +60,8 @@ interface GameState {
   user: UserProfile | null;
   liveFeed: UserProfile[];
   topRunners: UserProfile[] | null;
+  leaderboardPeriod: LeaderboardPeriod;
+  gameConfig: GameConfig;
   isBackendWakingUp: boolean;
   leaderboardError: boolean;
   ship: ShipState | null;
@@ -100,7 +103,9 @@ interface GameState {
   incrementCargo: () => void;
   resetRun: () => void;
   pushToLiveFeed: (user: UserProfile) => void;
-  fetchLeaderboard: () => Promise<void>;
+  fetchLeaderboard: (period?: LeaderboardPeriod) => Promise<void>;
+  setLeaderboardPeriod: (period: LeaderboardPeriod) => void;
+  fetchGameConfig: () => Promise<void>;
   fetchLiveFeed: () => Promise<void>;
   updateUsername: (newName: string) => Promise<UsernameUpdateResult | undefined>;
   
@@ -129,6 +134,8 @@ export const useStore = create<GameState>((set, get) => ({
   user: null,
   liveFeed: [],
   topRunners: null,
+  leaderboardPeriod: 'allTime',
+  gameConfig: { ...DEFAULT_GAME_CONFIG },
   isBackendWakingUp: false,
   leaderboardError: false,
   ship: null,
@@ -453,21 +460,25 @@ export const useStore = create<GameState>((set, get) => ({
     }
   },
 
-  fetchLeaderboard: async () => {
+  fetchLeaderboard: async (period?: LeaderboardPeriod) => {
     let timeoutId: any;
+    const activePeriod = period ?? get().leaderboardPeriod;
     try {
-      set({ leaderboardError: false, topRunners: null });
+      set({ leaderboardError: false, topRunners: null, leaderboardPeriod: activePeriod });
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-      
+
       timeoutId = setTimeout(() => set({ isBackendWakingUp: true }), 3000);
-      
-      const res = await fetch(`${backendUrl}/api/leaderboard`);
+
+      const res = await fetch(`${backendUrl}/api/leaderboard?period=${activePeriod}`);
       clearTimeout(timeoutId);
       set({ isBackendWakingUp: false });
-      
+
       const data = await res.json();
       if (data.success && data.leaderboard) {
-        set({ topRunners: data.leaderboard });
+        // Ignore stale responses if the user switched period mid-flight.
+        if (get().leaderboardPeriod === activePeriod) {
+          set({ topRunners: data.leaderboard });
+        }
       } else {
         throw new Error('Leaderboard fetch failed');
       }
@@ -475,6 +486,26 @@ export const useStore = create<GameState>((set, get) => ({
       clearTimeout(timeoutId);
       set({ isBackendWakingUp: false, leaderboardError: true, topRunners: [] });
       console.warn('Failed to fetch leaderboard:', e);
+    }
+  },
+
+  setLeaderboardPeriod: (period: LeaderboardPeriod) => {
+    if (get().leaderboardPeriod === period) return;
+    set({ leaderboardPeriod: period });
+    get().fetchLeaderboard(period);
+  },
+
+  fetchGameConfig: async () => {
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const res = await fetch(`${backendUrl}/api/config`);
+      const data = await res.json();
+      if (data.success && data.config) {
+        set({ gameConfig: { ...DEFAULT_GAME_CONFIG, ...data.config } });
+      }
+    } catch (e) {
+      // Non-fatal: keep defaults so the game stays playable offline.
+      console.warn('Failed to fetch game config, using defaults:', e);
     }
   },
 

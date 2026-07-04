@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { ethers } from 'ethers';
+import { getGameConfig } from '../lib/config';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -40,8 +41,10 @@ router.post('/sign', async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    if (amount < MIN_CLAIM_AMOUNT) {
-      res.status(400).json({ error: `Minimum claim amount is ${MIN_CLAIM_AMOUNT} coins` });
+    const cfg = await getGameConfig(prisma);
+    const minClaim = cfg.minClaimAmount || MIN_CLAIM_AMOUNT;
+    if (amount < minClaim) {
+      res.status(400).json({ error: `Minimum claim amount is ${minClaim} coins` });
       return;
     }
 
