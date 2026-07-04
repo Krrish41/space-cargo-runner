@@ -253,9 +253,16 @@
 
 .hud-score-card strong {
   color: #ffffff;
-  font-size: 1.7rem;
+  font-size: 2.2rem;
   line-height: 1;
   text-shadow: 0 0 12px var(--primary);
+  transition: transform 0.15s ease-out, color 0.15s ease-out;
+}
+
+.hud-score-card strong.score-pop {
+  transform: scale(1.15);
+  color: #fff;
+  text-shadow: 0 0 25px #ffffff, 0 0 15px var(--primary);
 }
 
 .powerup-pill {
@@ -562,6 +569,22 @@
 @keyframes pulse-danger {
   0% { text-shadow: 0 0 10px #ff3366; opacity: 0.8; }
   100% { text-shadow: 0 0 30px #ff3366, 0 0 60px #ff3366; opacity: 1; }
+}
+
+.status-warning {
+  animation: pulse-danger-bg 0.8s infinite alternate !important;
+  border-color: #ff3366 !important;
+}
+
+.status-warning-text {
+  color: #ff3366 !important;
+  font-weight: bold;
+  animation: pulse-danger 0.8s infinite alternate !important;
+}
+
+@keyframes pulse-danger-bg {
+  0% { box-shadow: inset 0 0 5px rgba(255, 51, 102, 0.2); background: rgba(255, 51, 102, 0.05); }
+  100% { box-shadow: inset 0 0 20px rgba(255, 51, 102, 0.6); background: rgba(255, 51, 102, 0.2); }
 }
 
 /* How to Play Manual Styles */
