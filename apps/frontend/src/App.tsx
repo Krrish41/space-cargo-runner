@@ -69,6 +69,8 @@ function App() {
   const [showFirstRunBrief, setShowFirstRunBrief] = useState(() => localStorage.getItem('tutorialSeen') !== 'true');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const withdrawStatus = useStore((state) => state.withdrawStatus);
+  const leaderboardPeriod = useStore((state) => state.leaderboardPeriod);
+  const setLeaderboardPeriod = useStore((state) => state.setLeaderboardPeriod);
   const withdrawError = useStore((state) => state.withdrawError);
   const requestRewardSignature = useStore((state) => state.requestRewardSignature);
   const setWithdrawStatus = useStore((state) => state.setWithdrawStatus);
@@ -487,15 +489,24 @@ function App() {
                   <strong>{displayedRun.coins}</strong>
                 </div>
               </div>
+              <div style={{ color: '#ff00ff', fontSize: '0.9rem', marginBottom: '15px' }}>
+                Credits Earned: +{displayedRun.coins} <Coins size={14} style={{ display: 'inline', verticalAlign: 'middle' }}/>
+              </div>
               {displayedRun.achievementNames.length > 0 && (
                 <div className="unlock-callout">
                   <Medal size={18} />
                   {displayedRun.achievementNames.join(', ')} unlocked
                 </div>
               )}
+              {isConnected && user && user.coins >= 100 && (
+                <div style={{ background: 'rgba(255, 209, 102, 0.1)', padding: '10px', borderRadius: '4px', border: '1px solid #ffd166', marginBottom: '15px', fontSize: '0.85rem' }}>
+                  <Wallet size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '5px' }} />
+                  You have enough credits to <strong style={{ color: '#ffd166', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setGameState('WITHDRAW')}>Withdraw</strong> to SCR!
+                </div>
+              )}
               <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
                 <button className="physical-btn" onClick={() => setGameState('MENU')}>Return to Menu</button>
-                <button className="physical-btn primary" onClick={handleStart}>Reboot Engine</button>
+                <button className="physical-btn primary" onClick={handleStart}>PLAY AGAIN</button>
               </div>
             </div>
           )}
@@ -600,8 +611,22 @@ function App() {
                 </div>
               </div>
 
-              {/* On-Chain Withdrawal Section */}
-              {isConnected && (
+              <div style={{ textAlign: 'center', marginTop: '30px' }}>
+                <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Shop</button>
+              </div>
+            </div>
+          )}
+
+          {gameState === 'WITHDRAW' && (
+            <div className="crt-panel withdraw-panel" style={{ padding: '30px', width: '100%', maxWidth: '500px' }}>
+              <div className="shop-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h2 className="title" style={{ fontSize: '2rem', margin: 0 }}>WITHDRAW FUNDS</h2>
+                <div style={{ color: '#ff00ff', fontSize: '1.2rem', fontWeight: 'bold', fontFamily: 'Courier New' }}>
+                  CREDITS: {user?.coins || 0} <Coins size={16} style={{ display: 'inline', verticalAlign: 'middle' }}/>
+                </div>
+              </div>
+
+              {isConnected ? (
                 <div style={{ background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #ffd166', marginBottom: '20px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -649,17 +674,16 @@ function App() {
                         isTxConfirming ||
                         !withdrawAmount ||
                         parseInt(withdrawAmount) < 100 ||
-                        (user?.coins || 0) < parseInt(withdrawAmount || '0')
+                        parseInt(withdrawAmount) > user.coins
                       }
                     >
-                      {withdrawStatus === 'signing' ? 'SIGNING...' :
-                       withdrawStatus === 'confirming' || isWritePending || isTxConfirming ? 'CONFIRMING...' :
-                       withdrawStatus === 'success' ? '✓ CLAIMED!' :
-                       'WITHDRAW'}
+                      {withdrawStatus === 'signing' ? 'Signing...' :
+                       withdrawStatus === 'confirming' || isWritePending || isTxConfirming ? 'Confirming...' :
+                       withdrawStatus === 'success' ? 'Claimed!' : 'WITHDRAW'}
                     </button>
                   </div>
 
-                  {withdrawStatus === 'error' && withdrawError && (
+                  {withdrawError && (
                     <div style={{ color: '#ff4466', fontSize: '0.85rem', marginTop: '8px' }}>
                       ⚠ {withdrawError}
                     </div>
@@ -670,9 +694,7 @@ function App() {
                     </div>
                   )}
                 </div>
-              )}
-
-              {!isConnected && (
+              ) : (
                 <div style={{ background: 'rgba(0, 0, 0, 0.3)', padding: '12px', borderRadius: '8px', border: '1px dashed #444', textAlign: 'center', color: '#8899b5', fontSize: '0.85rem', marginBottom: '20px' }}>
                   <ArrowDownToLine size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
                   Connect a wallet to withdraw coins as SCR tokens on SecureChain
@@ -680,7 +702,7 @@ function App() {
               )}
 
               <div style={{ textAlign: 'center' }}>
-                <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Bay</button>
+                <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Withdraw</button>
               </div>
             </div>
           )}
@@ -739,7 +761,25 @@ function App() {
 
           {gameState === 'LEADERBOARD' && (
             <div className="crt-panel leaderboard-panel" style={{ padding: '30px', width: '100%', maxWidth: '400px' }}>
-              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>TOP RUNNERS</h2>
+              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '10px' }}>TOP RUNNERS</h2>
+              
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
+                <button 
+                  className={`physical-btn ${leaderboardPeriod === 'weekly' ? 'primary' : ''}`}
+                  style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                  onClick={() => setLeaderboardPeriod('weekly')}
+                >
+                  Weekly
+                </button>
+                <button 
+                  className={`physical-btn ${leaderboardPeriod === 'allTime' ? 'primary' : ''}`}
+                  style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                  onClick={() => setLeaderboardPeriod('allTime')}
+                >
+                  All-Time
+                </button>
+              </div>
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New', marginBottom: '30px' }}>
                 {topRunners === null ? (
                   <div style={{ textAlign: 'center', color: '#8899b5', padding: '20px' }}>
