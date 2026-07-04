@@ -176,6 +176,7 @@ export class MainScene extends Phaser.Scene {
     this.elapsedMs = time - this.runStartedAt;
     this.updateDifficulty();
     this.updatePowerUps(time);
+    this.updateHazards();
 
     const worldSpeed = this.getWorldSpeed();
     this.scrollBackground(delta, worldSpeed);
@@ -215,7 +216,6 @@ export class MainScene extends Phaser.Scene {
       }
     });
 
-    this.isInvulnerable = this.powerUpEnds.has('Shield');
     if (this.powerUpEnds.has('Shield')) {
       this.ship.setTint(0x63ff8f);
     } else if (this.ship.tintTopLeft === 0x63ff8f) {
@@ -353,20 +353,22 @@ export class MainScene extends Phaser.Scene {
 
     if (seconds > 22 && roll < 0.24) {
       obstacle = this.obstacles.create(x, -50, 'mine');
-      obstacle.setScale(0.95);
-      obstacle.setData('damage', 35);
+      obstacle.setScale(0.08);
+      obstacle.setData('damage', 50);
       obstacle.setData('kind', 'Mine');
       obstacle.setData('speedMultiplier', 0.86);
       obstacle.setData('drift', Phaser.Math.Between(-25, 25));
       obstacle.setData('spin', Phaser.Math.Between(-70, 70));
+      if (obstacle.body) { (obstacle.body as Phaser.Physics.Arcade.Body).setCircle(200, 56, 56); }
     } else if (seconds > 14 && roll < 0.48) {
       obstacle = this.obstacles.create(x, -50, 'debris');
-      obstacle.setScale(0.9);
-      obstacle.setData('damage', 18);
+      obstacle.setScale(0.08);
+      obstacle.setData('damage', 12);
       obstacle.setData('kind', 'Debris');
       obstacle.setData('speedMultiplier', 1.25);
       obstacle.setData('drift', Phaser.Math.Between(-55, 55));
       obstacle.setData('spin', Phaser.Math.Between(120, 240));
+      if (obstacle.body) { (obstacle.body as Phaser.Physics.Arcade.Body).setCircle(200, 56, 56); }
     } else {
       obstacle = this.obstacles.create(x, -50, 'asteroid');
       obstacle.setScale(Phaser.Math.FloatBetween(0.09, 0.15));
@@ -384,11 +386,15 @@ export class MainScene extends Phaser.Scene {
   spawnCargo(x: number) {
     const isDataCache = Math.random() < 0.32;
     const cargo = this.cargoGroup.create(x, -50, isDataCache ? 'data-cache' : 'cargo');
-    cargo.setScale(isDataCache ? 0.9 : 0.08);
+    cargo.setScale(0.08);
     cargo.setBlendMode(Phaser.BlendModes.SCREEN);
-    cargo.setData('score', isDataCache ? 18 : 10);
-    cargo.setData('label', isDataCache ? 'DATA +18' : 'CARGO +10');
+    cargo.setData('score', isDataCache ? 30 : 10);
+    cargo.setData('cargoIncrement', isDataCache ? 3 : 1);
+    cargo.setData('label', isDataCache ? 'DATA CACHE +30' : 'CARGO +10');
     cargo.setData('spin', isDataCache ? 20 : 45);
+    if (isDataCache && cargo.body) {
+      (cargo.body as Phaser.Physics.Arcade.Body).setCircle(200, 56, 56);
+    }
   }
 
   spawnFuel(x: number) {
@@ -433,9 +439,18 @@ export class MainScene extends Phaser.Scene {
     if (this.isInvulnerable) return;
 
     obstacle.destroy();
-    useStore.getState().damageShip(obstacle.getData('damage') || 25);
     
-    const isFatal = useStore.getState().health <= 0;
+    if (kind === 'Mine' || kind === 'Debris') {
+      const reason = kind === 'Mine' ? 'REASON: CATASTROPHIC DETONATION' : 'REASON: DEBRIS COLLISION';
+      useStore.getState().drainFuel(obstacle.getData('damage') || 25, reason);
+      if (kind === 'Debris' && this.ship.body) {
+        this.ship.setVelocityX((this.ship.body.velocity.x || 0) + (Math.random() > 0.5 ? 400 : -400));
+      }
+    } else {
+      useStore.getState().damageShip(obstacle.getData('damage') || 25, 'REASON: HULL COMPROMISED');
+    }
+    
+    const isFatal = useStore.getState().health <= 0 || useStore.getState().fuel <= 0;
     if (isFatal) {
       this.cameras.main.shake(300, 0.045);
       this.cameras.main.flash(200, 255, 30, 80);
@@ -476,7 +491,7 @@ export class MainScene extends Phaser.Scene {
     const label = multiplier > 1 ? `${cargo.getData('label') || 'CARGO'} x2` : cargo.getData('label') || 'CARGO +10';
     cargo.destroy();
     useStore.getState().addCoins(score);
-    useStore.getState().incrementCargo();
+    useStore.getState().incrementCargo(cargo.getData('cargoIncrement') || 1);
 
     this.showBurst(this.ship.x, this.ship.y - 20, multiplier > 1 ? 0xffd166 : 0xff00ff, 12);
     this.showFloatingText(label, this.ship.x, this.ship.y - 45, multiplier > 1 ? '#ffd166' : '#ff00ff');
@@ -554,6 +569,24 @@ export class MainScene extends Phaser.Scene {
     this.ship.setAlpha(1);
     this.ship.clearTint();
     this.applySelectedSkin();
+  }
+
+  updateHazards() {
+    this.obstacles.getChildren().forEach(child => {
+      const obstacle = child as ArcadeEntity;
+      if (obstacle.getData('kind') === 'Mine') {
+        const dist = Phaser.Math.Distance.Between(this.ship.x, this.ship.y, obstacle.x, obstacle.y);
+        if (dist < 150) {
+          obstacle.setTint(0xff005a);
+          // Inner hit-box detonation handles in hitObstacle, but we can do an early check if it's very close
+          if (dist < 40 && obstacle.active) {
+            this.hitObstacle(this.ship, obstacle);
+          }
+        } else {
+          obstacle.clearTint();
+        }
+      }
+    });
   }
 
   pauseWorld() {

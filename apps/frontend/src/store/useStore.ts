@@ -73,6 +73,7 @@ interface GameState {
   bestScore: number;
   runStartedAt: number | null;
   lastRunStats: RunStats | null;
+  failureReason: string | null;
   activePowerUp: { type: PowerUpKind; remainingMs: number } | null;
   soundEnabled: boolean;
   musicEnabled: boolean;
@@ -100,7 +101,7 @@ interface GameState {
   toggleMusic: () => void;
   selectSkin: (skinId: string) => void;
   addCoins: (coins: number) => void;
-  incrementCargo: () => void;
+  incrementCargo: (amount?: number) => void;
   resetRun: () => void;
   pushToLiveFeed: (user: UserProfile) => void;
   fetchLeaderboard: (period?: LeaderboardPeriod) => Promise<void>;
@@ -114,9 +115,9 @@ interface GameState {
 
   // New Actions
   syncPlayerStats: (stats: PlayerStats) => void;
-  damageShip: (amount: number) => void;
+  damageShip: (amount: number, reason?: string) => void;
   upgradeShield: () => Promise<boolean>;
-  drainFuel: (amount: number) => void;
+  drainFuel: (amount: number, reason?: string) => void;
   replenishFuel: (amount: number) => void;
   upgradeFuel: () => Promise<boolean>;
   syncRunResults: (distance: number, coins: number) => Promise<void>;
@@ -147,6 +148,7 @@ export const useStore = create<GameState>((set, get) => ({
   bestScore: Number(localStorage.getItem('bestScore') || 0),
   runStartedAt: null,
   lastRunStats: null,
+  failureReason: null,
   activePowerUp: null,
   soundEnabled: localStorage.getItem('soundEnabled') !== 'false',
   musicEnabled: localStorage.getItem('musicEnabled') !== 'false',
@@ -202,7 +204,7 @@ export const useStore = create<GameState>((set, get) => ({
     set({ selectedSkinId: skinId });
   },
   addCoins: (coins) => set((state) => ({ coinsCollected: state.coinsCollected + coins })),
-  incrementCargo: () => set((state) => ({ cargoCollected: state.cargoCollected + 1 })),
+  incrementCargo: (amount = 1) => set((state) => ({ cargoCollected: state.cargoCollected + amount })),
   
   resetRun: () => set((state) => ({ 
     distance: 0, 
@@ -211,6 +213,7 @@ export const useStore = create<GameState>((set, get) => ({
     timeSurvived: 0,
     runStartedAt: Date.now(),
     lastRunStats: null,
+    failureReason: null,
     activePowerUp: null,
     health: state.maxHealth,
     fuel: state.maxFuel
@@ -260,28 +263,26 @@ export const useStore = create<GameState>((set, get) => ({
     });
   },
 
-  damageShip: (amount: number) => {
-    const state = get();
-    if (state.gameState !== 'PLAYING') return;
-
-    const newHealth = Math.max(0, state.health - amount);
-    set({ health: newHealth });
-    
-    if (newHealth === 0) {
-      set({ gameState: 'GAME_OVER' });
-    }
+  damageShip: (amount: number, reason?: string) => {
+    set((state) => {
+      if (state.gameState !== 'PLAYING') return state;
+      const newHealth = Math.max(0, state.health - amount);
+      if (newHealth === 0) {
+        return { health: newHealth, gameState: 'GAME_OVER', failureReason: reason || 'REASON: HULL COMPROMISED' };
+      }
+      return { health: newHealth };
+    });
   },
 
-  drainFuel: (amount: number) => {
-    const state = get();
-    if (state.gameState !== 'PLAYING') return;
-
-    const newFuel = Math.max(0, state.fuel - amount);
-    set({ fuel: newFuel });
-
-    if (newFuel === 0) {
-      set({ gameState: 'GAME_OVER' });
-    }
+  drainFuel: (amount: number, reason?: string) => {
+    set((state) => {
+      if (state.gameState !== 'PLAYING') return state;
+      const newFuel = Math.max(0, state.fuel - amount);
+      if (newFuel === 0) {
+        return { fuel: newFuel, gameState: 'GAME_OVER', failureReason: reason || 'REASON: FUEL DEPLETED' };
+      }
+      return { fuel: newFuel };
+    });
   },
 
   replenishFuel: (amount: number) => {
@@ -443,6 +444,12 @@ export const useStore = create<GameState>((set, get) => ({
     });
 
     if (!state.user) return;
+    
+    // Optimistically update the user's credits (coins) balance
+    set({
+      user: { ...state.user, coins: state.user.coins + coins } as UserProfile
+    });
+
     try {
       const payload = { 
         userId: state.user.id, 

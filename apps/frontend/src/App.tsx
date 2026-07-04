@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useStore } from './store/useStore';
 import { PhaserGame } from './game/PhaserGame';
-import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine, Wallet } from 'lucide-react';
+import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine, Wallet, AlertTriangle } from 'lucide-react';
 import { useAccount, useDisconnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatEther } from 'viem';
 import { CONTRACT_ADDRESS, SPACE_CARGO_TOKEN_ABI } from './contracts/SpaceCargoToken';
@@ -28,6 +28,7 @@ function App() {
     timeSurvived,
     bestScore,
     lastRunStats,
+    failureReason,
     activePowerUp,
     soundEnabled,
     musicEnabled,
@@ -140,18 +141,22 @@ function App() {
   useEffect(() => {
     fetchLeaderboard();
     fetchLiveFeed();
-    socket.on('scoreUpdated', (updatedUser: UserProfile) => {
-      // If this is the current player, sync their new state locally
-      if (user && updatedUser.id === user.id) {
-        setUser(updatedUser);
+    
+    const handleScoreUpdated = (updatedUser: UserProfile) => {
+      // Use get() to avoid dependency array stale closures
+      const currentUser = useStore.getState().user;
+      if (currentUser && updatedUser.id === currentUser.id) {
+        useStore.getState().setUser(updatedUser);
       }
       useStore.getState().pushToLiveFeed(updatedUser);
-    });
+    };
+
+    socket.on('scoreUpdated', handleScoreUpdated);
 
     return () => {
-      socket.off('scoreUpdated');
+      socket.off('scoreUpdated', handleScoreUpdated);
     };
-  }, [user, setUser]);
+  }, []);
 
   // Initialize Guest User
   useEffect(() => {
@@ -316,30 +321,35 @@ function App() {
                     </div>
                   </div>
                 </div>
-
-                <div className="hud-item hud-mini-stat">
-                  <Rocket className="text-primary" />
-                  <span className="stat-value">{Math.floor(distance)}m</span>
-                </div>
-                <div className="hud-item hud-mini-stat">
-                  <Coins className="text-secondary" color="#ff00ff" />
-                  <span className="stat-value">{coinsCollected}</span>
-                </div>
-                <div className="hud-score-card">
-                  <span>Score</span>
-                  <strong className={scorePop ? 'score-pop' : ''}>{hudScore}</strong>
-                  <small>{formatTime(timeSurvived)} | Cargo {cargoCollected}</small>
-                </div>
-                {activePowerUp && (
-                  <div className="powerup-pill">
-                    <PowerIcon size={18} />
-                    <span>{activePowerUp.type}</span>
-                    <strong>{Math.ceil(activePowerUp.remainingMs / 1000)}s</strong>
-                  </div>
-                )}
               </>
             )}
           </div>
+
+          {/* New Top-Center Score Dashboard */}
+          {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
+            <div className="hud-dashboard-center">
+              <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                <Rocket className="text-primary" />
+                <span className="stat-value">{Math.floor(distance)}m</span>
+              </div>
+              <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                <Coins className="text-secondary" color="var(--primary)" />
+                <span className="stat-value">{coinsCollected}</span>
+              </div>
+              <div className="hud-score-card" style={{ border: 'none', background: 'transparent', boxShadow: 'none', margin: 0, padding: '0 15px', borderLeft: '1px solid rgba(0, 255, 204, 0.2)', borderRight: '1px solid rgba(0, 255, 204, 0.2)', borderRadius: 0 }}>
+                <span style={{ color: 'var(--primary)', textShadow: '0 0 5px var(--primary)' }}>Score</span>
+                <strong className={scorePop ? 'score-pop' : ''} style={{ color: 'var(--primary)', textShadow: '0 0 10px var(--primary)' }}>{hudScore}</strong>
+                <small style={{ color: 'var(--primary)' }}>{formatTime(timeSurvived)} | Cargo {cargoCollected}</small>
+              </div>
+              {activePowerUp && (
+                <div className="powerup-pill" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                  <PowerIcon size={18} color="var(--primary)" />
+                  <span style={{ color: 'var(--primary)' }}>{activePowerUp.type}</span>
+                  <strong style={{ color: 'var(--primary)' }}>{Math.ceil(activePowerUp.remainingMs / 1000)}s</strong>
+                </div>
+              )}
+            </div>
+          )}
 
         </div>
 
@@ -380,8 +390,8 @@ function App() {
                   </strong>
                 </div>
                 <div className="wallet-credits" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginLeft: '20px' }}>
-                  <span style={{ fontSize: '0.8rem', color: '#ff00ff', letterSpacing: '2px' }}>CREDITS</span>
-                  <strong style={{ fontSize: '1.2rem', color: '#ff00ff' }}>{user.coins} <Coins size={14} style={{ display: 'inline', verticalAlign: 'middle' }}/></strong>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--primary)', letterSpacing: '2px', textShadow: '0 0 5px var(--primary)' }}>CREDITS</span>
+                  <strong style={{ fontSize: '1.2rem', color: 'var(--primary)', textShadow: '0 0 5px var(--primary)' }}>{user.coins} <Coins size={14} style={{ display: 'inline', verticalAlign: 'middle' }}/></strong>
                 </div>
                 {isConnected ? (
                   <button 
@@ -462,7 +472,19 @@ function App() {
 
           {gameState === 'GAME_OVER' && (
             <div className="crt-panel game-over-panel" style={{ padding: '40px', textAlign: 'center', width: '100%', maxWidth: '400px' }}>
-              <h2 className="title emergency-text" style={{ fontSize: '2.5rem' }}>CRITICAL FAILURE</h2>
+              <h2 className="title emergency-text" style={{ fontSize: '2.5rem', marginBottom: failureReason ? '10px' : '20px' }}>CRITICAL FAILURE</h2>
+              {failureReason && (
+                <div style={{
+                  color: '#ff3333',
+                  textShadow: '0 0 5px #ff0000',
+                  fontSize: '0.9rem',
+                  marginBottom: '20px',
+                  fontFamily: '"Press Start 2P", "Courier New", Courier, monospace',
+                  letterSpacing: '1px'
+                }}>
+                  {failureReason}
+                </div>
+              )}
               <div className="run-summary-grid">
                 <div>
                   <span>Final Score</span>
@@ -504,9 +526,9 @@ function App() {
                   You have enough credits to <strong style={{ color: '#ffd166', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setGameState('WITHDRAW')}>Withdraw</strong> to SCR!
                 </div>
               )}
-              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-                <button className="physical-btn" onClick={() => setGameState('MENU')}>Return to Menu</button>
-                <button className="physical-btn primary" onClick={handleStart}>PLAY AGAIN</button>
+              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ minWidth: '140px', flex: '1 1 auto' }}>Return to Menu</button>
+                <button className="physical-btn primary" onClick={handleStart} style={{ minWidth: '140px', flex: '1 1 auto' }}>PLAY AGAIN</button>
               </div>
             </div>
           )}
@@ -535,52 +557,69 @@ function App() {
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>PILOT MANUAL</h2>
               <div style={{ display: 'grid', gap: '15px', marginTop: '20px', maxHeight: '55vh', overflowY: 'auto', paddingRight: '10px' }}>
                 <div className="manual-entry">
-                  <Gauge size={40} color="#00ffcc" className="manual-sprite" />
+                  <img src={`${import.meta.env.BASE_URL}assets/controls.png`} alt="Controls" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>Controls</strong><br/>
-                    Arrow keys or Tap Left/Right side of screen to steer. Press P or Space to pause.
+                    <strong>CONTROLS:</strong> Steer using Arrow Keys, screen drag, or gamepad. [P] / [SPACE BAR] to pause. Manage velocity for peak performance.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/cargo.png`} alt="Cargo" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>Collectibles</strong><br/>
-                    Gather Cargo (points) and Fuel (extends flight time).
+                    <strong>CARGO:</strong> Collect for credits, score, and XP.
                   </div>
                 </div>
                 <div className="manual-entry">
-                  <img src={`${import.meta.env.BASE_URL}assets/mine.png`} alt="Mine" className="manual-sprite" style={{ filter: 'hue-rotate(280deg)' }} />
+                  <img src={`${import.meta.env.BASE_URL}assets/data-cache.png`} alt="Data Cache" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>Hazards</strong><br/>
-                    Avoid Asteroids, Mines, and Debris. Hitting them damages Hull.
+                    <strong>DATA CACHE:</strong> Highly encrypted corporate information drives. Collect for a massive multiplier to your score, credits, and XP.
+                  </div>
+                </div>
+                <div className="manual-entry">
+                  <img src={`${import.meta.env.BASE_URL}assets/asteroid.png`} alt="Asteroid" className="manual-sprite" />
+                  <div className="manual-text">
+                    <strong>ASTEROID:</strong> Dodge. Hits drain fuel.
+                  </div>
+                </div>
+                <div className="manual-entry">
+                  <img src={`${import.meta.env.BASE_URL}assets/mine.png`} alt="Mine" className="manual-sprite" />
+                  <div className="manual-text">
+                    <strong>PROXIMITY MINE:</strong> Highly volatile explosive hazard. Direct impact triggers a catastrophic detonation, instantly draining a massive portion of your fuel reserves.
+                  </div>
+                </div>
+                <div className="manual-entry">
+                  <img src={`${import.meta.env.BASE_URL}assets/debris.png`} alt="Debris" className="manual-sprite" />
+                  <div className="manual-text">
+                    <strong>SPACE DEBRIS:</strong> Jagged metallic wreckage scattered in orbit. Scraping against debris causes minor fuel loss and momentarily knocks your ship off its trajectory.
+                  </div>
+                </div>
+                <div className="manual-entry">
+                  <img src={`${import.meta.env.BASE_URL}assets/fuel.png`} alt="Fuel" className="manual-sprite" />
+                  <div className="manual-text">
+                    <strong>FUEL:</strong> Replenish. Running empty ends session.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/power-shield.png`} alt="Shield" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>SHIELD GENERATOR</strong><br/>
-                    Deploys a temporary quantum barrier around the ship. Absorbs exactly one direct impact from an asteroid or hazard without draining fuel.
+                    <strong>SHIELD GENERATOR:</strong> Deploys a temporary quantum barrier around the ship. Absorbs exactly one direct impact from an asteroid or hazard without draining fuel.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/power-magnet.png`} alt="Magnet" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>GRAVITY MAGNET</strong><br/>
-                    Activates a localized tractor beam. Automatically pulls all nearby Cargo and Data caches directly to your ship for 10 seconds.
+                    <strong>GRAVITY MAGNET:</strong> Activates a localized tractor beam. Automatically pulls all nearby Cargo and Data caches directly to your ship for 10 seconds.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/power-double.png`} alt="Double Score" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>DATA MULTIPLIER (2X)</strong><br/>
-                    Overclocks the ship's processing core. All score, XP, and credits collected from Cargo and Data are doubled for the next 15 seconds.
+                    <strong>DATA MULTIPLIER (2X):</strong> Overclocks the ship's processing core. All score, XP, and credits collected from Cargo and Data are doubled for the next 15 seconds.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/power-slow.png`} alt="Slow Motion" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>TEMPORAL SHIFT (SLOW-MO)</strong><br/>
-                    Engages a time-dilation drive. Slows down all incoming asteroids and hazards by 50% while maintaining your ship's maneuverability, allowing for precision dodging.
+                    <strong>TEMPORAL SHIFT (SLOW-MO):</strong> Engages a time-dilation drive. Slows down all incoming asteroids and hazards by 50% while maintaining your ship's maneuverability, allowing for precision dodging.
                   </div>
                 </div>
               </div>
@@ -594,16 +633,16 @@ function App() {
             <div className="crt-panel shop-panel" style={{ padding: '30px', width: '100%', maxWidth: '500px' }}>
               <div className="shop-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h2 className="title" style={{ fontSize: '2rem', margin: 0 }}>SHIP UPGRADES</h2>
-                <div style={{ color: '#ff00ff', fontSize: '1.2rem', fontWeight: 'bold', fontFamily: 'Courier New' }}>
-                  CREDITS: {user?.coins || 0} <Coins size={16} style={{ display: 'inline', verticalAlign: 'middle' }}/>
+                <div style={{ color: '#ff00ff', fontSize: '1.4rem', fontWeight: 'bold', fontFamily: 'Courier New', textShadow: '0 0 10px #ff00ff' }}>
+                  CREDITS: {user?.coins || 0} <Coins size={20} className="spinning-coin" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '5px' }}/>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontFamily: 'Courier New', marginBottom: '20px' }}>
-                <div className="upgrade-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #1a2233' }}>
+                <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '20px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '20px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>DEFLECTOR SHIELDS</span>
-                    <span style={{ color: '#8899b5' }}>Level {shieldLevel} &rarr; Level {shieldLevel + 1}</span>
-                    <span style={{ color: '#8899b5', fontSize: '0.9rem' }}>Max HP: {maxHealth} &rarr; {maxHealth + 100}</span>
+                    <span style={{ color: '#c0d4f5' }}>Level {shieldLevel} &rarr; Level {shieldLevel + 1}</span>
+                    <span style={{ color: '#c0d4f5', fontSize: '0.9rem' }}>Max HP: {maxHealth} &rarr; {maxHealth + 100}</span>
                   </div>
                   <button 
                     className="physical-btn" 
@@ -615,11 +654,11 @@ function App() {
                   </button>
                 </div>
                 
-                <div className="upgrade-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '15px', borderRadius: '8px', border: '1px solid #1a2233' }}>
+                <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '20px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '20px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span style={{ fontSize: '1.2rem', color: '#00f0ff' }}>PLASMA FUEL CORE</span>
-                    <span style={{ color: '#8899b5' }}>Level {fuelLevel} &rarr; Level {fuelLevel + 1}</span>
-                    <span style={{ color: '#8899b5', fontSize: '0.9rem' }}>Capacity: {maxFuel} &rarr; {maxFuel + 100}</span>
+                    <span style={{ color: '#c0d4f5' }}>Level {fuelLevel} &rarr; Level {fuelLevel + 1}</span>
+                    <span style={{ color: '#c0d4f5', fontSize: '0.9rem' }}>Capacity: {maxFuel} &rarr; {maxFuel + 100}</span>
                   </div>
                   <button 
                     className="physical-btn" 
@@ -786,14 +825,14 @@ function App() {
               
               <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
                 <button 
-                  className={`physical-btn ${leaderboardPeriod === 'weekly' ? 'primary' : ''}`}
+                  className={`physical-btn ${leaderboardPeriod === 'weekly' ? 'tab-active' : 'tab-inactive'}`}
                   style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                   onClick={() => setLeaderboardPeriod('weekly')}
                 >
                   Weekly
                 </button>
                 <button 
-                  className={`physical-btn ${leaderboardPeriod === 'allTime' ? 'primary' : ''}`}
+                  className={`physical-btn ${leaderboardPeriod === 'allTime' ? 'tab-active' : 'tab-inactive'}`}
                   style={{ padding: '8px 16px', fontSize: '0.85rem' }}
                   onClick={() => setLeaderboardPeriod('allTime')}
                 >
@@ -809,8 +848,11 @@ function App() {
                       : "Fetching data..."}
                   </div>
                 ) : leaderboardError ? (
-                  <div style={{ textAlign: 'center', color: '#ff4444', padding: '20px' }}>
-                    Leaderboard unavailable.
+                  <div style={{ textAlign: 'center', color: '#ff4444', padding: '20px', background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.4)', borderRadius: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                      <AlertTriangle size={24} />
+                      <span>{">"} ERR_CONNECTION_REFUSED... <span className="blinking-cursor">_</span></span>
+                    </div>
                   </div>
                 ) : topRunners.length === 0 ? (
                   <div style={{ textAlign: 'center', color: '#8899b5' }}>No runners yet! Be the first!</div>
@@ -836,13 +878,15 @@ function App() {
         {/* Bottom Physical Dashboard */}
         {(gameState === 'MENU' || gameState === 'GAME_OVER') && (
           <div className="console-dashboard">
-            <button className="physical-btn primary" onClick={handleStart} style={{ fontSize: '1.4rem', padding: '16px 32px', width: '100%', marginBottom: '10px' }}>
+            <button className="physical-btn primary" onClick={handleStart} style={{ fontSize: '1.3rem', padding: '14px 24px', width: '100%', marginBottom: '20px' }}>
               <Rocket style={{ marginRight: '10px' }}/> START ENGINE
             </button>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px', marginBottom: '15px' }}>
               <button className="physical-btn" onClick={() => setGameState('SHOP')}><Settings size={18} /> Upgrades</button>
               <button className="physical-btn" onClick={() => setGameState('HANGAR')}><Palette size={18} /> Hangar</button>
               <button className="physical-btn" onClick={() => setGameState('ACHIEVEMENTS')}><Medal size={18} /> Records</button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
               <button className="physical-btn" onClick={handleOpenLeaderboard}><Trophy size={18} /> Leaderboard</button>
               <button className="physical-btn" onClick={() => setGameState('WITHDRAW')}><Wallet size={18} /> Withdraw</button>
               <button className="physical-btn" onClick={() => setGameState('HOW_TO_PLAY')}>? How to Play</button>

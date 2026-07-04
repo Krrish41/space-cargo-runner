@@ -66,6 +66,9 @@ export class Preloader extends Phaser.Scene {
     this.load.image('power-magnet', `${import.meta.env.BASE_URL}assets/power-magnet.png`);
     this.load.image('power-double', `${import.meta.env.BASE_URL}assets/power-double.png`);
     this.load.image('power-slow', `${import.meta.env.BASE_URL}assets/power-slow.png`);
+    this.load.image('data-cache', `${import.meta.env.BASE_URL}assets/data-cache.png`);
+    this.load.image('mine', `${import.meta.env.BASE_URL}assets/mine.png`);
+    this.load.image('debris', `${import.meta.env.BASE_URL}assets/debris.png`);
 
     // Keep the stars as generated graphics since they are just dots
     const starGraphics = this.add.graphics();
@@ -80,49 +83,9 @@ export class Preloader extends Phaser.Scene {
     dustGraphics.generateTexture('dust-streak', 2, 18);
     dustGraphics.destroy();
 
-    // High contrast + glow for mines (Obstacle)
-    const mineGraphics = this.add.graphics();
-    mineGraphics.fillStyle(0x1a0510, 1); // Darker base for contrast
-    mineGraphics.lineStyle(4, 0xff005a, 1); // Thicker, brighter red
-    mineGraphics.fillCircle(24, 24, 18);
-    mineGraphics.strokeCircle(24, 24, 18);
-    // Add glow ring
-    mineGraphics.lineStyle(2, 0xff005a, 0.4);
-    mineGraphics.strokeCircle(24, 24, 22);
-    mineGraphics.lineBetween(24, 0, 24, 48);
-    mineGraphics.lineBetween(0, 24, 48, 24);
-    mineGraphics.lineBetween(6, 6, 42, 42);
-    mineGraphics.lineBetween(42, 6, 6, 42);
-    mineGraphics.generateTexture('mine', 48, 48);
-    mineGraphics.destroy();
 
-    // High contrast + glow for debris (Obstacle)
-    const debrisGraphics = this.add.graphics();
-    debrisGraphics.fillStyle(0x4a5a6d, 1);
-    debrisGraphics.lineStyle(3, 0xffffff, 0.8);
-    debrisGraphics.fillTriangle(6, 42, 42, 8, 34, 44);
-    debrisGraphics.strokeTriangle(6, 42, 42, 8, 34, 44);
-    // Add glow outline
-    debrisGraphics.lineStyle(2, 0xffffff, 0.3);
-    debrisGraphics.strokeTriangle(4, 44, 44, 6, 36, 46);
-    debrisGraphics.generateTexture('debris', 48, 48);
-    debrisGraphics.destroy();
 
-    // High contrast + glow for data cache (Collectible)
-    const dataGraphics = this.add.graphics();
-    dataGraphics.fillStyle(0x021118, 1);
-    dataGraphics.lineStyle(4, 0x00ffcc, 1);
-    dataGraphics.fillRoundedRect(6, 8, 36, 32, 6);
-    dataGraphics.strokeRoundedRect(6, 8, 36, 32, 6);
-    // Add glow ring
-    dataGraphics.lineStyle(2, 0x00ffcc, 0.4);
-    dataGraphics.strokeRoundedRect(2, 4, 44, 40, 8);
-    dataGraphics.fillStyle(0x00ffcc, 1);
-    dataGraphics.fillRect(14, 16, 20, 4);
-    dataGraphics.fillRect(14, 24, 14, 4);
-    dataGraphics.fillRect(14, 32, 18, 4);
-    dataGraphics.generateTexture('data-cache', 48, 48);
-    dataGraphics.destroy();
+
 
   }
 

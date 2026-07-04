@@ -34,13 +34,14 @@
 
 /* CRT Screen / Terminal Panels embedded in the console */
 .crt-panel {
-  background: radial-gradient(circle at center, #0a0f18 0%, #020408 100%);
-  border: 4px solid #1a2233;
-  border-radius: 16px;
+  background: rgba(10, 15, 24, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 204, 0.4);
+  border-radius: 12px;
   box-shadow: 
-    inset 0 0 30px rgba(0, 255, 204, 0.1),
-    0 10px 30px rgba(0, 0, 0, 0.8),
-    0 0 0 8px #0d121c; /* Physical bezel */
+    0 0 20px rgba(0, 255, 204, 0.1),
+    inset 0 0 30px rgba(0, 255, 204, 0.05);
   position: relative;
   overflow: hidden;
   color: var(--primary);
@@ -56,7 +57,7 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.08) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
   z-index: 2;
   background-size: 100% 4px, 6px 100%;
   pointer-events: none;
@@ -113,9 +114,8 @@
 
 /* Physical Toggle Buttons */
 .physical-btn {
-  background: linear-gradient(180deg, #2a344a 0%, #151a25 100%);
-  border: 2px solid #000;
-  border-top: 2px solid #4a5a7d;
+  background: rgba(10, 15, 24, 0.7);
+  border: 1px solid rgba(0, 255, 204, 0.3);
   color: #8899b5;
   padding: 15px 30px;
   font-size: 1.2rem;
@@ -124,54 +124,71 @@
   border-radius: 6px;
   cursor: pointer;
   box-shadow: 
-    0 6px 0 #0a0d14,
-    0 8px 15px rgba(0,0,0,0.5);
-  transition: all 0.1s ease;
+    0 4px 10px rgba(0,0,0,0.4);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   min-width: 250px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
   text-shadow: 0 -1px 0 rgba(0,0,0,0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-.physical-btn:hover {
+.physical-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 
-    0 8px 0 #0a0d14,
-    0 12px 20px rgba(0,0,0,0.6);
-  background: linear-gradient(180deg, #32405c 0%, #1a2233 100%);
-  color: #a0b2d4;
+    inset 0 0 15px rgba(0, 255, 204, 0.2), 
+    0 0 10px rgba(0, 255, 204, 0.4),
+    0 6px 15px rgba(0,0,0,0.5);
+  background: rgba(20, 28, 42, 0.8);
+  color: #c0d4f5;
+  border: 1px solid var(--primary);
 }
 
-.physical-btn:active, .physical-btn.pressed {
-  transform: translateY(4px);
+.physical-btn:active:not(:disabled), .physical-btn.pressed:not(:disabled) {
+  transform: translateY(2px) scale(0.98);
   box-shadow: 
-    0 2px 0 #0a0d14,
-    0 4px 10px rgba(0,0,0,0.5);
-  background: linear-gradient(180deg, #151a25 0%, #0a0d14 100%);
-  border-top: 2px solid #1a2233;
+    inset 0 0 25px rgba(0, 255, 204, 0.4),
+    0 2px 5px rgba(0,0,0,0.6);
+  background: rgba(15, 20, 30, 0.9);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.physical-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(100%);
 }
 
 /* Primary Action Button (Start Engine) */
+@keyframes pulseGlow {
+  0% { box-shadow: inset 0 0 20px rgba(0, 255, 204, 0.4), 0 0 15px rgba(0, 255, 204, 0.3); }
+  50% { box-shadow: inset 0 0 40px rgba(0, 255, 204, 0.7), 0 0 30px rgba(0, 255, 204, 0.6); }
+  100% { box-shadow: inset 0 0 20px rgba(0, 255, 204, 0.4), 0 0 15px rgba(0, 255, 204, 0.3); }
+}
+
 .physical-btn.primary {
-  color: var(--primary);
-  text-shadow: 0 0 10px var(--primary);
-}
-.physical-btn.primary:hover {
   color: #fff;
-  text-shadow: 0 0 20px var(--primary);
-  box-shadow: 
-    0 8px 0 #0a0d14,
-    0 12px 20px rgba(0,255,204,0.3);
-  border-color: var(--primary);
+  background: rgba(0, 255, 204, 0.15);
+  border: 1px solid var(--primary);
+  text-shadow: 0 0 15px var(--primary);
+  animation: pulseGlow 2s infinite ease-in-out;
 }
-.physical-btn.primary:active {
+.physical-btn.primary:hover:not(:disabled) {
   color: #fff;
-  border-color: #000;
-  box-shadow: 
-    0 2px 0 #0a0d14,
-    0 4px 10px rgba(0,255,204,0.5);
+  background: rgba(0, 255, 204, 0.25);
+  text-shadow: 0 0 25px var(--primary), 0 0 10px #fff;
+  border-color: #fff;
+  animation: none;
+  box-shadow: inset 0 0 40px rgba(0, 255, 204, 0.8), 0 0 40px rgba(0, 255, 204, 0.6);
+}
+.physical-btn.primary:active:not(:disabled) {
+  color: #fff;
+  background: rgba(0, 255, 204, 0.4);
+  box-shadow: inset 0 0 60px rgba(0, 255, 204, 1), 0 0 20px rgba(0, 255, 204, 0.8);
 }
 
 /* Danger Action Button (Game Over) */
@@ -229,6 +246,23 @@
   font-size: 1.5rem;
   text-shadow: 0 0 8px var(--primary);
   color: var(--primary);
+}
+
+.hud-dashboard-center {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(5, 8, 12, 0.85);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  padding: 10px 20px;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.15), inset 0 0 10px rgba(0, 255, 204, 0.1);
+  backdrop-filter: blur(5px);
+  z-index: 10;
 }
 
 .hud-score-card {
@@ -381,6 +415,9 @@
 
 .game-over-panel {
   width: min(680px, calc(100vw - 42px));
+  max-height: 90vh;
+  overflow-y: auto;
+  padding-bottom: 30px;
 }
 
 .run-summary-grid {
@@ -630,7 +667,7 @@
 .disconnect-btn {
   background: transparent;
   border: none;
-  color: #ff3366;
+  color: var(--primary);
   cursor: pointer;
   padding: 5px;
   border-radius: 4px;
@@ -643,8 +680,8 @@
 }
 
 .disconnect-btn:hover {
-  background: rgba(255, 51, 102, 0.1);
-  box-shadow: 0 0 8px rgba(255, 51, 102, 0.4);
+  background: rgba(0, 255, 204, 0.1);
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
   transform: none;
 }
 
@@ -1601,4 +1638,39 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+@keyframes terminalBlink {
+  50% { opacity: 0; }
+}
+.blinking-cursor {
+  animation: terminalBlink 1s step-end infinite;
+  display: inline-block;
+  width: 12px;
+  height: 1.2em;
+  background-color: #ff4444;
+  vertical-align: middle;
+}
+
+@keyframes spinY {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+.spinning-coin {
+  animation: spinY 2.5s linear infinite;
+  color: #ff00ff;
+  filter: drop-shadow(0 0 8px #ff00ff);
+}
+
+.physical-btn.tab-active {
+  background: rgba(0, 255, 204, 0.2);
+  border-bottom: 2px solid var(--primary);
+  color: #fff;
+  text-shadow: 0 0 10px var(--primary);
+}
+
+.physical-btn.tab-inactive {
+  background: rgba(10, 15, 24, 0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #8899b5;
 }
