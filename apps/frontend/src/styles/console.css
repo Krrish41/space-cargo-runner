@@ -693,15 +693,15 @@
   min-width: 0;
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 0, 255, 0.55);
-  background: rgba(255, 0, 255, 0.09);
-  color: var(--secondary);
+  border: 1px solid rgba(0, 255, 204, 0.55);
+  background: rgba(0, 255, 204, 0.09);
+  color: var(--primary);
   font-size: 0.86rem;
   font-weight: bold;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 0 14px rgba(255, 0, 255, 0.16), inset 0 0 12px rgba(255, 0, 255, 0.05);
+  box-shadow: 0 0 14px rgba(0, 255, 204, 0.16), inset 0 0 12px rgba(0, 255, 204, 0.05);
   transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, text-shadow 0.2s ease;
   animation: promptPulse 2.6s ease-in-out infinite;
 }
@@ -712,16 +712,16 @@
 
 .connect-prompt:hover {
   color: #fff;
-  background: rgba(255, 0, 255, 0.16);
-  border-color: var(--secondary);
-  box-shadow: 0 0 22px rgba(255, 0, 255, 0.4);
-  text-shadow: 0 0 10px var(--secondary);
+  background: rgba(0, 255, 204, 0.16);
+  border-color: var(--primary);
+  box-shadow: 0 0 22px rgba(0, 255, 204, 0.4);
+  text-shadow: 0 0 10px var(--primary);
   transform: none;
 }
 
 @keyframes promptPulse {
-  0%, 100% { box-shadow: 0 0 12px rgba(255, 0, 255, 0.14), inset 0 0 12px rgba(255, 0, 255, 0.05); }
-  50% { box-shadow: 0 0 22px rgba(255, 0, 255, 0.32), inset 0 0 12px rgba(255, 0, 255, 0.08); }
+  0%, 100% { box-shadow: 0 0 12px rgba(0, 255, 204, 0.14), inset 0 0 12px rgba(0, 255, 204, 0.05); }
+  50% { box-shadow: 0 0 22px rgba(0, 255, 204, 0.32), inset 0 0 12px rgba(0, 255, 204, 0.08); }
 }
 
 .health-bar-container {
