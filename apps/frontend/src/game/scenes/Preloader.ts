@@ -62,6 +62,10 @@ export class Preloader extends Phaser.Scene {
     this.load.image('asteroid', `${import.meta.env.BASE_URL}assets/asteroid.png`);
     this.load.image('cargo', `${import.meta.env.BASE_URL}assets/cargo.png`);
     this.load.image('fuel', `${import.meta.env.BASE_URL}assets/fuel.png`);
+    this.load.image('power-shield', `${import.meta.env.BASE_URL}assets/power-shield.png`);
+    this.load.image('power-magnet', `${import.meta.env.BASE_URL}assets/power-magnet.png`);
+    this.load.image('power-double', `${import.meta.env.BASE_URL}assets/power-double.png`);
+    this.load.image('power-slow', `${import.meta.env.BASE_URL}assets/power-slow.png`);
 
     // Keep the stars as generated graphics since they are just dots
     const starGraphics = this.add.graphics();
@@ -120,29 +124,6 @@ export class Preloader extends Phaser.Scene {
     dataGraphics.generateTexture('data-cache', 48, 48);
     dataGraphics.destroy();
 
-    // High contrast + glow for power-ups
-    const powerGraphics = this.add.graphics();
-    const powerTextures = [
-      { key: 'power-shield', color: 0x63ff8f },
-      { key: 'power-magnet', color: 0xff4fd8 },
-      { key: 'power-double', color: 0xffd166 },
-      { key: 'power-slow', color: 0x73c2ff }
-    ];
-
-    powerTextures.forEach(({ key, color }) => {
-      powerGraphics.clear();
-      powerGraphics.fillStyle(0x020610, 1);
-      powerGraphics.lineStyle(4, color, 1);
-      powerGraphics.fillCircle(24, 24, 18);
-      powerGraphics.strokeCircle(24, 24, 18);
-      // Glow ring
-      powerGraphics.lineStyle(2, color, 0.4);
-      powerGraphics.strokeCircle(24, 24, 22);
-      powerGraphics.fillStyle(color, 1);
-      powerGraphics.fillCircle(24, 24, 8);
-      powerGraphics.generateTexture(key, 48, 48);
-    });
-    powerGraphics.destroy();
   }
 
   create() {

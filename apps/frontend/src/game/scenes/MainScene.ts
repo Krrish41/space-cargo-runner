@@ -408,7 +408,11 @@ export class MainScene extends Phaser.Scene {
     ];
     const option = Phaser.Utils.Array.GetRandom(options);
     const powerUp = this.powerUps.create(x, -50, option.texture);
-    powerUp.setScale(0.95);
+    powerUp.setScale(0.08); // Scale down the 512x512 generated images
+    // Adjust physics body to match the new size (unscaled radius 200 -> 400px diameter -> ~32px scaled)
+    if (powerUp.body) {
+      powerUp.setCircle(200, 56, 56);
+    }
     powerUp.setBlendMode(Phaser.BlendModes.ADD);
     powerUp.setData('type', option.type);
     powerUp.setData('spin', 80);

@@ -533,7 +533,7 @@ function App() {
           {gameState === 'HOW_TO_PLAY' && (
             <div className="crt-panel meta-panel">
               <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>PILOT MANUAL</h2>
-              <div style={{ display: 'grid', gap: '15px', marginTop: '20px' }}>
+              <div style={{ display: 'grid', gap: '15px', marginTop: '20px', maxHeight: '55vh', overflowY: 'auto', paddingRight: '10px' }}>
                 <div className="manual-entry">
                   <Gauge size={40} color="#00ffcc" className="manual-sprite" />
                   <div className="manual-text">
@@ -556,10 +556,31 @@ function App() {
                   </div>
                 </div>
                 <div className="manual-entry">
-                  <Shield size={40} color="#ff00ff" className="manual-sprite" />
+                  <img src={`${import.meta.env.BASE_URL}assets/power-shield.png`} alt="Shield" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>Power-Ups</strong><br/>
-                    Pick up temporary upgrades like Shields, Magnets, and Double Score.
+                    <strong>SHIELD GENERATOR</strong><br/>
+                    Deploys a temporary quantum barrier around the ship. Absorbs exactly one direct impact from an asteroid or hazard without draining fuel.
+                  </div>
+                </div>
+                <div className="manual-entry">
+                  <img src={`${import.meta.env.BASE_URL}assets/power-magnet.png`} alt="Magnet" className="manual-sprite" />
+                  <div className="manual-text">
+                    <strong>GRAVITY MAGNET</strong><br/>
+                    Activates a localized tractor beam. Automatically pulls all nearby Cargo and Data caches directly to your ship for 10 seconds.
+                  </div>
+                </div>
+                <div className="manual-entry">
+                  <img src={`${import.meta.env.BASE_URL}assets/power-double.png`} alt="Double Score" className="manual-sprite" />
+                  <div className="manual-text">
+                    <strong>DATA MULTIPLIER (2X)</strong><br/>
+                    Overclocks the ship's processing core. All score, XP, and credits collected from Cargo and Data are doubled for the next 15 seconds.
+                  </div>
+                </div>
+                <div className="manual-entry">
+                  <img src={`${import.meta.env.BASE_URL}assets/power-slow.png`} alt="Slow Motion" className="manual-sprite" />
+                  <div className="manual-text">
+                    <strong>TEMPORAL SHIFT (SLOW-MO)</strong><br/>
+                    Engages a time-dilation drive. Slows down all incoming asteroids and hazards by 50% while maintaining your ship's maneuverability, allowing for precision dodging.
                   </div>
                 </div>
               </div>
