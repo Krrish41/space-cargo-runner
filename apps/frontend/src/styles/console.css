@@ -44,6 +44,7 @@
   position: relative;
   overflow: hidden;
   color: var(--primary);
+  pointer-events: auto;
 }
 
 /* CRT Scanline effect */
@@ -107,6 +108,7 @@
   gap: 20px;
   border: 1px solid #3a4863;
   position: relative;
+  pointer-events: auto;
 }
 
 /* Physical Toggle Buttons */
