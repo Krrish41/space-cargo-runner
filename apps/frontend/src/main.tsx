@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import App from './App.tsx'
+import AdminApp from './admin/AdminApp.tsx'
 
 import { createConfig, http, WagmiProvider } from 'wagmi';
 import { polygon, base, mainnet } from 'wagmi/chains';
@@ -50,12 +52,19 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <WalletModalProvider>
-          <App />
-        </WalletModalProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <HashRouter>
+      <Routes>
+        <Route path="/admin" element={<AdminApp />} />
+        <Route path="*" element={
+          <WagmiProvider config={config}>
+            <QueryClientProvider client={queryClient}>
+              <WalletModalProvider>
+                <App />
+              </WalletModalProvider>
+            </QueryClientProvider>
+          </WagmiProvider>
+        } />
+      </Routes>
+    </HashRouter>
   </StrictMode>,
 )
