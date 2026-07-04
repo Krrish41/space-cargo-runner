@@ -195,7 +195,10 @@ export class MainScene extends Phaser.Scene {
 
   updateDifficulty() {
     const seconds = this.elapsedMs / 1000;
-    this.baseSpeed = 300 + Math.min(420, seconds * 4.6 + this.distance * 0.18);
+    const config = useStore.getState().gameConfig;
+    const speedScale = config?.difficultySpeedScale || 1;
+    // Visibly stronger time-based ramp
+    this.baseSpeed = 300 + Math.min(500, (seconds * 6.5 + this.distance * 0.22) * speedScale);
   }
 
   updatePowerUps(time: number) {
@@ -281,7 +284,9 @@ export class MainScene extends Phaser.Scene {
 
   handleSpawning(delta: number) {
     const seconds = this.elapsedMs / 1000;
-    const spawnInterval = Math.max(420, 1080 - seconds * 7 - this.distance * 0.1);
+    const config = useStore.getState().gameConfig;
+    const spawnScale = config?.difficultySpawnScale || 1;
+    const spawnInterval = Math.max(380, 1080 - seconds * 9 - this.distance * 0.15) / spawnScale;
 
     this.spawnTimer += delta;
     if (this.spawnTimer <= spawnInterval) return;
@@ -425,11 +430,20 @@ export class MainScene extends Phaser.Scene {
 
     obstacle.destroy();
     useStore.getState().damageShip(obstacle.getData('damage') || 25);
-    this.cameras.main.shake(180, kind === 'Mine' ? 0.03 : 0.02);
-    this.cameras.main.flash(120, 255, 30, 80);
-    this.showBurst(this.ship.x, this.ship.y, 0xff3366, 18);
-    this.showFloatingText(kind.toUpperCase(), this.ship.x, this.ship.y - 40, '#ff3366');
-    this.playTone(80, 0.16, 'sawtooth', 0.07);
+    
+    const isFatal = useStore.getState().health <= 0;
+    if (isFatal) {
+      this.cameras.main.shake(300, 0.045);
+      this.cameras.main.flash(200, 255, 30, 80);
+      this.showBurst(this.ship.x, this.ship.y, 0xff0000, 40);
+      this.playTone(60, 0.4, 'sawtooth', 0.15);
+    } else {
+      this.cameras.main.shake(180, kind === 'Mine' ? 0.03 : 0.02);
+      this.cameras.main.flash(120, 255, 30, 80);
+      this.showBurst(this.ship.x, this.ship.y, 0xff3366, 18);
+      this.showFloatingText(kind.toUpperCase(), this.ship.x, this.ship.y - 40, '#ff3366');
+      this.playTone(80, 0.16, 'sawtooth', 0.07);
+    }
 
     this.isInvulnerable = true;
     this.ship.setTint(0xff3366);
@@ -642,14 +656,29 @@ export class MainScene extends Phaser.Scene {
     const context = this.getAudioContext();
     if (!context) return;
 
+    // Layered music
     this.musicOsc = context.createOscillator();
     this.musicGain = context.createGain();
     this.musicOsc.type = 'sawtooth';
     this.musicOsc.frequency.setValueAtTime(55, context.currentTime);
+    
+    // Slight vibrato for synthwave feel
+    const lfo = context.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(4, context.currentTime); // 4Hz vibrato
+    const lfoGain = context.createGain();
+    lfoGain.gain.setValueAtTime(2, context.currentTime); // 2Hz depth
+    lfo.connect(lfoGain);
+    lfoGain.connect(this.musicOsc.frequency);
+    lfo.start();
+
     this.musicGain.gain.setValueAtTime(0.018, context.currentTime);
     this.musicOsc.connect(this.musicGain);
     this.musicGain.connect(context.destination);
     this.musicOsc.start();
+    
+    // Store LFO so we can stop it
+    (this as any).musicLfo = lfo;
   }
 
   stopMusic() {
@@ -657,6 +686,10 @@ export class MainScene extends Phaser.Scene {
     this.musicOsc.stop();
     this.musicOsc.disconnect();
     this.musicGain?.disconnect();
+    if ((this as any).musicLfo) {
+      (this as any).musicLfo.stop();
+      (this as any).musicLfo.disconnect();
+    }
     this.musicOsc = undefined;
     this.musicGain = undefined;
   }
