@@ -234,8 +234,8 @@
 }
 
 .status-light.disconnected {
-  background-color: var(--secondary);
-  box-shadow: 0 0 10px var(--secondary), inset 0 0 4px rgba(255,255,255,0.8);
+  background-color: #ff3333;
+  box-shadow: 0 0 10px #ff3333, inset 0 0 4px rgba(255,255,255,0.8);
 }
 
 /* HUD Overlay Styling */
