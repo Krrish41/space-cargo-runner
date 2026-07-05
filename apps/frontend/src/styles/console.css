@@ -248,6 +248,12 @@
   color: var(--primary);
 }
 
+.hud-top-container {
+  display: flex;
+  width: 100%;
+}
+
+
 .hud-dashboard-center {
   position: absolute;
   top: 30px;
@@ -1626,6 +1632,60 @@
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
+}
+
+@media (max-width: 768px) {
+  /* Phase 1: Mobile HUD Restructuring (Top Section) */
+  .hud-top-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .hud-cluster {
+    width: 100%;
+    transform: scale(0.9);
+    transform-origin: top center;
+    justify-content: center;
+  }
+  
+  .hud-cluster .hud-bars {
+    align-items: center;
+  }
+  
+  .hud-cluster .hud-item {
+    align-items: center !important;
+    text-align: center;
+  }
+
+  /* Phase 2: Refine the Score Dashboard for Mobile */
+  .hud-dashboard-center {
+    position: static;
+    transform: none;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .hud-score-card {
+    min-width: 120px;
+    flex: 1 1 100%;
+    text-align: center;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: 1px solid rgba(0, 255, 204, 0.2);
+    border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+    padding: 8px 0 !important;
+  }
+
+  /* Phase 3: Verify Bottom Controls */
+  .quick-controls {
+    top: auto;
+    bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
+    right: 15px;
+  }
 }
 
 /* Accessibility: honor reduced-motion preferences */
