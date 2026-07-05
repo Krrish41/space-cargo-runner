@@ -821,54 +821,57 @@ function App() {
 
           {gameState === 'LEADERBOARD' && (
             <div className="crt-panel leaderboard-panel" style={{ padding: '30px', width: '100%', maxWidth: '400px' }}>
-              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '10px' }}>TOP RUNNERS</h2>
+              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '20px' }}>TOP RUNNERS</h2>
               
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
-                <button 
-                  className={`physical-btn ${leaderboardPeriod === 'weekly' ? 'tab-active' : 'tab-inactive'}`}
-                  style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-                  onClick={() => setLeaderboardPeriod('weekly')}
-                >
-                  Weekly
-                </button>
-                <button 
-                  className={`physical-btn ${leaderboardPeriod === 'allTime' ? 'tab-active' : 'tab-inactive'}`}
-                  style={{ padding: '8px 16px', fontSize: '0.85rem' }}
-                  onClick={() => setLeaderboardPeriod('allTime')}
-                >
-                  All-Time
-                </button>
-              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', padding: '0 1rem' }}>
+                  <button 
+                    className={`physical-btn ${leaderboardPeriod === 'weekly' ? 'tab-active' : 'tab-inactive'}`}
+                    style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                    onClick={() => setLeaderboardPeriod('weekly')}
+                  >
+                    Weekly
+                  </button>
+                  <button 
+                    className={`physical-btn ${leaderboardPeriod === 'allTime' ? 'tab-active' : 'tab-inactive'}`}
+                    style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                    onClick={() => setLeaderboardPeriod('allTime')}
+                  >
+                    All-Time
+                  </button>
+                </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New', marginBottom: '30px' }}>
-                {topRunners === null ? (
-                  <div style={{ textAlign: 'center', color: '#8899b5', padding: '20px' }}>
-                    {isBackendWakingUp 
-                      ? "Backend is waking up... this might take around a minute." 
-                      : "Fetching data..."}
-                  </div>
-                ) : leaderboardError ? (
-                  <div style={{ textAlign: 'center', color: '#ff4444', padding: '20px', background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.4)', borderRadius: '8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                      <AlertTriangle size={24} />
-                      <span>{">"} ERR_CONNECTION_REFUSED... <span className="blinking-cursor">_</span></span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New' }}>
+                  {topRunners === null ? (
+                    <div style={{ textAlign: 'center', color: '#8899b5', padding: '20px' }}>
+                      {isBackendWakingUp 
+                        ? "Backend is waking up... this might take around a minute." 
+                        : "Fetching data..."}
                     </div>
-                  </div>
-                ) : topRunners.length === 0 ? (
-                  <div style={{ textAlign: 'center', color: '#8899b5' }}>No runners yet! Be the first!</div>
-                ) : (
-                  topRunners.map((runner, idx) => (
-                    <div key={runner.id} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #1a2233', paddingBottom: '10px' }}>
-                      <span style={runner.id === user?.id ? { color: 'var(--secondary)' } : {}}>
-                        {idx + 1}. {runner.username} {runner.id === user?.id && '(You)'}
-                      </span>
-                      <span className="stat-value">{runner.highScore}m</span>
+                  ) : leaderboardError ? (
+                    <div style={{ margin: '0 auto', color: '#ff4444', padding: '20px', background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.4)', borderRadius: '8px', width: '100%' }}>
+                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+                        <span>{">"}</span>
+                        <span>ERR_CONNECTION_REFUSED...</span>
+                        <span className="blinking-cursor"></span>
+                      </div>
                     </div>
-                  ))
-                )}
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Terminal</button>
+                  ) : topRunners.length === 0 ? (
+                    <div style={{ textAlign: 'center', color: '#8899b5' }}>No runners yet! Be the first!</div>
+                  ) : (
+                    topRunners.map((runner, idx) => (
+                      <div key={runner.id} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #1a2233', paddingBottom: '10px' }}>
+                        <span style={runner.id === user?.id ? { color: 'var(--secondary)' } : {}}>
+                          {idx + 1}. {runner.username} {runner.id === user?.id && '(You)'}
+                        </span>
+                        <span className="stat-value">{runner.highScore}m</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Terminal</button>
+                </div>
               </div>
             </div>
           )}
