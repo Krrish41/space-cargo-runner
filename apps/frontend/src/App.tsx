@@ -827,14 +827,14 @@ function App() {
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', padding: '0 1rem' }}>
                   <button 
                     className={`physical-btn ${leaderboardPeriod === 'weekly' ? 'tab-active' : 'tab-inactive'}`}
-                    style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                    style={{ padding: '8px 16px', fontSize: '0.85rem', flex: 1, minWidth: 0 }}
                     onClick={() => setLeaderboardPeriod('weekly')}
                   >
                     Weekly
                   </button>
                   <button 
                     className={`physical-btn ${leaderboardPeriod === 'allTime' ? 'tab-active' : 'tab-inactive'}`}
-                    style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                    style={{ padding: '8px 16px', fontSize: '0.85rem', flex: 1, minWidth: 0 }}
                     onClick={() => setLeaderboardPeriod('allTime')}
                   >
                     All-Time
@@ -849,11 +849,11 @@ function App() {
                         : "Fetching data..."}
                     </div>
                   ) : leaderboardError ? (
-                    <div style={{ margin: '0 auto', color: '#ff4444', padding: '20px', background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.4)', borderRadius: '8px', width: '100%' }}>
-                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                        <span>{">"}</span>
-                        <span>ERR_CONNECTION_REFUSED...</span>
-                        <span className="blinking-cursor"></span>
+                    <div style={{ margin: '0 auto', color: '#ff4444', padding: '15px 10px', background: 'rgba(255, 0, 0, 0.1)', border: '1px solid rgba(255, 0, 0, 0.4)', borderRadius: '8px', width: '100%' }}>
+                      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', flexWrap: 'nowrap', fontSize: '0.85rem' }}>
+                        <span style={{ flexShrink: 0 }}>{">"}</span>
+                        <span style={{ whiteSpace: 'nowrap' }}>ERR_CONNECTION_REFUSED...</span>
+                        <span className="blinking-cursor" style={{ flexShrink: 0, minWidth: '10px' }}></span>
                       </div>
                     </div>
                   ) : topRunners.length === 0 ? (
