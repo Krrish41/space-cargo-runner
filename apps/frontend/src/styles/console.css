@@ -1663,15 +1663,22 @@
     position: static;
     transform: none;
     width: 100%;
-    flex-wrap: wrap;
-    justify-content: center;
+    max-width: 340px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
-    padding: 10px;
+    padding: 12px;
+    margin: 0 auto;
+  }
+  
+  .hud-dashboard-center .hud-mini-stat {
+    justify-content: center;
+    width: 100%;
   }
   
   .hud-score-card {
-    min-width: 120px;
-    flex: 1 1 100%;
+    grid-column: span 2;
+    min-width: 0;
     text-align: center;
     border-left: none !important;
     border-right: none !important;
@@ -1679,6 +1686,12 @@
     border-bottom: 1px solid rgba(0, 255, 204, 0.2);
     padding: 8px 0 !important;
   }
+
+  .powerup-pill {
+    grid-column: span 2;
+    justify-self: center;
+  }
+
 
   /* Phase 3: Verify Bottom Controls */
   .quick-controls {

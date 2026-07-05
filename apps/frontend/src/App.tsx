@@ -284,32 +284,6 @@ function App() {
         {/* Top Cockpit Bar: HUD & Player ID */}
         <div className="hud-cockpit">
           <div className="hud-top-container">
-            {/* New Top-Center Score Dashboard */}
-            {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
-              <div className="hud-dashboard-center">
-                <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
-                  <Rocket className="text-primary" />
-                  <span className="stat-value">{Math.floor(distance)}m</span>
-                </div>
-                <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
-                  <Coins className="text-secondary" color="var(--primary)" />
-                  <span className="stat-value">{coinsCollected}</span>
-                </div>
-                <div className="hud-score-card" style={{ border: 'none', background: 'transparent', boxShadow: 'none', margin: 0, padding: '0 15px', borderLeft: '1px solid rgba(0, 255, 204, 0.2)', borderRight: '1px solid rgba(0, 255, 204, 0.2)', borderRadius: 0 }}>
-                  <span style={{ color: 'var(--primary)', textShadow: '0 0 5px var(--primary)' }}>Score</span>
-                  <strong className={scorePop ? 'score-pop' : ''} style={{ color: 'var(--primary)', textShadow: '0 0 10px var(--primary)' }}>{hudScore}</strong>
-                  <small style={{ color: 'var(--primary)' }}>{formatTime(timeSurvived)} | Cargo {cargoCollected}</small>
-                </div>
-                {activePowerUp && (
-                  <div className="powerup-pill" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
-                    <PowerIcon size={18} color="var(--primary)" />
-                    <span style={{ color: 'var(--primary)' }}>{activePowerUp.type}</span>
-                    <strong style={{ color: 'var(--primary)' }}>{Math.ceil(activePowerUp.remainingMs / 1000)}s</strong>
-                  </div>
-                )}
-              </div>
-            )}
-
             <div className="hud-cluster" style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
               {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
                 <>
@@ -351,6 +325,32 @@ function App() {
                 </>
               )}
             </div>
+
+            {/* New Top-Center Score Dashboard */}
+            {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
+              <div className="hud-dashboard-center">
+                <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                  <Rocket className="text-primary" />
+                  <span className="stat-value">{Math.floor(distance)}m</span>
+                </div>
+                <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                  <Coins className="text-secondary" color="var(--primary)" />
+                  <span className="stat-value">{coinsCollected}</span>
+                </div>
+                <div className="hud-score-card" style={{ border: 'none', background: 'transparent', boxShadow: 'none', margin: 0, padding: '0 15px', borderLeft: '1px solid rgba(0, 255, 204, 0.2)', borderRight: '1px solid rgba(0, 255, 204, 0.2)', borderRadius: 0 }}>
+                  <span style={{ color: 'var(--primary)', textShadow: '0 0 5px var(--primary)' }}>Score</span>
+                  <strong className={scorePop ? 'score-pop' : ''} style={{ color: 'var(--primary)', textShadow: '0 0 10px var(--primary)' }}>{hudScore}</strong>
+                  <small style={{ color: 'var(--primary)' }}>{formatTime(timeSurvived)} | Cargo {cargoCollected}</small>
+                </div>
+                {activePowerUp && (
+                  <div className="powerup-pill" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                    <PowerIcon size={18} color="var(--primary)" />
+                    <span style={{ color: 'var(--primary)' }}>{activePowerUp.type}</span>
+                    <strong style={{ color: 'var(--primary)' }}>{Math.ceil(activePowerUp.remainingMs / 1000)}s</strong>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
         </div>
