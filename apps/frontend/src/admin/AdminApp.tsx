@@ -83,23 +83,25 @@ export default function AdminApp() {
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        <nav className={`admin-tabs ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              className={`admin-tab ${tab === t.id ? 'active' : ''}`}
-              onClick={() => {
-                setTab(t.id);
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
-        </nav>
-        <div className={`admin-header-actions ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          <a className="admin-link-btn" href="#/"><Gamepad2 size={16} /> Game</a>
-          <button className="admin-link-btn" onClick={handleLogout}>Log out</button>
+        <div className={`admin-mobile-menu ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
+          <nav className="admin-tabs">
+            {TABS.map((t) => (
+              <button
+                key={t.id}
+                className={`admin-tab ${tab === t.id ? 'active' : ''}`}
+                onClick={() => {
+                  setTab(t.id);
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </nav>
+          <div className="admin-header-actions">
+            <a className="admin-link-btn" href="#/"><Gamepad2 size={16} /> Game</a>
+            <button className="admin-link-btn" onClick={handleLogout}>Log out</button>
+          </div>
         </div>
       </header>
 

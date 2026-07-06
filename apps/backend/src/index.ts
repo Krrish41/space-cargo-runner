@@ -238,6 +238,11 @@ app.post("/api/user/sync", async (req, res) => {
   const computedScore = score || (distance + coins * 10 + cargoCollected * 25);
 
   try {
+    const cfg = await getGameConfig(prisma);
+    if (cfg.maintenanceMode) {
+      return res.json({ success: true, message: "Maintenance mode active, run not saved." });
+    }
+
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
       const updatedUser = await prisma.user.update({
