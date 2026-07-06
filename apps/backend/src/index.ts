@@ -223,7 +223,7 @@ app.get("/api/feed", async (_req, res) => {
 
 // Sync Run Results Endpoint
 app.post("/api/user/sync", async (req, res) => {
-  const { userId, distance, coins, xp, cargoCollected } = req.body;
+  const { userId, distance, coins, xp, cargoCollected, score } = req.body;
   
   if (
     typeof distance !== 'number' || distance < 0 || distance > 250000 ||
@@ -234,6 +234,9 @@ app.post("/api/user/sync", async (req, res) => {
     return res.status(400).json({ success: false, message: "Payload validation failed. Invalid run parameters." });
   }
 
+  // Calculate a fallback score in case old clients don't send one
+  const computedScore = score || (distance + coins * 10 + cargoCollected * 25);
+
   try {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (user) {
@@ -242,7 +245,7 @@ app.post("/api/user/sync", async (req, res) => {
         data: {
           coins: { increment: coins },
           xp: { increment: xp },
-          highScore: distance > user.highScore ? distance : user.highScore
+          highScore: computedScore > user.highScore ? computedScore : user.highScore
         },
         include: { ship: true }
       });

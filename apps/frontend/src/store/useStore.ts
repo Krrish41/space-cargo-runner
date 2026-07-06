@@ -182,7 +182,13 @@ export const useStore = create<GameState>((set, get) => ({
   withdrawStatus: 'idle' as WithdrawStatus,
   withdrawError: null,
 
-  setUser: (user) => set({ user }),
+  setUser: (user) => set(() => {
+    const localKey = `bestScore_${user?.id || 'guest'}`;
+    const localBest = Number(localStorage.getItem(localKey) || 0);
+    const backendBest = user?.highScore || 0;
+    const resolvedBest = Math.max(localBest, backendBest);
+    return { user, bestScore: resolvedBest };
+  }),
   setShip: (ship) => set({ ship }),
   setGameState: (gameState) => set({ gameState }),
   setDistance: (distance) => set({ distance }),
@@ -412,7 +418,10 @@ export const useStore = create<GameState>((set, get) => ({
 
     if (distance >= 500) localStorage.setItem('skin:magenta', 'true');
     if (state.cargoCollected >= 10) localStorage.setItem('skin:gold', 'true');
-    localStorage.setItem('bestScore', String(bestScore));
+    
+    // Save to user-scoped localStorage
+    const localKey = `bestScore_${state.user?.id || 'guest'}`;
+    localStorage.setItem(localKey, String(bestScore));
 
     set({
       bestScore,
@@ -446,12 +455,28 @@ export const useStore = create<GameState>((set, get) => ({
 
     if (!state.user) return;
     
+    const xpEarned = Math.floor(finalScore / 10);
+    
     // Optimistically update the user's credits (coins) balance
     set({
-      user: { ...state.user, coins: state.user.coins + coins } as UserProfile
+      user: { ...state.user, coins: state.user.coins + coins, xp: state.user.xp + xpEarned, highScore: bestScore }
     });
 
     try {
+      // Also update the database.
+      fetch(`${BACKEND_URL}/api/user/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          userId: state.user.id, 
+          distance, 
+          coins, 
+          xp: xpEarned, 
+          cargoCollected: state.cargoCollected,
+          score: finalScore
+        })
+      });
+
       const payload = { 
         userId: state.user.id, 
         distance: finalScore, 
