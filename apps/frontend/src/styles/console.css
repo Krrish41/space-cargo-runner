@@ -301,7 +301,8 @@
   transition: transform 0.15s ease-out, color 0.15s ease-out;
 }
 
-.hud-score-card strong.score-pop {
+.hud-score-card strong.score-pop,
+.hud-dashboard-center strong.score-pop {
   transform: scale(1.15);
   color: #fff;
   text-shadow: 0 0 25px #ffffff, 0 0 15px var(--primary);
@@ -1792,4 +1793,24 @@
   background: rgba(10, 15, 24, 0.4);
   border: 1px solid rgba(255,255,255,0.1);
   color: #8899b5;
+}
+
+/* Themed Scrollbar */
+.live-comms-ticker *::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.live-comms-ticker *::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.live-comms-ticker *::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 204, 0.3);
+  border-radius: 4px;
+}
+
+.live-comms-ticker *::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 204, 0.6);
 }

@@ -370,7 +370,7 @@ function App() {
                   <Coins className="text-secondary" color="var(--primary)" size={14} />
                   <span className="stat-value">{coinsCollected}</span>
                 </div>
-                <div className="hud-item hud-mini-stat hud-score-card" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
                   <Trophy className="text-primary" size={14} />
                   <strong className={`stat-value ${scorePop ? 'score-pop' : ''}`}>{hudScore}</strong>
                 </div>
@@ -922,9 +922,9 @@ function App() {
               <button className="physical-btn" onClick={() => setGameState('SHOP')}><Settings size={18} /> <span>Upgrades</span></button>
               <button className="physical-btn" onClick={() => setGameState('HANGAR')}><Palette size={18} /> <span>Hangar</span></button>
               <button className="physical-btn" onClick={() => setGameState('ACHIEVEMENTS')}><Medal size={18} /> <span>Records</span></button>
-              <button className="physical-btn" onClick={handleOpenLeaderboard}><Trophy size={18} /> <span>Leaderboard</span></button>
+              <button className="physical-btn" onClick={handleOpenLeaderboard}><Trophy size={18} /> <span>Ranks</span></button>
               <button className="physical-btn" onClick={() => setGameState('WITHDRAW')}><Wallet size={18} /> <span>Withdraw</span></button>
-              <button className="physical-btn" onClick={() => setGameState('HOW_TO_PLAY')}><HelpCircle size={18} /> <span>How to Play</span></button>
+              <button className="physical-btn" onClick={() => setGameState('HOW_TO_PLAY')}><HelpCircle size={18} /> <span>Guide</span></button>
             </div>
           </div>
         )}
