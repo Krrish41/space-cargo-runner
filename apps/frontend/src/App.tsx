@@ -52,7 +52,8 @@ function App() {
     upgradeFuel,
     toggleSound,
     toggleMusic,
-    selectSkin
+    selectSkin,
+    gameConfig
   } = useStore();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -739,10 +740,10 @@ function App() {
                   <div className="withdraw-row" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <input
                       type="number"
-                      placeholder="Amount (min 100)"
+                      placeholder={`Amount (min ${gameConfig.minClaimAmount})`}
                       value={withdrawAmount}
                       onChange={(e) => setWithdrawAmount(e.target.value)}
-                      min={100}
+                      min={gameConfig.minClaimAmount}
                       max={user?.coins || 0}
                       style={{
                         flex: 1,
@@ -767,7 +768,7 @@ function App() {
                         isWritePending ||
                         isTxConfirming ||
                         !withdrawAmount ||
-                        parseInt(withdrawAmount) < 100 ||
+                        parseInt(withdrawAmount) < gameConfig.minClaimAmount ||
                         parseInt(withdrawAmount) > user.coins
                       }
                     >
