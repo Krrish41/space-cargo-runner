@@ -24,8 +24,7 @@
 .admin-header {
   display: flex;
   align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
+  justify-content: space-between;
   padding: 16px 24px;
   border-bottom: 1px solid var(--a-line);
   background: rgba(6, 9, 16, 0.9);
@@ -83,10 +82,11 @@
 .admin-bar-label { font-size: 0.62rem; color: var(--a-muted); }
 
 /* ---- Toolbar ---- */
-.admin-toolbar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-.admin-search { display: flex; gap: 8px; flex: 1; min-width: 220px; }
-.admin-search input { flex: 1; }
-.admin-count { color: var(--a-muted); font-size: 0.8rem; white-space: nowrap; flex-shrink: 0; }
+.admin-toolbar { display: flex; gap: 16px; align-items: center; width: 100%; box-sizing: border-box; }
+.admin-search { display: flex; gap: 16px; flex: 1; min-width: 0; width: 100%; box-sizing: border-box; }
+.admin-search input { flex: 1; min-width: 0; width: 100%; box-sizing: border-box; }
+.admin-search button { flex-shrink: 0; box-sizing: border-box; }
+.admin-count { color: var(--a-muted); font-size: 0.8rem; white-space: nowrap; flex-shrink: 0; box-sizing: border-box; }
 .admin-check { display: flex; align-items: center; gap: 8px; color: var(--a-muted); font-size: 0.85rem; cursor: pointer; }
 .admin-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
 .admin-pill {
@@ -198,15 +198,11 @@
 
 /* ---- Responsive ---- */
 @media (max-width: 760px) {
-  .admin-header { padding: 12px 14px; padding-right: 50px; gap: 12px; }
+  .admin-header { padding: 12px 20px; justify-content: space-between; }
   .admin-mobile-menu-btn { 
     display: flex; 
     align-items: center; 
     justify-content: center; 
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    margin: 0; 
   }
   
   .admin-mobile-menu {
@@ -249,6 +245,12 @@
   .admin-main { padding: 14px; }
   .admin-charts { grid-template-columns: 1fr; }
   .admin-card-value { font-size: 1.4rem; }
+
+  /* Mobile Toolbar Stacking */
+  .admin-toolbar { flex-direction: column; align-items: stretch; gap: 12px; }
+  .admin-search { flex-direction: column; gap: 8px; }
+  .admin-search button { width: 100%; }
+  .admin-count { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {
   .admin-spinner { animation-duration: 0.001ms; }
