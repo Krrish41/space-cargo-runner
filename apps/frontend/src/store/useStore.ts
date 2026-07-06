@@ -168,7 +168,8 @@ export const useStore = create<GameState>((set, get) => ({
   shipSkins: [
     { id: 'standard', name: 'Standard Courier', color: '#00ffcc', unlock: 'Unlocked', unlocked: true },
     { id: 'magenta', name: 'Pulse Runner', color: '#ff00ff', unlock: 'Reach 500m', unlocked: localStorage.getItem('skin:magenta') === 'true' || Number(localStorage.getItem('bestScore') || 0) >= 500 },
-    { id: 'gold', name: 'Aureate Hauler', color: '#ffd166', unlock: 'Collect 10 cargo in one run', unlocked: localStorage.getItem('skin:gold') === 'true' }
+    { id: 'gold', name: 'Aureate Hauler', color: '#ffd166', unlock: 'Collect 10 cargo in one run', unlocked: localStorage.getItem('skin:gold') === 'true' },
+    { id: 'ace', name: 'Void Ace', color: '#ff4444', unlock: 'Survive 90s in one run', unlocked: localStorage.getItem('skin:ace') === 'true' }
   ],
   
   health: 100,
@@ -418,6 +419,7 @@ export const useStore = create<GameState>((set, get) => ({
 
     if (distance >= 500) localStorage.setItem('skin:magenta', 'true');
     if (state.cargoCollected >= 10) localStorage.setItem('skin:gold', 'true');
+    if (timeSurvived >= 90) localStorage.setItem('skin:ace', 'true');
     
     // Save to user-scoped localStorage
     const localKey = `bestScore_${state.user?.id || 'guest'}`;
@@ -440,7 +442,8 @@ export const useStore = create<GameState>((set, get) => ({
         unlocked:
           skin.unlocked ||
           (skin.id === 'magenta' && distance >= 500) ||
-          (skin.id === 'gold' && state.cargoCollected >= 10)
+          (skin.id === 'gold' && state.cargoCollected >= 10) ||
+          (skin.id === 'ace' && timeSurvived >= 90)
       })),
       lastRunStats: {
         finalScore,
