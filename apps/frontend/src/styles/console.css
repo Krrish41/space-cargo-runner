@@ -1818,22 +1818,26 @@
 }
 
 /* Themed Scrollbar */
-.live-comms-ticker *::-webkit-scrollbar {
+::-webkit-scrollbar,
+*::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
-.live-comms-ticker *::-webkit-scrollbar-track {
+::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
 }
 
-.live-comms-ticker *::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
   background: rgba(0, 255, 204, 0.3);
   border-radius: 4px;
 }
 
-.live-comms-ticker *::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 255, 204, 0.6);
 }
 
