@@ -692,7 +692,7 @@ function App() {
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ minWidth: '120px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
+                    style={{ width: '150px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
                     onClick={upgradeShield}
                     disabled={!user || user.coins < shieldLevel * 150}
                   >
@@ -715,7 +715,7 @@ function App() {
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ minWidth: '120px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
+                    style={{ width: '150px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
                     onClick={upgradeFuel}
                     disabled={!user || user.coins < fuelLevel * 125}
                   >
