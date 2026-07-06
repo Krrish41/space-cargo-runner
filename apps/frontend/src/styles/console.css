@@ -1322,6 +1322,7 @@
   }
 
   .center-stage {
+    flex-direction: column !important;
     justify-content: flex-start !important;
     align-items: center !important;
     min-height: 0;
@@ -1333,6 +1334,7 @@
   .screen-leaderboard .center-stage,
   .screen-achievements .center-stage,
   .screen-hangar .center-stage,
+  .screen-withdraw .center-stage,
   .screen-game-over .center-stage {
     flex: 0 0 auto !important;
     padding: calc(env(safe-area-inset-top, 0px) + 96px) 8px 12px;
