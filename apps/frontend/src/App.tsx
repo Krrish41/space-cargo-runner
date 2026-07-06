@@ -692,11 +692,11 @@ function App() {
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ minWidth: '130px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}
+                    style={{ minWidth: '120px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
                     onClick={upgradeShield}
                     disabled={!user || user.coins < shieldLevel * 150}
                   >
-                    UPGRADE ({shieldLevel * gameConfig.shieldUpgradeBaseCost} <Coins size={14} />)
+                    UPGRADE ({shieldLevel * gameConfig.shieldUpgradeBaseCost} <Coins size={14} color="#ffd166" />)
                   </button>
                 </div>
                 <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '15px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
@@ -715,11 +715,11 @@ function App() {
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ minWidth: '130px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}
+                    style={{ minWidth: '120px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
                     onClick={upgradeFuel}
                     disabled={!user || user.coins < fuelLevel * 125}
                   >
-                    UPGRADE ({fuelLevel * gameConfig.fuelUpgradeBaseCost} <Coins size={14} />)
+                    UPGRADE ({fuelLevel * gameConfig.fuelUpgradeBaseCost} <Coins size={14} color="#ffd166" />)
                   </button>
                 </div>
               </div>
