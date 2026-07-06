@@ -1795,8 +1795,8 @@
 }
 .spinning-coin {
   animation: spinY 2.5s linear infinite;
-  color: #ff00ff;
-  filter: drop-shadow(0 0 8px #ff00ff);
+  color: #ffd166;
+  filter: drop-shadow(0 0 8px rgba(255, 209, 102, 0.6));
 }
 
 .physical-btn.tab-active {
