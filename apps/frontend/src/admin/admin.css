@@ -187,7 +187,8 @@
 /* ---- Responsive ---- */
 @media (max-width: 760px) {
   .admin-header { padding: 12px 14px; gap: 12px; }
-  .admin-tabs { order: 3; width: 100%; margin-left: 0; overflow-x: auto; }
+  .admin-tabs { order: 3; width: 100%; margin-left: 0; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .admin-tab { white-space: nowrap; flex-shrink: 0; }
   .admin-header-actions { margin-left: auto; }
   .admin-main { padding: 14px; }
   .admin-charts { grid-template-columns: 1fr; }
