@@ -69,6 +69,7 @@ function App() {
   const leaderboardError = useStore((state) => state.leaderboardError);
   const fetchLeaderboard = useStore((state) => state.fetchLeaderboard);
   const fetchLiveFeed = useStore((state) => state.fetchLiveFeed);
+  const fetchGameConfig = useStore((state) => state.fetchGameConfig);
   const [showFirstRunBrief, setShowFirstRunBrief] = useState(() => localStorage.getItem('tutorialSeen') !== 'true');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const withdrawStatus = useStore((state) => state.withdrawStatus);
@@ -120,8 +121,8 @@ function App() {
   // Handle withdrawal submission
   const handleWithdraw = async () => {
     const amount = parseInt(withdrawAmount);
-    if (isNaN(amount) || amount < 100) {
-      setWithdrawStatus('error', 'Minimum withdrawal is 100 coins');
+    if (isNaN(amount) || amount < gameConfig.minClaimAmount) {
+      setWithdrawStatus('error', `Minimum withdrawal is ${gameConfig.minClaimAmount} coins`);
       return;
     }
 
@@ -143,6 +144,7 @@ function App() {
   useEffect(() => {
     fetchLeaderboard();
     fetchLiveFeed();
+    fetchGameConfig();
     
     const handleScoreUpdated = (updatedUser: UserProfile) => {
       // Use get() to avoid dependency array stale closures
