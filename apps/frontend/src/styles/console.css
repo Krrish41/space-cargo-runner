@@ -1352,11 +1352,11 @@
     font-size: clamp(2.35rem, 14vw, 3.25rem);
     line-height: 1.12;
     letter-spacing: 2px;
-    margin: 0 0 8px;
+    margin: 40px 0 8px;
   }
 
   .tutorial-brief {
-    width: calc(100vw - 20px);
+    width: 100%;
     padding: 12px;
     gap: 10px;
     align-items: flex-start;
@@ -1367,7 +1367,7 @@
   }
 
   .mission-strip {
-    width: calc(100vw - 20px);
+    width: 100%;
     grid-template-columns: 1fr;
     gap: 8px;
     margin-top: 0;
@@ -1379,8 +1379,8 @@
   }
 
   .live-comms-ticker {
-    width: calc(100vw - 20px) !important;
-    height: 100px !important;
+    width: 100% !important;
+    height: 160px !important;
     margin-top: 10px !important;
     padding: 5px !important;
   }
