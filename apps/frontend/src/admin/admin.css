@@ -148,8 +148,7 @@
 .admin-config-field { display: flex; flex-direction: column; gap: 6px; }
 .admin-config-label { font-size: 0.8rem; color: var(--a-text); }
 .admin-config-hint { font-size: 0.68rem; color: var(--a-muted); }
-.admin-config-field.admin-toggle { flex-direction: row; align-items: center; flex-wrap: wrap; gap: 10px; }
-.admin-config-field.admin-toggle input { width: 20px; height: 20px; }
+.admin-config-field.admin-toggle input { width: 20px; height: 20px; flex-shrink: 0; }
 .admin-config-actions { display: flex; align-items: center; gap: 14px; justify-content: flex-end; }
 .admin-saved { color: var(--a-primary); font-size: 0.85rem; }
 .admin-note { color: var(--a-muted); font-size: 0.76rem; }

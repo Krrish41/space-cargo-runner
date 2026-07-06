@@ -563,11 +563,16 @@ function ConfigTab() {
 
         <label className="admin-config-field admin-toggle">
           <span className="admin-config-label">Maintenance mode</span>
-          <input
-            type="checkbox"
-            checked={cfg.maintenanceMode}
-            onChange={(e) => setCfg((c) => ({ ...c, maintenanceMode: e.target.checked }))}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', height: '40px', paddingLeft: '4px' }}>
+            <input
+              type="checkbox"
+              checked={cfg.maintenanceMode}
+              onChange={(e) => setCfg((c) => ({ ...c, maintenanceMode: e.target.checked }))}
+            />
+            <span style={{ marginLeft: '12px', fontSize: '0.9rem', color: 'var(--a-text)' }}>
+              {cfg.maintenanceMode ? 'Enabled' : 'Disabled'}
+            </span>
+          </div>
           <span className="admin-config-hint">Pause score submission &amp; leaderboard writes</span>
         </label>
       </div>
