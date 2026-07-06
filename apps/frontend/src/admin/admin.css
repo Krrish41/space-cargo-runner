@@ -210,13 +210,14 @@
   
   .admin-mobile-menu {
     display: none;
-    position: fixed;
-    top: 60px; /* roughly below header */
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: absolute;
+    top: 100%;
+    left: -1px;
+    right: -1px;
+    height: 100vh;
     background: rgba(6, 9, 16, 0.98);
     backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0, 255, 204, 0.16);
     flex-direction: column;
     justify-content: flex-start;
     padding: 20px;
