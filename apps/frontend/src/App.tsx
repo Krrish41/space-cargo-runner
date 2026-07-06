@@ -159,6 +159,22 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        const state = useStore.getState().gameState;
+        if (state === 'PLAYING') {
+          useStore.getState().setGameState('PAUSED');
+        } else if (state === 'PAUSED') {
+          useStore.getState().setGameState('PLAYING');
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Initialize Guest User
   useEffect(() => {
     if (!user && !initAttempted.current) {
@@ -291,7 +307,10 @@ function App() {
                 <>
                   <div className="hud-bars" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     <div className={`hud-item ${health <= (maxHealth * 0.25) ? 'status-warning' : ''}`} style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '2px', marginBottom: '4px' }}>HULL INTEGRITY</div>
+                      <div className="hud-label-container" style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '2px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Shield size={12} className="text-secondary" />
+                        <span className="hide-on-mobile">HULL INTEGRITY</span>
+                      </div>
                       <div className="health-bar-container">
                         <div 
                           className="health-bar-fill" 
@@ -304,7 +323,10 @@ function App() {
                     </div>
 
                     <div className={`hud-item ${fuel <= (maxFuel * 0.25) ? 'status-warning' : ''}`} style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '2px', marginBottom: '4px' }}>FUEL CORE DISSIPATION</div>
+                      <div className="hud-label-container" style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '2px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Gauge size={12} className="text-primary" />
+                        <span className="hide-on-mobile">FUEL CORE DISSIPATION</span>
+                      </div>
                       <div className="fuel-bar-container">
                         <div className="fuel-bar-fill" style={{ width: `${(fuel / maxFuel) * 100}%`, background: fuel <= (maxFuel * 0.25) ? '#ff3366' : '#00aaff' }}></div>
                       </div>
@@ -315,8 +337,11 @@ function App() {
 
                     {/* EXPERIENCE/RANK */}
                     <div className="hud-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <div style={{ fontSize: '0.7rem', color: '#00ffcc', letterSpacing: '2px', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                        <span>PILOT RANK</span>
+                      <div className="hud-label-container" style={{ fontSize: '0.7rem', color: '#00ffcc', letterSpacing: '2px', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', gap: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                           <Medal size={12} className="text-primary" />
+                           <span className="hide-on-mobile">PILOT RANK</span>
+                        </div>
                         <span>LVL {getPilotLevel()}</span>
                       </div>
                       <div className="fuel-bar-container" style={{ width: '150px' }}>
