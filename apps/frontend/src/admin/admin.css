@@ -107,6 +107,9 @@
   background: rgba(0, 0, 0, 0.4); border: 1px solid var(--a-line); color: var(--a-text);
   padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none;
 }
+.admin-shell select option {
+  background: var(--a-panel); color: var(--a-text);
+}
 .admin-shell input:focus, .admin-shell select:focus { border-color: var(--a-primary); box-shadow: 0 0 0 2px rgba(0, 255, 204, 0.15); }
 .admin-btn {
   padding: 10px 16px; border-radius: 8px; border: 1px solid var(--a-line);
@@ -166,7 +169,7 @@
 .admin-modal h2 { margin: 0; font-size: 1.1rem; }
 .admin-modal label { display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; color: var(--a-muted); }
 .admin-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.admin-modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+.admin-modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
 
 /* ---- Login ---- */
 .admin-login {
