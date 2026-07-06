@@ -88,9 +88,9 @@
 
 /* ---- Toolbar ---- */
 .admin-toolbar { display: flex; gap: 16px; align-items: center; width: 100%; box-sizing: border-box; }
-.admin-search { display: flex; gap: 16px; flex: 1; min-width: 0; width: 100%; box-sizing: border-box; }
-.admin-search input { flex: 1; min-width: 0; width: 100%; box-sizing: border-box; }
-.admin-search button { flex-shrink: 0; box-sizing: border-box; }
+.admin-search { display: flex; gap: 16px; flex: 1; min-width: 0; width: 100%; box-sizing: border-box; margin: 0; }
+.admin-search input { flex: 1; min-width: 0; width: 100%; box-sizing: border-box; margin: 0; }
+.admin-search button { flex-shrink: 0; box-sizing: border-box; margin: 0; }
 .admin-count { color: var(--a-muted); font-size: 0.8rem; white-space: nowrap; flex-shrink: 0; box-sizing: border-box; }
 .admin-check { display: flex; align-items: center; gap: 8px; color: var(--a-muted); font-size: 0.85rem; cursor: pointer; }
 .admin-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
@@ -252,13 +252,14 @@
   }
   .admin-tab { 
     width: 100%; 
-    text-align: left; 
+    justify-content: flex-start;
     padding: 16px 24px; 
     border-radius: 0; 
     font-size: 1.05rem; 
     margin-bottom: 0; 
     white-space: nowrap; 
     flex-shrink: 0; 
+    box-sizing: border-box;
   }
   .admin-tab.active {
     box-shadow: none;
@@ -279,11 +280,15 @@
     gap: 4px; 
   }
   .admin-mobile-menu .admin-link-btn {
+    width: 100%;
+    justify-content: flex-start;
     border: none;
     border-radius: 0;
     padding: 16px 24px;
     font-size: 1.05rem;
     background: transparent;
+    margin: 0;
+    box-sizing: border-box;
   }
   .admin-mobile-menu .admin-link-btn.logout {
     color: #ff6b8a;
@@ -295,8 +300,8 @@
 
   /* Mobile Toolbar Stacking */
   .admin-toolbar { flex-direction: column; align-items: stretch; gap: 12px; }
-  .admin-search { flex-direction: column; gap: 8px; }
-  .admin-search button { width: 100%; }
+  .admin-search { flex-direction: column; gap: 8px; align-items: stretch; width: 100%; margin: 0; }
+  .admin-search button { width: 100%; margin: 0; }
   .admin-count { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {

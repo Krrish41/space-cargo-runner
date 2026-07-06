@@ -692,7 +692,7 @@ function App() {
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ minWidth: '130px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}
+                    style={{ minWidth: '130px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                     onClick={upgradeShield}
                     disabled={!user || user.coins < shieldLevel * 150}
                   >
@@ -708,14 +708,14 @@ function App() {
                       <span style={{ color: '#fff', fontWeight: 'bold' }}>LVL {fuelLevel + 1}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', whiteSpace: 'nowrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
-                      <span style={{ opacity: 0.7 }}>CAPACITY {maxFuel}</span>
+                      <span style={{ opacity: 0.7 }}>FUEL {maxFuel}</span>
                       <ArrowRight size={14} style={{ opacity: 0.5 }} />
-                      <span style={{ color: '#00f0ff', fontWeight: 'bold' }}>CAPACITY {maxFuel + 100}</span>
+                      <span style={{ color: '#00f0ff', fontWeight: 'bold' }}>FUEL {maxFuel + 100}</span>
                     </div>
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ minWidth: '130px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}
+                    style={{ minWidth: '130px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                     onClick={upgradeFuel}
                     disabled={!user || user.coins < fuelLevel * 125}
                   >
