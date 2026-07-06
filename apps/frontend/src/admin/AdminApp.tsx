@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Gamepad2 } from 'lucide-react';
+import { Gamepad2, Menu, X } from 'lucide-react';
 import { adminApi, adminToken, AdminApiError } from './adminApi';
 import type {
   AdminAnalytics,
@@ -29,6 +29,7 @@ export default function AdminApp() {
   const [authed, setAuthed] = useState(false);
   const [checking, setChecking] = useState(true);
   const [tab, setTab] = useState<Tab>('overview');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -74,18 +75,29 @@ export default function AdminApp() {
             <span className="admin-sub">Space Cargo Runner · Admin</span>
           </div>
         </div>
-        <nav className="admin-tabs">
+        
+        <button 
+          className="admin-mobile-menu-btn" 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        <nav className={`admin-tabs ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           {TABS.map((t) => (
             <button
               key={t.id}
               className={`admin-tab ${tab === t.id ? 'active' : ''}`}
-              onClick={() => setTab(t.id)}
+              onClick={() => {
+                setTab(t.id);
+                setIsMobileMenuOpen(false);
+              }}
             >
               {t.label}
             </button>
           ))}
         </nav>
-        <div className="admin-header-actions">
+        <div className={`admin-header-actions ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
           <a className="admin-link-btn" href="#/"><Gamepad2 size={16} /> Game</a>
           <button className="admin-link-btn" onClick={handleLogout}>Log out</button>
         </div>
