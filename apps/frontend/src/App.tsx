@@ -43,7 +43,6 @@ function App() {
     fuel,
     maxFuel,
     fuelLevel,
-    handlingLevel,
     setGameState,
     resetRun,
     user,
@@ -51,7 +50,6 @@ function App() {
     syncPlayerStats,
     upgradeShield,
     upgradeFuel,
-    upgradeHandling,
     toggleSound,
     toggleMusic,
     selectSkin,
@@ -701,16 +699,27 @@ function App() {
                     UPGRADE ({shieldLevel * gameConfig.shieldUpgradeBaseCost} <Coins size={14} />)
                   </button>
                 </div>
-                
-                    <span style={{ color: '#c0d4f5', fontSize: '0.9rem' }}>Capacity: {maxFuel} &rarr; {maxFuel + 100}</span>
+                <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '15px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span style={{ fontSize: '1.1rem', color: '#00f0ff', fontWeight: 'bold' }}>PLASMA FUEL CORE</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
+                      <span style={{ opacity: 0.7 }}>LVL {fuelLevel}</span>
+                      <ArrowRight size={14} style={{ opacity: 0.5 }} />
+                      <span style={{ color: '#fff', fontWeight: 'bold' }}>LVL {fuelLevel + 1}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
+                      <span style={{ opacity: 0.7 }}>CAPACITY {maxFuel}</span>
+                      <ArrowRight size={14} style={{ opacity: 0.5 }} />
+                      <span style={{ color: '#00f0ff', fontWeight: 'bold' }}>CAPACITY {maxFuel + 100}</span>
+                    </div>
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ minWidth: '150px', padding: '10px' }}
+                    style={{ minWidth: '130px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}
                     onClick={upgradeFuel}
                     disabled={!user || user.coins < fuelLevel * 125}
                   >
-                    UPGRADE ({fuelLevel * gameConfig.fuelUpgradeBaseCost} <Coins size={14} style={{ display: 'inline', verticalAlign: 'middle' }}/>)
+                    UPGRADE ({fuelLevel * gameConfig.fuelUpgradeBaseCost} <Coins size={14} />)
                   </button>
                 </div>
               </div>
