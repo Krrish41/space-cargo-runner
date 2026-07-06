@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { socket } from '../lib/socket';
+import { BACKEND_URL } from '../lib/config';
 import type { UserProfile, ShipState, PlayerStats, LeaderboardPeriod, GameConfig } from 'shared';
 import { DEFAULT_GAME_CONFIG } from 'shared';
 
@@ -308,7 +309,7 @@ export const useStore = create<GameState>((set, get) => ({
     });
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const backendUrl = BACKEND_URL;
       const res = await fetch(`${backendUrl}/api/ship/upgrade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -355,7 +356,7 @@ export const useStore = create<GameState>((set, get) => ({
     });
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const backendUrl = BACKEND_URL;
       const res = await fetch(`${backendUrl}/api/ship/upgrade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -472,7 +473,7 @@ export const useStore = create<GameState>((set, get) => ({
     const activePeriod = period ?? get().leaderboardPeriod;
     try {
       set({ leaderboardError: false, topRunners: null, leaderboardPeriod: activePeriod });
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const backendUrl = BACKEND_URL;
 
       timeoutId = setTimeout(() => set({ isBackendWakingUp: true }), 3000);
 
@@ -492,7 +493,7 @@ export const useStore = create<GameState>((set, get) => ({
     } catch (e) {
       clearTimeout(timeoutId);
       set({ isBackendWakingUp: false, leaderboardError: true, topRunners: [] });
-      console.warn('Failed to fetch leaderboard:', e);
+      console.warn('[offline] backend unreachable — using offline leaderboard.');
     }
   },
 
@@ -504,7 +505,7 @@ export const useStore = create<GameState>((set, get) => ({
 
   fetchGameConfig: async () => {
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const backendUrl = BACKEND_URL;
       const res = await fetch(`${backendUrl}/api/config`);
       const data = await res.json();
       if (data.success && data.config) {
@@ -512,13 +513,13 @@ export const useStore = create<GameState>((set, get) => ({
       }
     } catch (e) {
       // Non-fatal: keep defaults so the game stays playable offline.
-      console.warn('Failed to fetch game config, using defaults:', e);
+      console.warn('[offline] backend unreachable — using default game config.');
     }
   },
 
   fetchLiveFeed: async () => {
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const backendUrl = BACKEND_URL;
       const res = await fetch(`${backendUrl}/api/feed`);
       const data = await res.json();
       if (data.success && data.feed) {
@@ -527,7 +528,7 @@ export const useStore = create<GameState>((set, get) => ({
         throw new Error('Feed fetch failed');
       }
     } catch (e) {
-      console.warn('Failed to fetch live feed history:', e);
+      console.warn('[offline] backend unreachable — live feed offline.');
     }
   },
 
@@ -535,7 +536,7 @@ export const useStore = create<GameState>((set, get) => ({
     const state = get();
     if (!state.user) return;
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const backendUrl = BACKEND_URL;
       const res = await fetch(`${backendUrl}/api/user/rename`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -567,7 +568,7 @@ export const useStore = create<GameState>((set, get) => ({
     set({ withdrawStatus: 'signing' as WithdrawStatus, withdrawError: null });
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+      const backendUrl = BACKEND_URL;
       const res = await fetch(`${backendUrl}/api/rewards/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

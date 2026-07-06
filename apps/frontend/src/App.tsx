@@ -8,7 +8,8 @@ import { CONTRACT_ADDRESS, SPACE_CARGO_TOKEN_ABI } from './contracts/SpaceCargoT
 import { useWalletModal } from './context/WalletModalContext';
 import ProvenanceWalletModal from './components/ui/ProvenanceWalletModal';
 import EditPilotModal from './components/ui/EditPilotModal';
-import { socket } from './lib/socket';
+import { socket, connectSocket } from './lib/socket';
+import { BACKEND_URL } from './lib/config';
 import type { UserProfile } from 'shared';
 import './App.css';
 import './styles/console.css';
@@ -171,7 +172,7 @@ function App() {
           if (storedUserId) payload.userId = storedUserId;
           else if (storedGuestId) payload.username = storedGuestId;
 
-          const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+          const backendUrl = BACKEND_URL;
           const res = await fetch(`${backendUrl}/api/auth`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -183,11 +184,12 @@ function App() {
             localStorage.setItem('guestId', data.user.username); // Keep for legacy
             setUser(data.user);
             syncPlayerStats(data.user);
+            connectSocket();
           } else {
             throw new Error('Backend auth failed: ' + (data.message || 'No user returned'));
           }
         } catch (e) {
-          console.warn('Failed to init guest from backend. Falling back to offline mode:', e);
+          console.warn('[offline] backend unreachable — Failed to init guest from backend. Falling back to offline mode.');
           // Offline Fallback so the game doesn't permanently lock out
           const offlineUser = {
             id: 'offline-' + Math.random().toString(36).substring(2, 9),
@@ -212,7 +214,7 @@ function App() {
     if (isConnected && address && user && !walletBound) {
       const bindWallet = async () => {
         try {
-          const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+          const backendUrl = BACKEND_URL;
           const res = await fetch(`${backendUrl}/api/wallet/bind`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -229,7 +231,7 @@ function App() {
             throw new Error('Backend wallet bind failed: ' + (data.message || 'No user returned'));
           }
         } catch (e) {
-          console.warn('Failed to bind wallet with backend. Simulating local bind.', e);
+          console.warn('[offline] backend unreachable — Failed to bind wallet. Falling back to offline mode.', e);
           setUser({ ...user, walletAddress: address as string, username: 'Linked Pilot' });
           setWalletBound(true);
         }

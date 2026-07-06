@@ -6,7 +6,9 @@ import type {
   GameConfig,
 } from 'shared';
 
-const BACKEND = (import.meta.env.VITE_BACKEND_URL as string) || 'http://localhost:3001';
+import { BACKEND_URL } from '../lib/config';
+
+const BACKEND = BACKEND_URL;
 const TOKEN_KEY = 'scr_admin_token';
 
 export const adminToken = {

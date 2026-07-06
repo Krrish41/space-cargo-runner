@@ -1,4 +1,15 @@
 import { io } from 'socket.io-client';
+import { BACKEND_URL } from './config';
 
-const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
-export const socket = io(SOCKET_URL);
+export const socket = io(BACKEND_URL, {
+  autoConnect: false,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 2000,
+  reconnectionDelayMax: 15000
+});
+
+export function connectSocket() {
+  if (socket.disconnected) {
+    socket.connect();
+  }
+}
