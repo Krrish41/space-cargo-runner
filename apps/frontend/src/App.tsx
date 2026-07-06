@@ -306,45 +306,51 @@ function App() {
               {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
                 <>
                   <div className="hud-bars" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    <div className={`hud-item ${health <= (maxHealth * 0.25) ? 'status-warning' : ''}`} style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <div className="hud-label-container" style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '2px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Shield size={12} className="text-secondary" />
-                        <span className="hide-on-mobile">HULL INTEGRITY</span>
+                    {/* HULL */}
+                    <div className={`hud-item ${health <= (maxHealth * 0.25) ? 'status-warning' : ''}`} style={{ flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
+                      <div className="hud-label-container" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Shield size={14} className="text-secondary" />
+                          <span className="hide-on-mobile" style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '1px' }}>HULL</span>
+                        </div>
+                        <div className={health <= (maxHealth * 0.25) ? 'status-warning-text' : ''} style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                          {health}/{maxHealth} HP
+                        </div>
                       </div>
-                      <div className="health-bar-container">
+                      <div className="health-bar-container" style={{ width: '100%' }}>
                         <div 
                           className="health-bar-fill" 
                           style={{ width: `${(health / maxHealth) * 100}%`, background: health <= (maxHealth * 0.25) ? '#ff3366' : 'var(--primary)' }}
                         ></div>
                       </div>
-                      <div className={health <= (maxHealth * 0.25) ? 'status-warning-text' : ''} style={{ fontSize: '0.8rem', marginTop: '4px' }}>
-                        {health} / {maxHealth} HP {health <= (maxHealth * 0.25) && '(!)'}
-                      </div>
                     </div>
 
-                    <div className={`hud-item ${fuel <= (maxFuel * 0.25) ? 'status-warning' : ''}`} style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <div className="hud-label-container" style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '2px', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Gauge size={12} className="text-primary" />
-                        <span className="hide-on-mobile">FUEL CORE DISSIPATION</span>
+                    {/* FUEL */}
+                    <div className={`hud-item ${fuel <= (maxFuel * 0.25) ? 'status-warning' : ''}`} style={{ flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
+                      <div className="hud-label-container" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Gauge size={14} className="text-primary" />
+                          <span className="hide-on-mobile" style={{ fontSize: '0.7rem', color: '#8899b5', letterSpacing: '1px' }}>FUEL</span>
+                        </div>
+                        <div className={fuel <= (maxFuel * 0.25) ? 'status-warning-text' : ''} style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>
+                          {Math.floor(fuel)}/{maxFuel} EU
+                        </div>
                       </div>
-                      <div className="fuel-bar-container">
+                      <div className="fuel-bar-container" style={{ width: '100%' }}>
                         <div className="fuel-bar-fill" style={{ width: `${(fuel / maxFuel) * 100}%`, background: fuel <= (maxFuel * 0.25) ? '#ff3366' : '#00aaff' }}></div>
-                      </div>
-                      <div className={fuel <= (maxFuel * 0.25) ? 'status-warning-text' : ''} style={{ fontSize: '0.8rem', marginTop: '4px' }}>
-                        {Math.floor(fuel)} / {maxFuel} EU {fuel <= (maxFuel * 0.25) && '(!)'}
                       </div>
                     </div>
 
                     {/* EXPERIENCE/RANK */}
-                    <div className="hud-item" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <div className="hud-label-container" style={{ fontSize: '0.7rem', color: '#00ffcc', letterSpacing: '2px', marginBottom: '4px', display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', gap: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                           <Medal size={12} className="text-primary" />
-                           <span className="hide-on-mobile">PILOT RANK</span>
+                    <div className="hud-item" style={{ flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
+                      <div className="hud-label-container" style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginBottom: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                           <Medal size={14} className="text-primary" />
+                           <span className="hide-on-mobile" style={{ fontSize: '0.7rem', color: '#00ffcc', letterSpacing: '1px' }}>RANK</span>
                         </div>
-                        <span>LVL {getPilotLevel()}</span>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#00ffcc' }}>LVL {getPilotLevel()}</span>
                       </div>
-                      <div className="fuel-bar-container" style={{ width: '150px' }}>
+                      <div className="fuel-bar-container" style={{ width: '100%' }}>
                         <div className="xp-bar-fill" style={{ width: `${getXpProgress()}%` }}></div>
                       </div>
                     </div>
@@ -357,17 +363,16 @@ function App() {
             {(gameState === 'PLAYING' || gameState === 'PAUSED') && (
               <div className="hud-dashboard-center">
                 <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
-                  <Rocket className="text-primary" />
+                  <Rocket className="text-primary" size={14} />
                   <span className="stat-value">{Math.floor(distance)}m</span>
                 </div>
                 <div className="hud-item hud-mini-stat" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
-                  <Coins className="text-secondary" color="var(--primary)" />
+                  <Coins className="text-secondary" color="var(--primary)" size={14} />
                   <span className="stat-value">{coinsCollected}</span>
                 </div>
-                <div className="hud-score-card" style={{ border: 'none', background: 'transparent', boxShadow: 'none', margin: 0, padding: '0 15px', borderLeft: '1px solid rgba(0, 255, 204, 0.2)', borderRight: '1px solid rgba(0, 255, 204, 0.2)', borderRadius: 0 }}>
-                  <span style={{ color: 'var(--primary)', textShadow: '0 0 5px var(--primary)' }}>Score</span>
-                  <strong className={scorePop ? 'score-pop' : ''} style={{ color: 'var(--primary)', textShadow: '0 0 10px var(--primary)' }}>{hudScore}</strong>
-                  <small style={{ color: 'var(--primary)' }}>{formatTime(timeSurvived)} | Cargo {cargoCollected}</small>
+                <div className="hud-item hud-mini-stat hud-score-card" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>
+                  <Trophy className="text-primary" size={14} />
+                  <strong className={`stat-value ${scorePop ? 'score-pop' : ''}`}>{hudScore}</strong>
                 </div>
                 {activePowerUp && (
                   <div className="powerup-pill" style={{ border: 'none', background: 'transparent', boxShadow: 'none' }}>

@@ -1419,6 +1419,13 @@
     pointer-events: none;
   }
 
+  .hud-top-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+  }
+
   .hud-cluster {
     width: 100%;
     display: flex !important;
@@ -1437,20 +1444,14 @@
   }
 
   .hud-bars .hud-item {
-    gap: 4px;
+    gap: 0px;
     flex: 1;
   }
 
   .hud-bars .hud-item > .hud-label-container {
     font-size: 0.85rem !important;
-    margin-bottom: 2px !important;
-    justify-content: center;
-  }
-
-  .hud-bars .hud-item > div:last-child {
-    font-size: 0.6rem !important;
-    margin-top: 2px !important;
-    text-align: center;
+    margin-bottom: 4px !important;
+    width: 100%;
   }
 
   .health-bar-container,
@@ -1674,32 +1675,44 @@
   .hud-dashboard-center {
     position: static;
     transform: none;
-    width: auto;
+    width: 100%;
     max-width: none;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
-    padding: 0;
-    margin: 0;
+    padding: 6px 10px;
+    margin: 4px 0 0 0;
+    background: rgba(10, 15, 24, 0.7);
+    border: 1px solid rgba(0, 255, 204, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
   }
   
   .hud-dashboard-center .hud-mini-stat {
     justify-content: center;
     width: auto;
-    min-height: 24px;
-    padding: 3px 6px;
+    min-height: auto;
+    padding: 0;
     background: transparent;
     border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
   }
 
   .hud-dashboard-center .hud-mini-stat svg {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
   }
 
-  .hud-dashboard-center .hud-mini-stat span {
-    font-size: 0.75rem;
+  .hud-dashboard-center .hud-mini-stat .stat-value {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--primary);
   }
   
   .hud-score-card {
@@ -1708,8 +1721,8 @@
     border: none !important;
     padding: 0 !important;
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+    flex-direction: row;
+    align-items: center;
   }
 
   .hud-score-card strong {
