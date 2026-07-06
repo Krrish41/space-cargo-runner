@@ -9,6 +9,7 @@
   --a-muted: #8090ad;
   height: 100svh;
   overflow-y: auto;
+  overflow-x: hidden;
   background:
     radial-gradient(1200px 700px at 10% -10%, rgba(0, 255, 204, 0.06), transparent 60%),
     radial-gradient(1000px 700px at 100% 110%, rgba(255, 0, 255, 0.06), transparent 60%),
@@ -56,8 +57,8 @@
 }
 .admin-link-btn:hover { color: var(--a-primary); border-color: var(--a-primary); }
 
-.admin-main { padding: 24px; max-width: 1280px; margin: 0 auto; }
-.admin-section { display: flex; flex-direction: column; gap: 20px; }
+.admin-main { padding: 24px; max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; overflow-x: hidden; }
+.admin-section { display: flex; flex-direction: column; gap: 20px; min-width: 0; width: 100%; }
 
 /* ---- Cards ---- */
 .admin-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
@@ -115,7 +116,7 @@
 .admin-btn.danger:hover:not(:disabled) { border-color: #ff3366; color: #ff3366; }
 
 /* ---- Table ---- */
-.admin-table-wrap { overflow-x: auto; border: 1px solid var(--a-line); border-radius: 12px; }
+.admin-table-wrap { overflow-x: auto; border: 1px solid var(--a-line); border-radius: 12px; width: 100%; min-width: 0; }
 .admin-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 720px; }
 .admin-table th {
   text-align: left; padding: 12px 14px; color: var(--a-muted); font-weight: 600;
