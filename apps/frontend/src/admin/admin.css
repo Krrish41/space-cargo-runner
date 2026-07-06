@@ -7,8 +7,8 @@
   --a-secondary: #ff00ff;
   --a-text: #dbe8ff;
   --a-muted: #8090ad;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100svh;
+  overflow-y: auto;
   background:
     radial-gradient(1200px 700px at 10% -10%, rgba(0, 255, 204, 0.06), transparent 60%),
     radial-gradient(1000px 700px at 100% 110%, rgba(255, 0, 255, 0.06), transparent 60%),
