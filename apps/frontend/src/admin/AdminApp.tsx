@@ -77,10 +77,11 @@ export default function AdminApp() {
         </div>
         
         <button 
-          className="admin-mobile-menu-btn" 
+          className={`admin-mobile-menu-btn ${isMobileMenuOpen ? 'open' : ''}`} 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          <Menu size={24} className="icon-menu" />
+          <X size={24} className="icon-close" />
         </button>
 
         <div className={`admin-mobile-menu ${isMobileMenuOpen ? 'mobile-open' : ''}`}>

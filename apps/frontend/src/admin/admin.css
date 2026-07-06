@@ -202,6 +202,28 @@
   height: 36px;
   align-items: center;
   justify-content: center;
+  position: relative;
+}
+.admin-mobile-menu-btn .icon-menu,
+.admin-mobile-menu-btn .icon-close {
+  position: absolute;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.admin-mobile-menu-btn .icon-menu {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+.admin-mobile-menu-btn .icon-close {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+.admin-mobile-menu-btn.open .icon-menu {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+.admin-mobile-menu-btn.open .icon-close {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
 }
 .admin-mobile-menu-btn:hover { color: var(--a-primary); }
 
@@ -229,13 +251,17 @@
     top: 100%;
     left: -1px;
     right: -1px;
-    height: 100vh;
+    height: calc(100vh - 60px);
     background: var(--a-bg);
     border-top: 1px solid rgba(0, 255, 204, 0.16);
     flex-direction: column;
     justify-content: flex-start;
     padding: 24px 0;
     z-index: 9999;
+    overflow-y: auto;
+  }
+  .admin-mobile-menu::-webkit-scrollbar {
+    display: none;
   }
   .admin-mobile-menu.mobile-open {
     display: flex;
