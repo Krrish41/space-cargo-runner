@@ -807,8 +807,10 @@ function App() {
               <div className="achievement-grid">
                 {achievements.map((achievement) => (
                   <div key={achievement.id} className={`achievement-card ${achievement.unlocked ? 'unlocked' : ''}`}>
-                    <Medal size={26} />
-                    <strong>{achievement.name}</strong>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                      <Medal size={24} />
+                      <strong style={{ fontSize: '1.1rem' }}>{achievement.name}</strong>
+                    </div>
                     <span>{achievement.description}</span>
                   </div>
                 ))}
@@ -841,8 +843,10 @@ function App() {
                     onClick={() => selectSkin(skin.id)}
                     disabled={!skin.unlocked}
                   >
-                    <span className="skin-swatch" style={{ background: skin.color }}></span>
-                    <strong>{skin.name}</strong>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                      <span className="skin-swatch" style={{ background: skin.color }}></span>
+                      <strong style={{ fontSize: '1.1rem' }}>{skin.name}</strong>
+                    </div>
                     <small>{skin.unlocked ? selectedSkinId === skin.id ? 'Equipped' : 'Available' : skin.unlock}</small>
                   </button>
                 ))}
