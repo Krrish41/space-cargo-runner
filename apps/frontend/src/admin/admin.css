@@ -103,6 +103,7 @@
 
 /* ---- Inputs & buttons ---- */
 .admin-shell input, .admin-shell select {
+  width: 100%; box-sizing: border-box; margin: 0;
   background: rgba(0, 0, 0, 0.4); border: 1px solid var(--a-line); color: var(--a-text);
   padding: 10px 12px; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none;
 }
