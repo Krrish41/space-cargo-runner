@@ -124,6 +124,10 @@
 .admin-btn.danger { color: #ff6b8a; border-color: rgba(255, 51, 102, 0.4); }
 .admin-btn.danger:hover:not(:disabled) { border-color: #ff3366; color: #ff3366; }
 
+.admin-toolbar { display: flex; align-items: center; justify-content: flex-end; margin-bottom: 16px; }
+.admin-check { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--a-text); cursor: pointer; }
+.admin-check input { width: 16px; height: 16px; margin: 0; cursor: pointer; flex-shrink: 0; }
+
 /* ---- Table ---- */
 .admin-table-wrap { overflow-x: auto; border: 1px solid var(--a-line); border-radius: 12px; width: 100%; min-width: 0; }
 .admin-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; min-width: 720px; }
@@ -170,6 +174,7 @@
 .admin-modal label { display: flex; flex-direction: column; gap: 6px; font-size: 0.78rem; color: var(--a-muted); }
 .admin-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .admin-modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+.admin-modal-actions .admin-btn { width: 100%; box-sizing: border-box; }
 
 /* ---- Login ---- */
 .admin-login {
