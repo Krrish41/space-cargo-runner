@@ -593,7 +593,7 @@ function App() {
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/controls.png`} alt="Controls" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>CONTROLS:</strong> Steer using Arrow Keys, screen drag, or gamepad. [P] / [SPACE BAR] to pause. Manage velocity for peak performance.
+                    <strong>CONTROLS:</strong> Arrow Keys, drag, or gamepad. [P] / [SPACE] to pause.
                   </div>
                 </div>
                 <div className="manual-entry">
@@ -605,7 +605,7 @@ function App() {
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/data-cache.png`} alt="Data Cache" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>DATA CACHE:</strong> Highly encrypted corporate information drives. Collect for a massive multiplier to your score, credits, and XP.
+                    <strong>DATA CACHE:</strong> Collect for a massive score, credits, and XP multiplier.
                   </div>
                 </div>
                 <div className="manual-entry">
@@ -617,13 +617,13 @@ function App() {
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/mine.png`} alt="Mine" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>PROXIMITY MINE:</strong> Highly volatile explosive hazard. Direct impact triggers a catastrophic detonation, instantly draining a massive portion of your fuel reserves.
+                    <strong>PROXIMITY MINE:</strong> Avoid. Direct impact heavily drains fuel.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/debris.png`} alt="Debris" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>SPACE DEBRIS:</strong> Jagged metallic wreckage scattered in orbit. Scraping against debris causes minor fuel loss and momentarily knocks your ship off its trajectory.
+                    <strong>SPACE DEBRIS:</strong> Scraping causes minor fuel loss and knocks you off course.
                   </div>
                 </div>
                 <div className="manual-entry">
@@ -635,25 +635,25 @@ function App() {
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/power-shield.png`} alt="Shield" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>SHIELD GENERATOR:</strong> Deploys a temporary quantum barrier around the ship. Absorbs exactly one direct impact from an asteroid or hazard without draining fuel.
+                    <strong>SHIELD GENERATOR:</strong> Absorbs one direct impact without draining fuel.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/power-magnet.png`} alt="Magnet" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>GRAVITY MAGNET:</strong> Activates a localized tractor beam. Automatically pulls all nearby Cargo and Data caches directly to your ship for 10 seconds.
+                    <strong>GRAVITY MAGNET:</strong> Pulls nearby cargo and data to your ship for 10s.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/power-double.png`} alt="Double Score" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>DATA MULTIPLIER (2X):</strong> Overclocks the ship's processing core. All score, XP, and credits collected from Cargo and Data are doubled for the next 15 seconds.
+                    <strong>DATA MULTIPLIER (2X):</strong> Doubles all score, XP, and credits for 15s.
                   </div>
                 </div>
                 <div className="manual-entry">
                   <img src={`${import.meta.env.BASE_URL}assets/power-slow.png`} alt="Slow Motion" className="manual-sprite" />
                   <div className="manual-text">
-                    <strong>TEMPORAL SHIFT (SLOW-MO):</strong> Engages a time-dilation drive. Slows down all incoming asteroids and hazards by 50% while maintaining your ship's maneuverability, allowing for precision dodging.
+                    <strong>TEMPORAL SHIFT (SLOW-MO):</strong> Slows hazards by 50% for precision dodging.
                   </div>
                 </div>
               </div>
