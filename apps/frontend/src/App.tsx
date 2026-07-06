@@ -725,14 +725,14 @@ function App() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <span style={{ fontSize: '1.2rem', color: '#ffd166', letterSpacing: '1px' }}>WITHDRAW TO WALLET</span>
-                      <span style={{ color: '#8899b5', fontSize: '0.85rem' }}>Convert in-game coins to SCR tokens on SecureChain</span>
+                      <span style={{ color: '#8899b5', fontSize: '0.85rem' }}>Convert in-game coins to SCAI tokens on SecureChain</span>
                     </div>
                     <ArrowDownToLine size={28} color="#ffd166" />
                   </div>
 
                   {onChainBalance !== undefined && (
                     <div style={{ color: '#ffd166', fontSize: '0.9rem', marginBottom: '10px', fontFamily: 'Courier New' }}>
-                      ON-CHAIN BALANCE: {parseFloat(formatEther(onChainBalance as bigint)).toFixed(0)} SCR
+                      ON-CHAIN BALANCE: {parseFloat(formatEther(onChainBalance as bigint)).toFixed(0)} SCAI
                     </div>
                   )}
 
