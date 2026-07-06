@@ -1378,9 +1378,9 @@
 
   .live-comms-ticker {
     width: calc(100vw - 20px) !important;
-    height: 112px !important;
+    height: 100px !important;
     margin-top: 10px !important;
-    padding: 12px !important;
+    padding: 5px !important;
   }
 
   .console-dashboard {
@@ -1617,7 +1617,7 @@
   }
 
   .live-comms-ticker {
-    height: 104px !important;
+    height: 90px !important;
   }
 }
 
