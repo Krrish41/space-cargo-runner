@@ -188,11 +188,13 @@
 
 /* ---- Login ---- */
 .admin-login {
-  width: 100%; max-width: 380px; background: var(--a-panel); border: 1px solid var(--a-line);
+  width: calc(100vw - 32px); max-width: 380px; background: var(--a-panel); border: 1px solid var(--a-line);
   border-radius: 16px; padding: 40px 32px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 50px rgba(0, 255, 204, 0.1);
+  box-sizing: border-box; margin: 0 auto;
 }
 .admin-login h1 { margin: 6px 0 0; font-size: 1.4rem; letter-spacing: 1px; }
+.admin-login .admin-sub { white-space: normal; line-height: 1.4; margin-top: -6px; }
 .admin-login input { width: 100%; text-align: center; }
 .admin-login .admin-btn { width: 100%; }
 .admin-back { color: var(--a-muted); font-size: 0.76rem; text-decoration: none; margin-top: 4px; }
