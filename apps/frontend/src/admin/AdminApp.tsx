@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Gamepad2, Menu, X } from 'lucide-react';
+import { Gamepad2, Menu, X, LogOut } from 'lucide-react';
 import { adminApi, adminToken, AdminApiError } from './adminApi';
 import type {
   AdminAnalytics,
@@ -100,7 +100,7 @@ export default function AdminApp() {
           </nav>
           <div className="admin-header-actions">
             <a className="admin-link-btn" href="#/"><Gamepad2 size={16} /> Game</a>
-            <button className="admin-link-btn logout" onClick={handleLogout}>Log out</button>
+            <button className="admin-link-btn logout" onClick={handleLogout}><LogOut size={16} /> LOG OUT</button>
           </div>
         </div>
       </header>
