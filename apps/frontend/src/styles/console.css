@@ -1417,16 +1417,15 @@
 
   .hud-cluster {
     width: 100%;
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) minmax(112px, 34vw);
+    display: flex !important;
+    flex-direction: column !important;
     gap: 6px !important;
-    align-items: start !important;
+    align-items: center !important;
   }
 
   .hud-bars {
     gap: 5px !important;
     min-width: 0;
-    grid-row: span 3;
   }
 
   .hud-bars .hud-item {
@@ -1607,9 +1606,7 @@
 }
 
 @media (max-width: 380px) {
-  .hud-cluster {
-    grid-template-columns: minmax(0, 1fr) 104px;
-  }
+  /* Phase 1: Mobile HUD Restructuring */
 
   .neon-title {
     font-size: 2.25rem;

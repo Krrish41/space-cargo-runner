@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useStore } from './store/useStore';
 import { PhaserGame } from './game/PhaserGame';
-import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine, Wallet } from 'lucide-react';
+import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine, Wallet, HelpCircle } from 'lucide-react';
 import { useAccount, useDisconnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatEther } from 'viem';
 import { CONTRACT_ADDRESS, SPACE_CARGO_TOKEN_ABI } from './contracts/SpaceCargoToken';
@@ -883,20 +883,18 @@ function App() {
         </div>
 
         {/* Bottom Physical Dashboard */}
-        {(gameState === 'MENU' || gameState === 'GAME_OVER') && (
+        {gameState === 'MENU' && (
           <div className="console-dashboard">
             <button className="physical-btn primary" onClick={handleStart} style={{ fontSize: '1.3rem', padding: '14px 24px', width: '100%', marginBottom: '20px' }}>
-              <Rocket style={{ marginRight: '10px' }}/> START ENGINE
+              <Rocket style={{ marginRight: '10px' }}/> <span>START ENGINE</span>
             </button>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px', marginBottom: '15px' }}>
-              <button className="physical-btn" onClick={() => setGameState('SHOP')}><Settings size={18} /> Upgrades</button>
-              <button className="physical-btn" onClick={() => setGameState('HANGAR')}><Palette size={18} /> Hangar</button>
-              <button className="physical-btn" onClick={() => setGameState('ACHIEVEMENTS')}><Medal size={18} /> Records</button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
-              <button className="physical-btn" onClick={handleOpenLeaderboard}><Trophy size={18} /> Leaderboard</button>
-              <button className="physical-btn" onClick={() => setGameState('WITHDRAW')}><Wallet size={18} /> Withdraw</button>
-              <button className="physical-btn" onClick={() => setGameState('HOW_TO_PLAY')}>? How to Play</button>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px', width: '100%' }}>
+              <button className="physical-btn" onClick={() => setGameState('SHOP')}><Settings size={18} /> <span>Upgrades</span></button>
+              <button className="physical-btn" onClick={() => setGameState('HANGAR')}><Palette size={18} /> <span>Hangar</span></button>
+              <button className="physical-btn" onClick={() => setGameState('ACHIEVEMENTS')}><Medal size={18} /> <span>Records</span></button>
+              <button className="physical-btn" onClick={handleOpenLeaderboard}><Trophy size={18} /> <span>Leaderboard</span></button>
+              <button className="physical-btn" onClick={() => setGameState('WITHDRAW')}><Wallet size={18} /> <span>Withdraw</span></button>
+              <button className="physical-btn" onClick={() => setGameState('HOW_TO_PLAY')}><HelpCircle size={18} /> <span>How to Play</span></button>
             </div>
           </div>
         )}
