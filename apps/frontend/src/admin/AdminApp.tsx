@@ -68,9 +68,9 @@ export default function AdminApp() {
   return (
     <div className="admin-shell">
       <header className="admin-header">
-        <div className="admin-brand">
+        <div className="admin-brand-group">
           <span className="admin-logo">◈</span>
-          <div>
+          <div className="admin-brand-text">
             <h1>Mission Control</h1>
             <span className="admin-sub">Space Cargo Runner · Admin</span>
           </div>
