@@ -100,7 +100,7 @@ export default function AdminApp() {
           </nav>
           <div className="admin-header-actions">
             <a className="admin-link-btn" href="#/"><Gamepad2 size={16} /> Game</a>
-            <button className="admin-link-btn" onClick={handleLogout}>Log out</button>
+            <button className="admin-link-btn logout" onClick={handleLogout}>Log out</button>
           </div>
         </div>
       </header>
