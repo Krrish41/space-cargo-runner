@@ -692,7 +692,7 @@ function App() {
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ width: '150px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
+                    style={{ minWidth: '130px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
                     onClick={upgradeShield}
                     disabled={!user || user.coins < shieldLevel * 150}
                   >
@@ -715,7 +715,7 @@ function App() {
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ width: '150px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
+                    style={{ minWidth: '130px', padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', whiteSpace: 'nowrap', fontSize: '0.85rem' }}
                     onClick={upgradeFuel}
                     disabled={!user || user.coins < fuelLevel * 125}
                   >
@@ -735,7 +735,7 @@ function App() {
               <div className="shop-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h2 className="title" style={{ fontSize: '2rem', margin: 0 }}>WITHDRAW FUNDS</h2>
                 <div style={{ color: '#ffd166', fontSize: '1.2rem', fontWeight: 'bold', fontFamily: 'Courier New', textShadow: '0 0 10px rgba(255, 209, 102, 0.5)', textAlign: 'center' }}>
-                  CREDITS: {user?.coins || 0} <Coins size={16} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}/>
+                  CREDITS: {user?.coins || 0} <Coins size={16} className="spinning-coin" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}/>
                 </div>
               </div>
 
@@ -836,12 +836,25 @@ function App() {
               </div>
               <div className="mission-list">
                 {missions.map((mission) => (
-                  <div key={mission.id} className="mission-row">
+                  <div key={mission.id} className={`mission-row ${mission.completed ? 'completed' : ''}`}>
                     <span>{mission.label}</span>
-                    <div className="mission-progress">
-                      <div style={{ width: `${Math.min(100, (mission.progress / mission.target) * 100)}%` }}></div>
-                    </div>
-                    <strong>{mission.completed ? 'Complete' : mission.reward}</strong>
+                    {mission.completed ? (
+                      <>
+                        <div className="mission-progress" style={{ borderColor: '#00ffcc' }}>
+                          <div style={{ width: '100%', background: '#00ffcc' }}></div>
+                        </div>
+                        <strong style={{ color: '#00ffcc', display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'flex-end' }}>
+                          <Check size={18} /> UNLOCKED
+                        </strong>
+                      </>
+                    ) : (
+                      <>
+                        <div className="mission-progress">
+                          <div style={{ width: `${Math.min(100, (mission.progress / mission.target) * 100)}%` }}></div>
+                        </div>
+                        <strong style={{ color: '#00ffcc' }}>{mission.reward}</strong>
+                      </>
+                    )}
                   </div>
                 ))}
               </div>

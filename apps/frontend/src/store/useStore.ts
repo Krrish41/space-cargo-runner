@@ -163,7 +163,7 @@ export const useStore = create<GameState>((set, get) => ({
   missions: [
     { id: 'mission-distance', label: 'Run 750m', progress: 0, target: 750, reward: '+75 XP', completed: false },
     { id: 'mission-cargo', label: 'Secure 12 cargo', progress: 0, target: 12, reward: '+120 credits', completed: false },
-    { id: 'mission-survive', label: 'Survive 90s', progress: 0, target: 90, reward: 'Ace skin access', completed: false }
+    { id: 'mission-survive', label: 'Survive 90s', progress: 0, target: 90, reward: 'Void Ace skin', completed: false }
   ],
   shipSkins: [
     { id: 'standard', name: 'Standard Courier', color: '#00ffcc', unlock: 'Unlocked', unlocked: true },
