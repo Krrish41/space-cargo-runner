@@ -734,8 +734,8 @@ function App() {
             <div className="crt-panel withdraw-panel" style={{ padding: '30px', width: '100%', maxWidth: '500px' }}>
               <div className="shop-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <h2 className="title" style={{ fontSize: '2rem', margin: 0 }}>WITHDRAW FUNDS</h2>
-                <div style={{ color: '#ffd166', fontSize: '1.2rem', fontWeight: 'bold', fontFamily: 'Courier New', textShadow: '0 0 10px rgba(255, 209, 102, 0.5)', textAlign: 'center' }}>
-                  CREDITS: {user?.coins || 0} <Coins size={16} className="spinning-coin" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }}/>
+                <div style={{ display: 'flex', alignItems: 'center', color: '#ffd166', fontSize: '1.2rem', fontWeight: 'bold', fontFamily: 'Courier New', textShadow: '0 0 10px rgba(255, 209, 102, 0.5)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  CREDITS: {user?.coins || 0} <Coins size={16} className="spinning-coin" style={{ marginLeft: '6px' }}/>
                 </div>
               </div>
 
