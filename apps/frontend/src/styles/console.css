@@ -1405,8 +1405,8 @@
 
   .live-comms-ticker {
     width: 100% !important;
-    height: 160px !important;
-    margin-top: 10px !important;
+    height: 240px !important;
+    margin-top: 8px !important;
     padding: 5px !important;
   }
 
@@ -1645,7 +1645,7 @@
   }
 
   .live-comms-ticker {
-    height: 90px !important;
+    height: 160px !important;
   }
 }
 
