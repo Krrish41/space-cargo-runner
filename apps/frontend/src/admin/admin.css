@@ -51,6 +51,7 @@
   padding: 7px 12px; border-radius: 8px; border: 1px solid var(--a-line);
   background: transparent; color: var(--a-muted); cursor: pointer; text-decoration: none;
   font-family: inherit; font-size: 0.76rem;
+  display: flex; align-items: center; gap: 6px;
 }
 .admin-link-btn:hover { color: var(--a-primary); border-color: var(--a-primary); }
 

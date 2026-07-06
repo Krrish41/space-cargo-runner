@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Gamepad2 } from 'lucide-react';
 import { adminApi, adminToken, AdminApiError } from './adminApi';
 import type {
   AdminAnalytics,
@@ -85,7 +86,7 @@ export default function AdminApp() {
           ))}
         </nav>
         <div className="admin-header-actions">
-          <a className="admin-link-btn" href="#/">← Game</a>
+          <a className="admin-link-btn" href="#/"><Gamepad2 size={16} /> Game</a>
           <button className="admin-link-btn" onClick={handleLogout}>Log out</button>
         </div>
       </header>
@@ -140,7 +141,7 @@ function AdminLogin({ onAuthed }: { onAuthed: () => void }) {
         <button type="submit" className="admin-btn primary" disabled={loading || !password}>
           {loading ? 'Authenticating…' : 'Access dashboard'}
         </button>
-        <a className="admin-back" href="#/">← Back to game</a>
+        <a className="admin-back" href="#/" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Gamepad2 size={16} /> Back to game</a>
       </form>
     </div>
   );
