@@ -481,12 +481,12 @@ function App() {
                </div>
 
                {/* LIVE COMMS TICKER */}
-               <div className="live-comms-ticker" style={{ marginTop: '40px', border: '1px solid #00ffcc', padding: '15px', background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(4px)', color: '#00ffcc', fontFamily: 'monospace', width: '100%', maxWidth: '600px', height: '140px', overflow: 'hidden', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,255,204,0.1)' }}>
-                  <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid rgba(0,255,204,0.3)', paddingBottom: '6px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px' }}>
+               <div className="live-comms-ticker" style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', border: '1px solid #00ffcc', padding: '15px', background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(4px)', color: '#00ffcc', fontFamily: 'monospace', width: '100%', maxWidth: '600px', height: '140px', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,255,204,0.1)' }}>
+                  <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '12px', borderBottom: '1px solid rgba(0,255,204,0.3)', paddingBottom: '6px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <div className="status-light connected" style={{ width: '8px', height: '8px' }}></div>
                     GLOBAL LIVE COMMS LINK
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left', fontSize: '13px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', textAlign: 'left', fontSize: '13px', overflowY: 'auto', flexGrow: 1, paddingRight: '4px' }}>
                     {liveFeed.length === 0 ? (
                       <span className="blinking" style={{ color: '#8899b5' }}>Awaiting incoming transmissions...</span>
                     ) : (

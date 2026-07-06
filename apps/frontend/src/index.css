@@ -6,7 +6,7 @@ html, body {
   margin: 0;
   padding: 0;
   width: 100vw;
-  height: 100dvh;
+  height: 100svh;
   overflow: hidden;
   background-color: #000;
   -webkit-touch-callout: none;
@@ -16,5 +16,5 @@ html, body {
 
 #root {
   width: 100vw;
-  height: 100dvh;
+  height: 100svh;
 }
