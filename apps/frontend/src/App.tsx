@@ -484,7 +484,7 @@ function App() {
                </div>
 
                {/* LIVE COMMS TICKER */}
-               <div className="live-comms-ticker" style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', border: '1px solid rgba(0, 255, 204, 0.3)', padding: '5px', background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(4px)', color: '#00ffcc', fontFamily: 'monospace', width: '100%', maxWidth: '600px', height: '240px', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,255,204,0.05)' }}>
+               <div className="live-comms-ticker" style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', border: '1px solid rgba(0, 255, 204, 0.3)', padding: '5px', background: 'rgba(5, 5, 10, 0.85)', backdropFilter: 'blur(4px)', color: '#00ffcc', fontFamily: 'monospace', width: '100%', maxWidth: '600px', height: '170px', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,255,204,0.05)' }}>
                   <div style={{ fontSize: '11px', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '6px', borderBottom: '1px solid rgba(0,255,204,0.3)', paddingBottom: '6px', textAlign: 'left', display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                     <div className="status-light connected" style={{ width: '8px', height: '8px' }}></div>
                     GLOBAL LIVE COMMS LINK
