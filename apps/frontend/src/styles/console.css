@@ -578,12 +578,26 @@
 }
 
 .mission-row {
-  display: grid;
-  grid-template-columns: 150px 1fr 110px;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
-  align-items: center;
-  color: #dbe8ff;
+  border-radius: 8px;
+  border: 1px solid rgba(58, 72, 99, 0.9);
+  background: rgba(0, 0, 0, 0.35);
+  color: #8899b5;
+  padding: 14px;
+  text-align: left;
   font-family: 'Courier New', Courier, monospace;
+}
+
+.mission-row span {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.05rem;
+}
+
+.mission-row strong {
+  color: #00f0ff;
 }
 
 .mission-progress {
@@ -1588,7 +1602,7 @@
   }
 
   .mission-row {
-    grid-template-columns: 1fr;
+    /* Styles are now unified with achievement cards */
   }
 
   /* Home + game-over: pin the control dashboard so every button stays on screen,
