@@ -679,12 +679,12 @@ function App() {
                 <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '15px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <span style={{ fontSize: '1.1rem', color: 'var(--primary)', fontWeight: 'bold' }}>DEFLECTOR SHIELDS</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', whiteSpace: 'nowrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
                       <span style={{ opacity: 0.7 }}>LVL {shieldLevel}</span>
                       <ArrowRight size={14} style={{ opacity: 0.5 }} />
                       <span style={{ color: '#fff', fontWeight: 'bold' }}>LVL {shieldLevel + 1}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', whiteSpace: 'nowrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
                       <span style={{ opacity: 0.7 }}>HP {maxHealth}</span>
                       <ArrowRight size={14} style={{ opacity: 0.5 }} />
                       <span style={{ color: '#00ffcc', fontWeight: 'bold' }}>HP {maxHealth + 100}</span>
@@ -702,12 +702,12 @@ function App() {
                 <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '15px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <span style={{ fontSize: '1.1rem', color: '#00f0ff', fontWeight: 'bold' }}>PLASMA FUEL CORE</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', whiteSpace: 'nowrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
                       <span style={{ opacity: 0.7 }}>LVL {fuelLevel}</span>
                       <ArrowRight size={14} style={{ opacity: 0.5 }} />
                       <span style={{ color: '#fff', fontWeight: 'bold' }}>LVL {fuelLevel + 1}</span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'nowrap', whiteSpace: 'nowrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
                       <span style={{ opacity: 0.7 }}>CAPACITY {maxFuel}</span>
                       <ArrowRight size={14} style={{ opacity: 0.5 }} />
                       <span style={{ color: '#00f0ff', fontWeight: 'bold' }}>CAPACITY {maxFuel + 100}</span>
