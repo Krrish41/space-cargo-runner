@@ -53,7 +53,7 @@
   padding: 7px 12px; border-radius: 8px; border: 1px solid var(--a-line);
   background: transparent; color: var(--a-muted); cursor: pointer; text-decoration: none;
   font-family: inherit; font-size: 0.76rem;
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; gap: 6px; justify-content: flex-start;
 }
 .admin-link-btn:hover { color: var(--a-primary); border-color: var(--a-primary); }
 
@@ -88,11 +88,11 @@
 .admin-search input { flex: 1; }
 .admin-count { color: var(--a-muted); font-size: 0.8rem; white-space: nowrap; flex-shrink: 0; }
 .admin-check { display: flex; align-items: center; gap: 8px; color: var(--a-muted); font-size: 0.85rem; cursor: pointer; }
-.admin-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.admin-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
 .admin-pill {
   padding: 6px 14px; border-radius: 999px; border: 1px solid var(--a-line);
   background: transparent; color: var(--a-muted); cursor: pointer; font-family: inherit;
-  font-size: 0.74rem; text-transform: capitalize;
+  font-size: 0.74rem; text-transform: capitalize; flex: 1; text-align: center; white-space: nowrap;
 }
 .admin-pill.active { color: var(--a-primary); border-color: var(--a-primary); background: rgba(0, 255, 204, 0.1); }
 
@@ -237,6 +237,13 @@
     border-bottom: 1px solid rgba(0, 255, 204, 0.1);
   }
   .admin-tab { width: 100%; text-align: left; padding: 14px 16px; border-radius: 8px; font-size: 1rem; margin-bottom: 6px; white-space: nowrap; flex-shrink: 0; }
+  .admin-tab.active {
+    box-shadow: none;
+    border-color: transparent;
+    border-left: 3px solid var(--a-primary);
+    border-radius: 0 8px 8px 0;
+    background: linear-gradient(90deg, rgba(0,255,204,0.15) 0%, transparent 100%);
+  }
   
   .admin-header-actions { display: flex; width: 100%; flex-direction: column; justify-content: flex-start; margin-left: 0; padding-top: 20px; gap: 12px; }
   .admin-main { padding: 14px; }

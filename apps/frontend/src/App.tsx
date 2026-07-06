@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useStore } from './store/useStore';
 import { PhaserGame } from './game/PhaserGame';
-import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine, Wallet, HelpCircle } from 'lucide-react';
+import { Rocket, Coins, Trophy, Settings, LogOut, User, Pause, Play, Volume2, VolumeX, Music2, Music, Medal, Palette, Shield, Magnet, Gauge, Timer, ArrowDownToLine, Wallet, HelpCircle, ArrowRight } from 'lucide-react';
 import { useAccount, useDisconnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { formatEther } from 'viem';
 import { CONTRACT_ADDRESS, SPACE_CARGO_TOKEN_ABI } from './contracts/SpaceCargoToken';
@@ -43,6 +43,7 @@ function App() {
     fuel,
     maxFuel,
     fuelLevel,
+    handlingLevel,
     setGameState,
     resetRun,
     user,
@@ -50,6 +51,7 @@ function App() {
     syncPlayerStats,
     upgradeShield,
     upgradeFuel,
+    upgradeHandling,
     toggleSound,
     toggleMusic,
     selectSkin,
@@ -668,33 +670,38 @@ function App() {
 
           {gameState === 'SHOP' && (
             <div className="crt-panel shop-panel" style={{ padding: '30px', width: '100%', maxWidth: '500px' }}>
-              <div className="shop-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h2 className="title" style={{ fontSize: '2rem', margin: 0 }}>SHIP UPGRADES</h2>
-                <div style={{ color: '#ffd166', fontSize: '1.4rem', fontWeight: 'bold', fontFamily: 'Courier New', textShadow: '0 0 10px rgba(255, 209, 102, 0.5)', textAlign: 'center' }}>
-                  CREDITS: {user?.coins || 0} <Coins size={20} className="spinning-coin" style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '5px' }}/>
+              <div className="shop-header" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h2 className="title" style={{ fontSize: '1.4rem', margin: 0 }}>SHIP UPGRADES</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#ffd166', fontSize: '1.1rem', fontWeight: 'bold', fontFamily: 'Courier New', textShadow: '0 0 10px rgba(255, 209, 102, 0.5)' }}>
+                  CREDITS: {user?.coins || 0} <Coins size={18} className="spinning-coin" />
                 </div>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', fontFamily: 'Courier New', marginBottom: '20px' }}>
-                <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '20px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '20px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>DEFLECTOR SHIELDS</span>
-                    <span style={{ color: '#c0d4f5' }}>Level {shieldLevel} &rarr; Level {shieldLevel + 1}</span>
-                    <span style={{ color: '#c0d4f5', fontSize: '0.9rem' }}>Max HP: {maxHealth} &rarr; {maxHealth + 100}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New', marginBottom: '20px' }}>
+                {/* Shield Upgrade */}
+                <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '15px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '16px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <span style={{ fontSize: '1.1rem', color: 'var(--primary)', fontWeight: 'bold' }}>DEFLECTOR SHIELDS</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
+                      <span style={{ opacity: 0.7 }}>LVL {shieldLevel}</span>
+                      <ArrowRight size={14} style={{ opacity: 0.5 }} />
+                      <span style={{ color: '#fff', fontWeight: 'bold' }}>LVL {shieldLevel + 1}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', color: '#c0d4f5', fontSize: '0.85rem' }}>
+                      <span style={{ opacity: 0.7 }}>HP {maxHealth}</span>
+                      <ArrowRight size={14} style={{ opacity: 0.5 }} />
+                      <span style={{ color: '#00ffcc', fontWeight: 'bold' }}>HP {maxHealth + 100}</span>
+                    </div>
                   </div>
                   <button 
                     className="physical-btn" 
-                    style={{ minWidth: '150px', padding: '10px' }}
+                    style={{ minWidth: '130px', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}
                     onClick={upgradeShield}
                     disabled={!user || user.coins < shieldLevel * 150}
                   >
-                    UPGRADE ({shieldLevel * 150} <Coins size={14} style={{ display: 'inline', verticalAlign: 'middle' }}/>)
+                    UPGRADE ({shieldLevel * gameConfig.shieldUpgradeBaseCost} <Coins size={14} />)
                   </button>
                 </div>
                 
-                <div className="upgrade-row" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '20px', alignItems: 'center', background: 'rgba(0, 0, 0, 0.4)', padding: '20px', borderRadius: '8px', border: '1px solid rgba(0, 255, 204, 0.2)' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ fontSize: '1.2rem', color: '#00f0ff' }}>PLASMA FUEL CORE</span>
-                    <span style={{ color: '#c0d4f5' }}>Level {fuelLevel} &rarr; Level {fuelLevel + 1}</span>
                     <span style={{ color: '#c0d4f5', fontSize: '0.9rem' }}>Capacity: {maxFuel} &rarr; {maxFuel + 100}</span>
                   </div>
                   <button 
@@ -703,7 +710,7 @@ function App() {
                     onClick={upgradeFuel}
                     disabled={!user || user.coins < fuelLevel * 125}
                   >
-                    UPGRADE ({fuelLevel * 125} <Coins size={14} style={{ display: 'inline', verticalAlign: 'middle' }}/>)
+                    UPGRADE ({fuelLevel * gameConfig.fuelUpgradeBaseCost} <Coins size={14} style={{ display: 'inline', verticalAlign: 'middle' }}/>)
                   </button>
                 </div>
               </div>
