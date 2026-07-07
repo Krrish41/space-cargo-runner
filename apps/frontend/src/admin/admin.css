@@ -251,7 +251,14 @@
 @media (max-width: 1440px) {
   .admin-main { padding: 16px; }
   .admin-table th, .admin-table td { padding: 8px 10px; font-size: 0.75rem; }
-  .admin-tab { padding: 0 10px; font-size: 0.75rem; }
+  .admin-tab { padding: 0 8px; font-size: 0.75rem; }
+  .admin-tabs { gap: 2px; }
+  .admin-brand-group { gap: 8px; }
+  .admin-logo { font-size: 1.3rem; }
+  .admin-brand-text h1 { font-size: 1rem; }
+  .admin-sub { font-size: 0.65rem; letter-spacing: 1px; }
+  .admin-link-btn { padding: 5px 8px; font-size: 0.7rem; }
+  .admin-mobile-menu { gap: 8px; }
 }
 /* ---- Responsive ---- */
 @media (max-width: 760px) {
