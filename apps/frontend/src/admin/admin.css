@@ -25,16 +25,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  height: 60px;
+  padding: 10px 20px;
+  min-height: 60px;
   box-sizing: border-box;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   border-bottom: 1px solid var(--a-line);
   background: rgba(6, 9, 16, 0.9);
   position: sticky;
   top: 0;
   z-index: 5;
   backdrop-filter: blur(8px);
+  gap: 12px;
 }
 .admin-brand-group { display: flex; align-items: center; gap: 12px; flex-shrink: 1; min-width: 0; }
 .admin-brand-text { display: flex; flex-direction: column; flex-shrink: 1; min-width: 0; }
@@ -61,7 +62,7 @@
 }
 .admin-link-btn:hover { color: var(--a-primary); border-color: var(--a-primary); background: rgba(0, 255, 204, 0.05); transform: none; box-shadow: none; }
 
-.admin-main { padding: 24px; max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; overflow-x: hidden; }
+.admin-main { padding: 24px; max-width: 1280px; width: 100%; box-sizing: border-box; margin: 0 auto; overflow-x: visible; }
 .admin-section { display: flex; flex-direction: column; gap: 20px; min-width: 0; width: 100%; }
 
 /* ---- Cards ---- */
@@ -247,6 +248,11 @@
 }
 .admin-mobile-menu-btn:hover { color: var(--a-primary); }
 
+@media (max-width: 1440px) {
+  .admin-main { padding: 16px; }
+  .admin-table th, .admin-table td { padding: 8px 10px; font-size: 0.75rem; }
+  .admin-tab { padding: 0 10px; font-size: 0.75rem; }
+}
 /* ---- Responsive ---- */
 @media (max-width: 760px) {
   .admin-header { padding: 0 16px; height: 60px; justify-content: space-between; flex-wrap: nowrap; }

@@ -81,7 +81,7 @@
 
 /* Glowing Neon Title Sign */
 .neon-title {
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 8vh, 4rem);
   font-weight: 900;
   text-transform: uppercase;
   color: #fff;
@@ -91,7 +91,7 @@
     0 0 20px var(--primary),
     0 0 40px var(--primary),
     0 0 80px var(--primary);
-  margin-bottom: 2rem;
+  margin-bottom: clamp(0.5rem, 3vh, 2rem);
   text-align: center;
   letter-spacing: 4px;
 }
@@ -1267,6 +1267,17 @@
     min-width: 180px;
     padding: 12px 16px;
     font-size: 0.95rem;
+  }
+}
+
+/* Short Desktop Viewports (e.g. 1366x768 laptops) */
+@media (max-height: 820px) and (min-width: 761px) {
+  .mission-strip { margin-top: 5px; gap: 8px; }
+  .mission-chip { min-height: 50px; padding: 6px 10px; }
+  .console-dashboard { padding: 15px; gap: 10px; }
+  .live-comms-ticker {
+    max-height: min(170px, 20vh) !important;
+    margin-top: 4px !important;
   }
 }
 
