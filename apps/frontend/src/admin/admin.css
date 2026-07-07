@@ -25,10 +25,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  height: 60px;
+  padding: 10px 20px;
+  min-height: 60px;
+  height: auto;
   box-sizing: border-box;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   border-bottom: 1px solid var(--a-line);
   background: rgba(6, 9, 16, 0.9);
   position: sticky;
@@ -42,8 +43,8 @@
 .admin-logo.big { font-size: 2.6rem; }
 .admin-brand-text h1 { margin: 0; font-size: 1.15rem; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .admin-sub { color: var(--a-muted); font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.admin-mobile-menu { display: flex; flex: 1; align-items: center; justify-content: space-between; gap: 16px; min-width: 0; }
-.admin-tabs { display: flex; gap: 6px; flex-wrap: nowrap; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.admin-mobile-menu { display: flex; flex: 1; align-items: center; justify-content: space-between; gap: 16px; min-width: 0; flex-wrap: wrap; }
+.admin-tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; flex: 1; margin: 0; }
 .admin-tabs::-webkit-scrollbar { display: none; }
 .admin-tab {
   padding: 0 16px; height: 36px; border-radius: 8px; border: 1px solid transparent;
