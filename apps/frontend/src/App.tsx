@@ -822,8 +822,9 @@ function App() {
 
           {gameState === 'ACHIEVEMENTS' && (
             <div className="crt-panel meta-panel">
-              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>PILOT RECORDS</h2>
-              <div className="achievement-grid">
+              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center', flexShrink: 0 }}>PILOT RECORDS</h2>
+              <div style={{ flex: 1, overflowY: 'auto', paddingRight: '10px', display: 'flex', flexDirection: 'column', gap: '20px', minHeight: 0 }}>
+                <div className="achievement-grid">
                 {achievements.map((achievement) => (
                   <div key={achievement.id} className={`achievement-card ${achievement.unlocked ? 'unlocked' : ''}`}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
@@ -858,7 +859,7 @@ function App() {
                   </div>
                 ))}
               </div>
-              <div style={{ textAlign: 'center' }}>
+              <div style={{ textAlign: 'center', flexShrink: 0, marginTop: '20px' }}>
                 <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Records</button>
               </div>
             </div>
@@ -866,8 +867,8 @@ function App() {
 
           {gameState === 'HANGAR' && (
             <div className="crt-panel meta-panel">
-              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center' }}>SHIP HANGAR</h2>
-              <div className="skin-grid">
+              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center', flexShrink: 0 }}>SHIP HANGAR</h2>
+              <div className="skin-grid" style={{ flex: 1, overflowY: 'auto', paddingRight: '10px', minHeight: 0 }}>
                 {shipSkins.map((skin) => (
                   <button
                     key={skin.id}
@@ -883,7 +884,7 @@ function App() {
                   </button>
                 ))}
               </div>
-              <div style={{ textAlign: 'center' }}>
+              <div style={{ textAlign: 'center', flexShrink: 0, marginTop: '20px' }}>
                 <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Hangar</button>
               </div>
             </div>
@@ -891,10 +892,10 @@ function App() {
 
           {gameState === 'LEADERBOARD' && (
             <div className="crt-panel leaderboard-panel" style={{ padding: '30px', width: '100%', maxWidth: '400px' }}>
-              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '20px' }}>TOP RUNNERS</h2>
+              <h2 className="title" style={{ fontSize: '2rem', textAlign: 'center', marginBottom: '20px', flexShrink: 0 }}>TOP RUNNERS</h2>
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', padding: '0 1rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', flex: 1, minHeight: 0 }}>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', padding: '0 1rem', flexShrink: 0 }}>
                   <button 
                     className={`physical-btn ${leaderboardPeriod === 'weekly' ? 'tab-active' : 'tab-inactive'}`}
                     style={{ padding: '8px 16px', fontSize: '0.85rem', flex: 1, minWidth: 0 }}
@@ -911,7 +912,7 @@ function App() {
                   </button>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', fontFamily: 'Courier New', flex: 1, overflowY: 'auto', paddingRight: '10px', minHeight: 0 }}>
                   {topRunners === null ? (
                     <div style={{ textAlign: 'center', color: '#8899b5', padding: '20px' }}>
                       {isBackendWakingUp 
@@ -939,7 +940,7 @@ function App() {
                     ))
                   )}
                 </div>
-                <div style={{ textAlign: 'center' }}>
+                <div style={{ textAlign: 'center', flexShrink: 0 }}>
                   <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Terminal</button>
                 </div>
               </div>

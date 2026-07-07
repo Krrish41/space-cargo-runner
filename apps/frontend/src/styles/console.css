@@ -44,8 +44,9 @@
     0 0 20px rgba(0, 255, 204, 0.1),
     inset 0 0 30px rgba(0, 255, 204, 0.05);
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   max-height: 85vh;
   color: var(--primary);
   pointer-events: auto;
