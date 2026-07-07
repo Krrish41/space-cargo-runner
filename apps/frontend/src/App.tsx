@@ -859,6 +859,7 @@ function App() {
                   </div>
                 ))}
               </div>
+              </div>
               <div style={{ textAlign: 'center', flexShrink: 0, marginTop: '20px' }}>
                 <button className="physical-btn" onClick={() => setGameState('MENU')} style={{ margin: '0 auto' }}>Exit Records</button>
               </div>
