@@ -2,11 +2,11 @@
 
 **Space Cargo Runner** is a retro-futuristic arcade runner built with React, Phaser, Zustand, Socket.io, Express, Prisma, and PostgreSQL. Jump in as a guest pilot, dodge hazards, collect cargo, trigger power-ups, upgrade your ship, and chase the leaderboard.
 
-[🕹️ Play on GitHub Pages](https://krrish41.github.io/space-cargo-runner/)
+**Play it live:** [https://krrish41.github.io/space-cargo-runner/](https://krrish41.github.io/space-cargo-runner/)
 
 ---
 
-## 🚀 Features
+## Features
 
 - **High-Octane Gameplay**: Fast lateral ship controls with keyboard, pointer, or touch input. Dodge asteroids, mines, and space debris.
 - **Upgrades & Economy**: Collect cargo and data caches. Upgrade your hull, fuel capacity, shield, and magnet pulling power in the Shop.
@@ -17,11 +17,11 @@
 
 ---
 
-## 🛠️ Architecture & Monorepo Layout
+## Architecture & Monorepo Layout
 
 This project uses a monorepo structure containing both the frontend client and the backend server.
 
-```text
+```
 apps/frontend      React + Vite UI, Phaser game scene, Zustand store, Admin Panel
 apps/backend       Express + Socket.io API, Prisma persistence, SQLite/PostgreSQL
 packages/shared    Shared TypeScript types (models, socket payloads)
@@ -31,20 +31,22 @@ docs               Architecture, game design, and product writeup
 
 ---
 
-## ⚙️ Local Development & Setup
+## Local Development & Setup
 
-### 1. Prerequisites
+### Prerequisites
+
 - Node.js (v18 or newer recommended)
 - npm or yarn
 
-### 2. Install Dependencies
+### Install Dependencies
+
 From the root of the repository, run:
 
 ```bash
 npm install
 ```
 
-### 3. Setting up the Backend (Database & Server)
+### Setting up the Backend (Database & Server)
 
 The backend handles player persistence, economy validation, leaderboards, and the admin panel. By default, Prisma can run on a local PostgreSQL or SQLite database.
 
@@ -71,7 +73,7 @@ The backend handles player persistence, economy validation, leaderboards, and th
    ```
    *The server will start on `http://localhost:3001`.*
 
-### 4. Setting up the Frontend
+### Setting up the Frontend
 
 With the backend running, open a new terminal window.
 
@@ -91,13 +93,14 @@ With the backend running, open a new terminal window.
 
 ---
 
-## 🛡️ Setting up the Admin Panel
+## Setting up the Admin Panel
 
 The game includes a highly detailed **Mission Control (Admin Panel)** accessible at `/space-cargo-runner/admin` (e.g., `http://localhost:5173/space-cargo-runner/admin`).
 
 To access the admin panel, your player account must have the `admin` role in the database.
 
 ### How to promote your account to Admin:
+
 1. **Play the game once**: Open the frontend, enter a pilot name (e.g., `Krrish`), and start a run. This registers your user profile in the database.
 2. **Run the Admin Setup Script**: Open a terminal, navigate to the backend, and use the included promotion script.
    ```bash
@@ -108,7 +111,7 @@ To access the admin panel, your player account must have the `admin` role in the
 
 ---
 
-## 📦 Build and Deployment
+## Build and Deployment
 
 ### Frontend (GitHub Pages)
 
@@ -126,16 +129,17 @@ npm run preview:frontend
 **GitHub Actions**: A CI/CD workflow is included in `.github/workflows/`. It automatically installs dependencies, builds the frontend, and deploys the `apps/frontend/dist` folder to GitHub Pages on every push to the `main` branch.
 
 ### Playability without a Backend
+
 The frontend is built with graceful fallbacks. If the backend is unavailable or not configured (`VITE_BACKEND_URL` is empty), the game remains fully playable. It will fall back to an offline guest profile and use mock data for the leaderboards, ensuring the core arcade loop is never interrupted.
 
 ---
 
-## 🌐 Web3 Notes (Optional)
+## Web3 Notes (Optional)
 
 Wallet connection is optional and primarily used for withdrawing in-game credits as tokens on the SecureChain network. Guest mode is the default path and is enough to play immediately.
 
 **SecureChain Network Details:**
-```text
+```
 Network Name: SCAI Mainnet
 RPC URL: https://mainnet-rpc.scai.network
 Chain ID: 34
