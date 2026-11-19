@@ -4,6 +4,8 @@
 
 **Play it live:** [https://krrish41.github.io/space-cargo-runner/](https://krrish41.github.io/space-cargo-runner/)
 
+> **Note:** This repository is a standalone, smaller version of Space Cargo Runner. The backend work I did on the game during my EtherAuthority internship (database schema, leaderboard and anti-cheat services) was built in the company's environment and is not included here.
+
 ---
 
 ## Features
